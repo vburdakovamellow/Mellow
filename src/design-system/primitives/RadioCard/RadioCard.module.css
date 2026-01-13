@@ -7,10 +7,18 @@
   display: flex;
   gap: var(--ds-space-8);
   align-items: flex-start;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
 }
 
 .cardActive {
   background: var(--ds-color-bg-surface-brand-2);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--ds-color-bg-fill-control-active);
+  outline-offset: 2px;
 }
 
 .radio {

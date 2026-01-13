@@ -5,9 +5,11 @@ export function InputField({
   label,
   value,
   placeholder,
-  readOnly = true,
+  readOnly = false,
   rightIcon,
-  className
+  className,
+  onChange,
+  type = "text"
 }: {
   label?: string;
   value?: string;
@@ -15,6 +17,8 @@ export function InputField({
   readOnly?: boolean;
   rightIcon?: ReactNode;
   className?: string;
+  onChange?: (next: string) => void;
+  type?: "text" | "number" | "url";
 }) {
   return (
     <label className={[styles.field, className].filter(Boolean).join(" ")}>
@@ -23,9 +27,11 @@ export function InputField({
         <input
           aria-label={label}
           className={styles.native}
-          defaultValue={value}
+          value={value ?? ""}
           placeholder={placeholder}
           readOnly={readOnly}
+          type={type}
+          onChange={(e) => onChange?.(e.currentTarget.value)}
         />
         {rightIcon ? <span className={styles.rightIcon}>{rightIcon}</span> : null}
       </span>

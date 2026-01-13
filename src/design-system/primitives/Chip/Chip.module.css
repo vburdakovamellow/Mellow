@@ -8,6 +8,17 @@
   background: var(--ds-color-bg-fill-chips);
   border-radius: var(--ds-radius-12);
   color: var(--ds-color-text-primary);
+  border: 0;
+  user-select: none;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:focus-visible {
+  outline: 2px solid var(--ds-color-bg-fill-control-active);
+  outline-offset: 2px;
 }
 
 .label {

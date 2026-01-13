@@ -1,6 +1,8 @@
+import { useMemo, useState } from "react";
 import { Button } from "../../design-system/primitives/Button/Button";
 import { Chip } from "../../design-system/primitives/Chip/Chip";
 import { InputField } from "../../design-system/primitives/Input/Input";
+import { Modal } from "../../design-system/primitives/Modal/Modal";
 import { RadioCard } from "../../design-system/primitives/RadioCard/RadioCard";
 import { Toggle } from "../../design-system/primitives/Toggle/Toggle";
 
@@ -82,7 +84,17 @@ function Header() {
   );
 }
 
-function TitleActionsBar() {
+type PaymentType = "hourly" | "fixed";
+type StartDate = "asap" | "in-1-2-weeks" | "next-month" | "flexible";
+type SelectKey = "location" | "currency" | "workload";
+
+function TitleActionsBarWithActions({
+  onPreview,
+  onCreate
+}: {
+  onPreview: () => void;
+  onCreate: () => void;
+}) {
   return (
     <div className={styles.fixedTitleBar}>
       <div className={[styles.container, styles.titleBarInner].join(" ")}>
@@ -90,8 +102,10 @@ function TitleActionsBar() {
           <p className="ds-h3">Graphic Designer for Social Media Optimisation</p>
         </div>
         <div className={styles.actions}>
-          <Button variant="secondary">Preview</Button>
-          <Button variant="brand" leftIcon={<IconSpark color="var(--ds-color-text-inverse)" />}>
+          <Button variant="secondary" onClick={onPreview}>
+            Preview
+          </Button>
+          <Button variant="brand" leftIcon={<IconSpark color="var(--ds-color-text-inverse)" />} onClick={onCreate}>
             Create page
           </Button>
         </div>
@@ -138,10 +152,81 @@ function WysiwygToolbar() {
   );
 }
 
-function MainColumn() {
+function SelectField({
+  label,
+  value,
+  options,
+  open,
+  onToggle,
+  onSelect
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  open: boolean;
+  onToggle: () => void;
+  onSelect: (next: string) => void;
+}) {
+  return (
+    <div style={{ position: "relative" }}>
+      <div onClick={onToggle}>
+        <InputField
+          label={label}
+          value={value}
+          readOnly
+          rightIcon={<IconChevronDown size={16} color="var(--ds-color-text-secondary)" />}
+        />
+      </div>
+      {open ? (
+        <div
+          style={{
+            position: "absolute",
+            top: "calc(100% + 6px)",
+            left: 0,
+            right: 0,
+            background: "var(--ds-color-bg-surface)",
+            borderRadius: 12,
+            border: "1px solid var(--ds-color-border-secondary)",
+            padding: 6,
+            zIndex: 50
+          }}
+        >
+          {options.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => onSelect(opt)}
+              style={{
+                width: "100%",
+                textAlign: "left",
+                border: 0,
+                background: "transparent",
+                padding: "10px 10px",
+                borderRadius: 10,
+                cursor: "pointer",
+                fontSize: 16,
+                lineHeight: "22px"
+              }}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function MainColumn({
+  requestTitle,
+  onRequestTitleChange
+}: {
+  requestTitle: string;
+  onRequestTitleChange: (next: string) => void;
+}) {
   return (
     <section className={styles.main} aria-label="Main editor">
-      <InputField label="Request title" value="Graphic Designer for Social Media Optimisation" />
+      <InputField label="Request title" value={requestTitle} onChange={onRequestTitleChange} />
 
       <div className={styles.editorCard}>
         <WysiwygToolbar />
@@ -198,68 +283,161 @@ function MainColumn() {
   );
 }
 
-function Sidebar() {
+function Sidebar({
+  companyName,
+  website,
+  location,
+  currency,
+  workload,
+  skills,
+  aiSuggested,
+  newSkill,
+  negotiable,
+  paymentType,
+  fromRate,
+  toRate,
+  timelineFlexible,
+  startDate,
+  openSelectKey,
+  onCompanyNameChange,
+  onWebsiteChange,
+  onSelectOpenToggle,
+  onLocationSelect,
+  onCurrencySelect,
+  onWorkloadSelect,
+  onRemoveSkill,
+  onAddSuggested,
+  onNewSkillChange,
+  onAddNewSkill,
+  onNegotiableToggle,
+  onPaymentTypeSelect,
+  onFromRateChange,
+  onToRateChange,
+  onTimelineFlexibleToggle,
+  onStartDateSelect
+}: {
+  companyName: string;
+  website: string;
+  location: string;
+  currency: string;
+  workload: string;
+  skills: string[];
+  aiSuggested: string[];
+  newSkill: string;
+  negotiable: boolean;
+  paymentType: PaymentType;
+  fromRate: string;
+  toRate: string;
+  timelineFlexible: boolean;
+  startDate: StartDate;
+  openSelectKey: SelectKey | null;
+  onCompanyNameChange: (next: string) => void;
+  onWebsiteChange: (next: string) => void;
+  onSelectOpenToggle: (key: SelectKey) => void;
+  onLocationSelect: (next: string) => void;
+  onCurrencySelect: (next: string) => void;
+  onWorkloadSelect: (next: string) => void;
+  onRemoveSkill: (skill: string) => void;
+  onAddSuggested: (skill: string) => void;
+  onNewSkillChange: (next: string) => void;
+  onAddNewSkill: () => void;
+  onNegotiableToggle: (next: boolean) => void;
+  onPaymentTypeSelect: (next: PaymentType) => void;
+  onFromRateChange: (next: string) => void;
+  onToRateChange: (next: string) => void;
+  onTimelineFlexibleToggle: (next: boolean) => void;
+  onStartDateSelect: (next: StartDate) => void;
+}) {
   return (
     <aside className={styles.sidebar} aria-label="Sidebar">
       <div className={styles.sidebarGroup}>
         <p className={styles.groupTitle}>Company Details</p>
         <div className={styles.inputsStack}>
-          <InputField label="Company name" placeholder="Enter company name" />
-          <InputField label="Website" placeholder="Enter company website" />
+          <InputField label="Company name" value={companyName} placeholder="Enter company name" onChange={onCompanyNameChange} />
+          <InputField label="Website" value={website} placeholder="Enter company website" type="url" onChange={onWebsiteChange} />
         </div>
       </div>
 
       <div className={styles.sidebarGroup}>
         <p className={styles.groupTitle}>Location</p>
-        <InputField value="Remote from any country" rightIcon={<IconChevronDown size={16} color="var(--ds-color-text-secondary)" />} />
+        <SelectField
+          label=""
+          value={location}
+          options={["Remote from any country", "United Kingdom", "Europe", "United States"]}
+          open={openSelectKey === "location"}
+          onToggle={() => onSelectOpenToggle("location")}
+          onSelect={onLocationSelect}
+        />
       </div>
 
       <div className={styles.sidebarGroup}>
         <p className={styles.groupTitle}>Skills</p>
         <div className={styles.chipsGrid}>
-          <Chip rightIcon={<IconX color="var(--ds-color-text-secondary)" />}>Canva</Chip>
-          <Chip rightIcon={<IconX color="var(--ds-color-text-secondary)" />}>Adobe Photoshop</Chip>
+          {skills.map((s) => (
+            <Chip key={s} rightIcon={<IconX color="var(--ds-color-text-secondary)" />} onClick={() => onRemoveSkill(s)}>
+              {s}
+            </Chip>
+          ))}
         </div>
 
         <div className={styles.tip}>
           <p className={styles.sectionLabel}>AI suggested</p>
           <div className={styles.chipsGrid}>
-            <Chip leftIcon={<IconPlusCircle />} >Figma</Chip>
-            <Chip leftIcon={<IconPlusCircle />} >Chat GPT</Chip>
-            <Chip leftIcon={<IconPlusCircle />} >Midjourney</Chip>
+            {aiSuggested.map((s) => (
+              <Chip key={s} leftIcon={<IconPlusCircle />} onClick={() => onAddSuggested(s)}>
+                {s}
+              </Chip>
+            ))}
           </div>
         </div>
 
-        <InputField label="Add skills" placeholder="Type and press Enter" />
+        <InputField
+          label="Add skills"
+          value={newSkill}
+          placeholder="Type and press Enter"
+          onChange={onNewSkillChange}
+        />
+        <div style={{ marginTop: 8 }}>
+          <Button variant="secondary" onClick={onAddNewSkill}>
+            Add
+          </Button>
+        </div>
       </div>
 
       <div className={styles.sidebarGroup}>
         <p className={styles.groupTitle}>Budget</p>
         <div className={styles.toggleRow}>
-          <Toggle />
+          <Toggle on={negotiable} onToggle={onNegotiableToggle} />
           <p className="ds-b1">Set as negotiable</p>
         </div>
 
         <div>
           <p className={styles.sectionLabel}>Payment type</p>
           <div className={styles.radioRow}>
-            <RadioCard label="Hourly" active />
-            <RadioCard label="Fixed" />
+            <RadioCard label="Hourly" active={paymentType === "hourly"} onSelect={() => onPaymentTypeSelect("hourly")} />
+            <RadioCard label="Fixed" active={paymentType === "fixed"} onSelect={() => onPaymentTypeSelect("fixed")} />
           </div>
         </div>
 
         <div className={styles.twoColInputs}>
-          <InputField label="From" value="20.00" />
-          <InputField label="To" value="30.00" />
+          <InputField label="From" value={fromRate} onChange={onFromRateChange} />
+          <InputField label="To" value={toRate} onChange={onToRateChange} />
         </div>
 
-        <InputField label="Currency" value="USD" rightIcon={<IconChevronDown size={16} color="var(--ds-color-text-secondary)" />} />
+        <SelectField
+          label="Currency"
+          value={currency}
+          options={["USD", "EUR", "GBP"]}
+          open={openSelectKey === "currency"}
+          onToggle={() => onSelectOpenToggle("currency")}
+          onSelect={onCurrencySelect}
+        />
       </div>
 
       <div className={styles.sidebarGroup}>
         <p className={styles.groupTitle}>Project timeline</p>
         <div className={styles.toggleRow}>
-          <Toggle />
+          <Toggle on={timelineFlexible} onToggle={onTimelineFlexibleToggle} />
           <p className="ds-b1">Set as flexible</p>
         </div>
 
@@ -267,40 +445,162 @@ function Sidebar() {
           <p className={styles.sectionLabel}>Start date</p>
           <div className={styles.chipsGrid} style={{ gap: 8 }}>
             <div style={{ width: 176 }}>
-              <RadioCard label="ASAP" active />
+              <RadioCard label="ASAP" active={startDate === "asap"} onSelect={() => onStartDateSelect("asap")} />
             </div>
             <div style={{ width: 176 }}>
-              <RadioCard label="In 1-2 weeks" />
+              <RadioCard
+                label="In 1-2 weeks"
+                active={startDate === "in-1-2-weeks"}
+                onSelect={() => onStartDateSelect("in-1-2-weeks")}
+              />
             </div>
             <div style={{ width: 176 }}>
-              <RadioCard label="Next month" />
+              <RadioCard label="Next month" active={startDate === "next-month"} onSelect={() => onStartDateSelect("next-month")} />
             </div>
             <div style={{ width: 176 }}>
-              <RadioCard label="Flexible" />
+              <RadioCard label="Flexible" active={startDate === "flexible"} onSelect={() => onStartDateSelect("flexible")} />
             </div>
           </div>
         </div>
 
-        <InputField label="Workload" value="Less than 20 hours per week" rightIcon={<IconChevronDown size={16} color="var(--ds-color-text-secondary)" />} />
+        <SelectField
+          label="Workload"
+          value={workload}
+          options={["Less than 20 hours per week", "20-40 hours per week", "More than 40 hours per week"]}
+          open={openSelectKey === "workload"}
+          onToggle={() => onSelectOpenToggle("workload")}
+          onSelect={onWorkloadSelect}
+        />
       </div>
     </aside>
   );
 }
 
 export function RequestCreationEditScreen() {
+  const [modal, setModal] = useState<null | "preview" | "create">(null);
+
+  const [requestTitle, setRequestTitle] = useState("Graphic Designer for Social Media Optimisation");
+  const [companyName, setCompanyName] = useState("");
+  const [website, setWebsite] = useState("");
+
+  const [location, setLocation] = useState("Remote from any country");
+  const [currency, setCurrency] = useState("USD");
+  const [workload, setWorkload] = useState("Less than 20 hours per week");
+  const [openSelectKey, setOpenSelectKey] = useState<SelectKey | null>(null);
+
+  const [skills, setSkills] = useState<string[]>(["Canva", "Adobe Photoshop"]);
+  const [newSkill, setNewSkill] = useState("");
+
+  const allSuggested = useMemo(() => ["Figma", "Chat GPT", "Midjourney"], []);
+  const aiSuggested = useMemo(() => allSuggested.filter((s) => !skills.includes(s)), [allSuggested, skills]);
+
+  const [negotiable, setNegotiable] = useState(false);
+  const [paymentType, setPaymentType] = useState<PaymentType>("hourly");
+  const [fromRate, setFromRate] = useState("20.00");
+  const [toRate, setToRate] = useState("30.00");
+
+  const [timelineFlexible, setTimelineFlexible] = useState(false);
+  const [startDate, setStartDate] = useState<StartDate>("asap");
+
+  function toggleSelect(key: SelectKey) {
+    setOpenSelectKey((prev) => (prev === key ? null : key));
+  }
+
+  function addSkill(skill: string) {
+    const trimmed = skill.trim();
+    if (!trimmed) return;
+    setSkills((prev) => (prev.includes(trimmed) ? prev : [...prev, trimmed]));
+  }
+
+  function removeSkill(skill: string) {
+    setSkills((prev) => prev.filter((s) => s !== skill));
+  }
+
+  function addNewSkill() {
+    addSkill(newSkill);
+    setNewSkill("");
+  }
+
   return (
     <div className={styles.screen}>
       <Header />
-      <TitleActionsBar />
+      <TitleActionsBarWithActions onPreview={() => setModal("preview")} onCreate={() => setModal("create")} />
 
       <div className={styles.pageSpacer}>
         <div className={styles.container}>
           <div className={styles.page}>
-            <MainColumn />
-            <Sidebar />
+            <MainColumn requestTitle={requestTitle} onRequestTitleChange={setRequestTitle} />
+            <Sidebar
+              companyName={companyName}
+              website={website}
+              location={location}
+              currency={currency}
+              workload={workload}
+              skills={skills}
+              aiSuggested={aiSuggested}
+              newSkill={newSkill}
+              negotiable={negotiable}
+              paymentType={paymentType}
+              fromRate={fromRate}
+              toRate={toRate}
+              timelineFlexible={timelineFlexible}
+              startDate={startDate}
+              openSelectKey={openSelectKey}
+              onCompanyNameChange={setCompanyName}
+              onWebsiteChange={setWebsite}
+              onSelectOpenToggle={toggleSelect}
+              onLocationSelect={(next) => {
+                setLocation(next);
+                setOpenSelectKey(null);
+              }}
+              onCurrencySelect={(next) => {
+                setCurrency(next);
+                setOpenSelectKey(null);
+              }}
+              onWorkloadSelect={(next) => {
+                setWorkload(next);
+                setOpenSelectKey(null);
+              }}
+              onRemoveSkill={removeSkill}
+              onAddSuggested={(s) => addSkill(s)}
+              onNewSkillChange={setNewSkill}
+              onAddNewSkill={addNewSkill}
+              onNegotiableToggle={setNegotiable}
+              onPaymentTypeSelect={setPaymentType}
+              onFromRateChange={setFromRate}
+              onToRateChange={setToRate}
+              onTimelineFlexibleToggle={setTimelineFlexible}
+              onStartDateSelect={setStartDate}
+            />
           </div>
         </div>
       </div>
+
+      <Modal
+        title={modal === "preview" ? "Preview" : "Create page"}
+        open={modal !== null}
+        onClose={() => setModal(null)}
+      >
+        {modal === "preview" ? (
+          <div>
+            <p className="ds-b2" style={{ margin: 0 }}>
+              This is a placeholder preview action.
+            </p>
+            <p className="ds-b3 ds-text-secondary" style={{ marginTop: 8 }}>
+              (We can wire this to a real preview route later.)
+            </p>
+          </div>
+        ) : (
+          <div>
+            <p className="ds-b2" style={{ margin: 0 }}>
+              Page creation action triggered.
+            </p>
+            <p className="ds-b3 ds-text-secondary" style={{ marginTop: 8 }}>
+              (Next step: call API / generate shareable link.)
+            </p>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
