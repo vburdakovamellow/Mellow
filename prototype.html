@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mellow — Prototype (Request Creation - Edit)</title>
+    <style>
+      :root {
+        --ds-color-text-primary: #232222;
+        --ds-color-text-secondary: #8a8686;
+        --ds-color-text-tertiary: #d1d0d0;
+        --ds-color-text-inverse: #ffffff;
+
+        --ds-color-bg-porcelain: #f8f2e9;
+        --ds-color-bg-primary-72: rgba(248, 242, 233, 0.72);
+        --ds-color-bg-surface: #ffffff;
+        --ds-color-bg-secondary: #ede2d6;
+        --ds-color-bg-surface-brand-2: #f6d8ba;
+        --ds-color-bg-fill-chips: #ede2d6;
+        --ds-color-bg-fill-control-default: #e4d3c4;
+        --ds-color-bg-fill-control-active: #ff6f23;
+
+        --ds-color-border-secondary: #ead8be;
+        --ds-color-opacity-shark-10: rgba(35, 34, 34, 0.1);
+
+        --ds-color-button-secondary: #ede2d6;
+        --ds-color-button-brand: #ff6f23;
+
+        --ds-font-family-body: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        --ds-font-family-accent: ui-serif, Georgia, "Times New Roman", Times, serif;
+
+        --ds-font-size-12: 12px;
+        --ds-font-size-14: 14px;
+        --ds-font-size-16: 16px;
+        --ds-font-size-18: 18px;
+        --ds-font-size-36: 36px;
+
+        --ds-line-height-14: 14px;
+        --ds-line-height-18: 18px;
+        --ds-line-height-22: 22px;
+        --ds-line-height-24: 24px;
+        --ds-line-height-42: 42px;
+
+        --ds-space-8: 8px;
+        --ds-space-12: 12px;
+        --ds-space-14: 14px;
+        --ds-space-16: 16px;
+        --ds-space-24: 24px;
+        --ds-space-32: 32px;
+        --ds-space-40: 40px;
+        --ds-space-96: 96px;
+
+        --ds-radius-6: 6px;
+        --ds-radius-8: 8px;
+        --ds-radius-10: 10px;
+        --ds-radius-12: 12px;
+        --ds-radius-16: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--ds-color-bg-porcelain);
+        color: var(--ds-color-text-primary);
+        font-family: var(--ds-font-family-body);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .container {
+        width: 1440px;
+        margin: 0 auto;
+        padding: 0 var(--ds-space-96);
+      }
+
+      .fixedHeader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 20;
+        backdrop-filter: blur(8px);
+        background: var(--ds-color-bg-primary-72);
+      }
+      .headerInner {
+        height: 88px;
+        display: flex;
+        align-items: center;
+      }
+      .headerRow {
+        width: 100%;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .logo {
+        font-family: var(--ds-font-family-accent);
+        font-size: 32px;
+        line-height: 32px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+      }
+      .logoSlash {
+        opacity: 0.8;
+        margin-left: 1px;
+      }
+      .navRight {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 35px;
+      }
+      .menu {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+      .menuLink {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: var(--ds-font-size-16);
+        line-height: var(--ds-line-height-22);
+        font-weight: 500;
+        color: var(--ds-color-text-primary);
+        white-space: nowrap;
+      }
+      .signUp {
+        height: 56px;
+        padding: var(--ds-space-16) var(--ds-space-24);
+        border-radius: var(--ds-radius-10);
+        background: var(--ds-color-opacity-shark-10);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--ds-font-size-18);
+        line-height: var(--ds-line-height-24);
+        font-weight: 500;
+        color: var(--ds-color-text-primary);
+        border: 0;
+      }
+
+      .fixedTitleBar {
+        position: fixed;
+        top: 88px;
+        left: 0;
+        right: 0;
+        z-index: 19;
+        backdrop-filter: blur(8px);
+        background: var(--ds-color-bg-primary-72);
+      }
+      .titleBarInner {
+        height: 66px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--ds-space-16);
+        padding-bottom: var(--ds-space-16);
+        padding-top: var(--ds-space-8);
+      }
+      .h3 {
+        font-family: var(--ds-font-family-accent);
+        font-size: var(--ds-font-size-36);
+        line-height: var(--ds-line-height-42);
+        font-weight: 400;
+        margin: 0;
+      }
+      .actions {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--ds-space-8);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ds-space-8);
+        height: 32px;
+        padding: 0 var(--ds-space-12);
+        border: 0;
+        border-radius: var(--ds-radius-8);
+        cursor: pointer;
+      }
+      .btn.secondary {
+        background: var(--ds-color-button-secondary);
+        color: var(--ds-color-text-primary);
+      }
+      .btn.brand {
+        background: var(--ds-color-button-brand);
+        color: var(--ds-color-text-inverse);
+        border-radius: var(--ds-radius-6);
+      }
+      .btnIcon {
+        width: 20px;
+        height: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .pageSpacer {
+        padding-top: 154px;
+      }
+      .page {
+        border-top: 1px solid var(--ds-color-border-secondary);
+        display: flex;
+        gap: var(--ds-space-32);
+        align-items: flex-start;
+      }
+      .main {
+        width: 856px;
+        padding: 32px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .sidebar {
+        width: 360px;
+        padding: 32px 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ds-space-16);
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .label {
+        color: var(--ds-color-text-secondary);
+        font-size: var(--ds-font-size-14);
+        line-height: var(--ds-line-height-18);
+        font-weight: 500;
+      }
+      .control {
+        height: 52px;
+        width: 100%;
+        padding: 0 15px;
+        border-radius: var(--ds-radius-8);
+        border: 1px solid var(--ds-color-bg-surface);
+        background: var(--ds-color-bg-surface);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 12px;
+      }
+      .native {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: var(--ds-color-text-primary);
+        outline: none;
+        font-size: var(--ds-font-size-16);
+        line-height: var(--ds-line-height-22);
+      }
+      .native::placeholder {
+        color: var(--ds-color-text-tertiary);
+      }
+
+      .editorCard {
+        background: var(--ds-color-bg-surface);
+        border-radius: var(--ds-radius-16);
+        padding: var(--ds-space-40);
+        display: flex;
+        flex-direction: column;
+        gap: var(--ds-space-40);
+        overflow: auto;
+        min-height: 640px;
+      }
+
+      .wysiwyg {
+        background: var(--ds-color-bg-porcelain);
+        border-radius: var(--ds-radius-8);
+        padding: 8px 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .wysiwygChip {
+        padding: 4px 8px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .wysiwygText {
+        font-size: 12px;
+        line-height: 14px;
+        font-weight: 600;
+      }
+      .wysiwygBtn {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        border: 0;
+        background: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ds-color-text-primary);
+        cursor: pointer;
+      }
+      .content {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+      .block {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .b1 {
+        font-size: var(--ds-font-size-18);
+        line-height: var(--ds-line-height-24);
+        margin: 0;
+      }
+      .list {
+        margin: 0;
+        padding-left: 27px;
+        font-size: var(--ds-font-size-18);
+        line-height: var(--ds-line-height-24);
+      }
+
+      .sidebarGroup {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .groupTitle {
+        font-size: var(--ds-font-size-18);
+        line-height: var(--ds-line-height-24);
+        font-weight: 600;
+        margin: 0;
+      }
+      .chipsGrid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 32px;
+        padding: 0 12px;
+        background: var(--ds-color-bg-fill-chips);
+        border-radius: var(--ds-radius-12);
+        color: var(--ds-color-text-primary);
+        font-size: var(--ds-font-size-14);
+        line-height: var(--ds-line-height-18);
+      }
+      .chipIcon {
+        width: 16px;
+        height: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ds-color-text-secondary);
+      }
+
+      .toggleRow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .toggle {
+        width: 36px;
+        height: 20px;
+        background: var(--ds-color-bg-fill-control-default);
+        border-radius: var(--ds-radius-10);
+        position: relative;
+        overflow: hidden;
+        border: 0;
+      }
+      .toggle .indicator {
+        width: 16px;
+        height: 16px;
+        background: var(--ds-color-bg-surface);
+        border-radius: var(--ds-radius-8);
+        position: absolute;
+        top: 2px;
+        left: 2px;
+      }
+
+      .sectionLabel {
+        color: var(--ds-color-text-secondary);
+        font-size: var(--ds-font-size-14);
+        line-height: var(--ds-line-height-18);
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .radioRow {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+      }
+      .radioCard {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 14px;
+        border-radius: var(--ds-radius-8);
+        background: var(--ds-color-bg-secondary);
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .radioCard.active {
+        background: var(--ds-color-bg-surface-brand-2);
+      }
+      .radio {
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        background: var(--ds-color-bg-fill-control-default);
+        position: relative;
+        flex: 0 0 auto;
+      }
+      .radio.active {
+        background: var(--ds-color-bg-fill-control-active);
+      }
+      .radioDot {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        background: var(--ds-color-text-inverse);
+        position: absolute;
+        top: 6px;
+        left: 6px;
+      }
+      .radioTitle {
+        font-size: var(--ds-font-size-18);
+        line-height: var(--ds-line-height-24);
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .twoColInputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="fixedHeader">
+      <div class="container headerInner">
+        <div class="headerRow">
+          <div class="logo">mellow<span class="logoSlash">/</span></div>
+          <div class="navRight">
+            <div class="menu">
+              <span class="menuLink">For Businesses ▼</span>
+              <span class="menuLink">For Contractors ▼</span>
+              <span class="menuLink">Pricing</span>
+              <span class="menuLink">Resources ▼</span>
+            </div>
+            <button class="signUp" type="button">Sign Up</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fixedTitleBar">
+      <div class="container titleBarInner">
+        <h1 class="h3">Graphic Designer for Social Media Optimisation</h1>
+        <div class="actions">
+          <button class="btn secondary" type="button">Preview</button>
+          <button class="btn brand" type="button">
+            <span class="btnIcon">✦</span>
+            Create page
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pageSpacer">
+      <div class="container">
+        <div class="page">
+          <div class="main">
+            <div class="field">
+              <span class="label">Request title</span>
+              <div class="control">
+                <input class="native" value="Graphic Designer for Social Media Optimisation" readonly />
+              </div>
+            </div>
+
+            <div class="editorCard">
+              <div class="wysiwyg">
+                <div class="wysiwygChip">
+                  <span class="wysiwygText">Normal</span>
+                  <span style="color: var(--ds-color-button-brand)">▾</span>
+                </div>
+                <button class="wysiwygBtn" type="button"><b style="font-family: Georgia">B</b></button>
+                <button class="wysiwygBtn" type="button"><i style="font-family: Georgia">I</i></button>
+                <button class="wysiwygBtn" type="button"><span style="font-family: Georgia; text-decoration: underline">U</span></button>
+                <button class="wysiwygBtn" type="button"><span style="font-family: Georgia; text-decoration: line-through">S</span></button>
+              </div>
+
+              <div class="content">
+                <div class="block">
+                  <h2 class="h3">Project Summary:</h2>
+                  <p class="b1">
+                    We are seeking a talented UI Designer to lead the redesign of our SaaS platform. This project aims
+                    to enhance user experience, improve visual appeal, and optimize the interface for efficiency and
+                    clarity. The ideal candidate will collaborate closely with product managers and developers to create
+                    intuitive, engaging, and modern UI designs that align with user needs and business goals.
+                  </p>
+                </div>
+
+                <div class="block">
+                  <h2 class="h3">Key Responsibilities:</h2>
+                  <ul class="list">
+                    <li>Design and deliver high-quality user interfaces for the SaaS.</li>
+                    <li>Ensure the dashboard design is consistent with the overall brand.</li>
+                    <li>Iterate designs based on user feedback and usability testing results.</li>
+                    <li>Stay up-to-date with the latest UI trends, techniques, and technologies.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sidebar">
+            <div class="sidebarGroup">
+              <p class="groupTitle">Company Details</p>
+              <div class="field">
+                <span class="label">Company name</span>
+                <div class="control">
+                  <input class="native" placeholder="Enter company name" readonly />
+                </div>
+              </div>
+              <div class="field">
+                <span class="label">Website</span>
+                <div class="control">
+                  <input class="native" placeholder="Enter company website" readonly />
+                </div>
+              </div>
+            </div>
+
+            <div class="sidebarGroup">
+              <p class="groupTitle">Location</p>
+              <div class="control">
+                <input class="native" value="Remote from any country" readonly />
+                <span class="chipIcon">▾</span>
+              </div>
+            </div>
+
+            <div class="sidebarGroup">
+              <p class="groupTitle">Skills</p>
+              <div class="chipsGrid">
+                <span class="chip">Canva <span class="chipIcon">×</span></span>
+                <span class="chip">Adobe Photoshop <span class="chipIcon">×</span></span>
+              </div>
+
+              <p class="sectionLabel">AI suggested</p>
+              <div class="chipsGrid">
+                <span class="chip">＋ Figma</span>
+                <span class="chip">＋ Chat GPT</span>
+                <span class="chip">＋ Midjourney</span>
+              </div>
+
+              <div class="field">
+                <span class="label">Add skills</span>
+                <div class="control">
+                  <input class="native" placeholder="Type and press Enter" readonly />
+                </div>
+              </div>
+            </div>
+
+            <div class="sidebarGroup">
+              <p class="groupTitle">Budget</p>
+              <div class="toggleRow">
+                <button class="toggle" type="button"><span class="indicator"></span></button>
+                <p class="b1">Set as negotiable</p>
+              </div>
+
+              <p class="sectionLabel">Payment type</p>
+              <div class="radioRow">
+                <div class="radioCard active">
+                  <div class="radio active"><div class="radioDot"></div></div>
+                  <p class="radioTitle">Hourly</p>
+                </div>
+                <div class="radioCard">
+                  <div class="radio"></div>
+                  <p class="radioTitle">Fixed</p>
+                </div>
+              </div>
+
+              <div class="twoColInputs">
+                <div class="field">
+                  <span class="label">From</span>
+                  <div class="control"><input class="native" value="20.00" readonly /></div>
+                </div>
+                <div class="field">
+                  <span class="label">To</span>
+                  <div class="control"><input class="native" value="30.00" readonly /></div>
+                </div>
+              </div>
+
+              <div class="field">
+                <span class="label">Currency</span>
+                <div class="control">
+                  <input class="native" value="USD" readonly />
+                  <span class="chipIcon">▾</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
