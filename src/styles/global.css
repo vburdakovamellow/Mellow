@@ -1,0 +1,88 @@
+:root {
+  /* Colors (from Figma variables) */
+  --ds-color-text-primary: #232222;
+  --ds-color-text-secondary: #8a8686;
+  --ds-color-text-tertiary: #d1d0d0;
+  --ds-color-text-inverse: #ffffff;
+
+  --ds-color-bg-porcelain: #f8f2e9;
+  --ds-color-bg-primary-72: rgba(248, 242, 233, 0.72);
+  --ds-color-bg-surface: #ffffff;
+  --ds-color-bg-secondary: #ede2d6;
+  --ds-color-bg-surface-brand-2: #f6d8ba;
+  --ds-color-bg-fill-chips: #ede2d6;
+  --ds-color-bg-fill-control-default: #e4d3c4;
+  --ds-color-bg-fill-control-active: #ff6f23;
+
+  --ds-color-border-secondary: #ead8be;
+  --ds-color-opacity-shark-10: rgba(35, 34, 34, 0.1);
+
+  --ds-color-button-secondary: #ede2d6;
+  --ds-color-button-brand: #ff6f23;
+
+  /* Typography */
+  --ds-font-family-body: "Suisse Int'l", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+    "Apple Color Emoji", "Segoe UI Emoji";
+  --ds-font-family-accent: "PP Neue World", ui-serif, Georgia, "Times New Roman", Times, serif;
+
+  --ds-font-size-12: 12px;
+  --ds-font-size-14: 14px;
+  --ds-font-size-16: 16px;
+  --ds-font-size-18: 18px;
+  --ds-font-size-36: 36px;
+
+  --ds-line-height-14: 14px;
+  --ds-line-height-18: 18px;
+  --ds-line-height-22: 22px;
+  --ds-line-height-24: 24px;
+  --ds-line-height-42: 42px;
+
+  /* Spacing */
+  --ds-space-0: 0px;
+  --ds-space-2: 2px;
+  --ds-space-4: 4px;
+  --ds-space-6: 6px;
+  --ds-space-8: 8px;
+  --ds-space-12: 12px;
+  --ds-space-14: 14px;
+  --ds-space-16: 16px;
+  --ds-space-24: 24px;
+  --ds-space-32: 32px;
+  --ds-space-40: 40px;
+  --ds-space-96: 96px;
+
+  /* Radius */
+  --ds-radius-6: 6px;
+  --ds-radius-8: 8px;
+  --ds-radius-10: 10px;
+  --ds-radius-12: 12px;
+  --ds-radius-16: 16px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ds-color-bg-porcelain);
+  color: var(--ds-color-text-primary);
+  font-family: var(--ds-font-family-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+

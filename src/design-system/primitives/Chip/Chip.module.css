@@ -1,0 +1,36 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-8);
+  height: 32px;
+  padding: 0 var(--ds-space-12);
+  background: var(--ds-color-bg-fill-chips);
+  border-radius: var(--ds-radius-12);
+  color: var(--ds-color-text-primary);
+}
+
+.label {
+  font-size: var(--ds-font-size-14);
+  line-height: var(--ds-line-height-18);
+  font-weight: 400;
+}
+
+.rightIcon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-color-text-secondary);
+}
+
+.leftIcon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-color-text-primary);
+}
+

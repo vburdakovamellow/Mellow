@@ -1,0 +1,32 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-8);
+  height: 32px;
+  padding: 0 var(--ds-space-12);
+  border: 0;
+  border-radius: var(--ds-radius-8);
+  cursor: pointer;
+  user-select: none;
+}
+
+.secondary {
+  background: var(--ds-color-button-secondary);
+  color: var(--ds-color-text-primary);
+}
+
+.brand {
+  background: var(--ds-color-button-brand);
+  color: var(--ds-color-text-inverse);
+  border-radius: var(--ds-radius-6);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+

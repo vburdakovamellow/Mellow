@@ -1,0 +1,45 @@
+.card {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: var(--ds-space-14);
+  border-radius: var(--ds-radius-8);
+  background: var(--ds-color-bg-secondary);
+  display: flex;
+  gap: var(--ds-space-8);
+  align-items: flex-start;
+}
+
+.cardActive {
+  background: var(--ds-color-bg-surface-brand-2);
+}
+
+.radio {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--ds-color-bg-fill-control-default);
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.radioActive {
+  background: var(--ds-color-bg-fill-control-active);
+}
+
+.radioDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--ds-color-text-inverse);
+  position: absolute;
+  top: 6px;
+  left: 6px;
+}
+
+.title {
+  font-size: var(--ds-font-size-18);
+  line-height: var(--ds-line-height-24);
+  font-weight: 500;
+  margin: 0;
+}
+
