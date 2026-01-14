@@ -1,5 +1,6 @@
 import styles from "./Input.module.css";
 import type { ReactNode } from "react";
+import React from "react";
 
 export function InputField({
   label,
@@ -9,6 +10,7 @@ export function InputField({
   rightIcon,
   className,
   onChange,
+  onKeyDown,
   type = "text"
 }: {
   label?: string;
@@ -18,6 +20,7 @@ export function InputField({
   rightIcon?: ReactNode;
   className?: string;
   onChange?: (next: string) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   type?: "text" | "number" | "url";
 }) {
   return (
@@ -32,6 +35,7 @@ export function InputField({
           readOnly={readOnly}
           type={type}
           onChange={(e) => onChange?.(e.currentTarget.value)}
+          onKeyDown={onKeyDown}
         />
         {rightIcon ? <span className={styles.rightIcon}>{rightIcon}</span> : null}
       </span>

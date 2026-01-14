@@ -3,30 +3,70 @@
   align-items: center;
   justify-content: center;
   gap: var(--ds-space-8);
-  height: 32px;
-  padding: 0 var(--ds-space-12);
   border: 0;
   border-radius: var(--ds-radius-8);
   cursor: pointer;
   user-select: none;
+  width: auto;
+  font-family: 'Suisse Int\'l', var(--ds-font-family-body);
+  font-style: normal;
+  font-weight: 400;
+  text-align: center;
 }
 
+/* Sizes */
+.xs {
+  height: 32px;
+  padding: 0 var(--ds-space-12);
+  font-size: var(--ds-font-size-16);
+  line-height: var(--ds-line-height-22);
+}
+
+.m {
+  height: 42px;
+  padding: 0 var(--ds-space-16);
+  font-size: var(--ds-font-size-18);
+  line-height: var(--ds-line-height-24);
+}
+
+.xl {
+  height: 52px;
+  padding: 14px 24px;
+  font-size: var(--ds-font-size-18);
+  line-height: var(--ds-line-height-24);
+  border-radius: 10px;
+}
+
+/* Variants */
 .secondary {
   background: var(--ds-color-button-secondary);
   color: var(--ds-color-text-primary);
 }
 
 .brand {
-  background: var(--ds-color-button-brand);
-  color: var(--ds-color-text-inverse);
-  border-radius: var(--ds-radius-6);
+  background: #FF6F23;
+  color: #FFFFFF;
 }
 
 .icon {
-  width: 20px;
-  height: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+}
+
+.xs .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.m .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.xl .icon {
+  width: 20px;
+  height: 20px;
 }
 

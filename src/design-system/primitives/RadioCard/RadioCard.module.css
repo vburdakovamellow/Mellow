@@ -3,7 +3,7 @@
   min-width: 0;
   padding: var(--ds-space-14);
   border-radius: var(--ds-radius-8);
-  background: var(--ds-color-bg-secondary);
+  background: #fff;
   display: flex;
   gap: var(--ds-space-8);
   align-items: flex-start;
@@ -45,9 +45,11 @@
 }
 
 .title {
-  font-size: var(--ds-font-size-18);
-  line-height: var(--ds-line-height-24);
-  font-weight: 500;
+  font-size: var(--ds-font-size-16);
+  line-height: var(--ds-line-height-22);
+  font-weight: 400;
   margin: 0;
+  color: var(--ds-color-text-primary);
+  font-family: var(--ds-font-family-body);
 }
 
