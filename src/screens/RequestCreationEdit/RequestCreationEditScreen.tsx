@@ -1282,7 +1282,7 @@ export function RequestPreview({
 
           {/* Apply Button */}
           <div style={{ width: '100%', marginTop: 'var(--ds-space-8)' }}>
-            <Button variant="brand" size="xl" style={{ width: '100%' }}>
+            <Button variant="brand" size="xl" className={styles.previewUploadButton}>
               Apply now
             </Button>
           </div>
