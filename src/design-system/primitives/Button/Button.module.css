@@ -39,8 +39,9 @@
 
 /* Variants */
 .secondary {
-  background: var(--ds-color-button-secondary);
-  color: var(--ds-color-text-primary);
+  background: white;
+  color: #8A8686;
+  border: 1px solid var(--ds-color-border-secondary);
 }
 
 .brand {

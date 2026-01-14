@@ -1,0 +1,25 @@
+.devButtonsContainer {
+  position: fixed;
+  top: 4px;
+  right: 4px;
+  z-index: 9999;
+  display: flex;
+  gap: var(--ds-space-8);
+}
+
+.devButton {
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: var(--ds-radius-8);
+  padding: var(--ds-space-8) var(--ds-space-16);
+  font-size: var(--ds-font-size-14);
+  line-height: var(--ds-line-height-20);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.devButton:hover {
+  background: #2a2a2a;
+}
