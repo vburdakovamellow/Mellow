@@ -1499,7 +1499,7 @@ export function RequestPreview({
         {/* Apply Button - Fixed at bottom of preview */}
         {!isApplicationCardVisible && (
           <div className={styles.previewFixedApplyButton}>
-            <Button variant="brand" size="xl" style={{ width: '100%' }}>
+            <Button variant="brand" size="xl">
               Apply now
             </Button>
           </div>

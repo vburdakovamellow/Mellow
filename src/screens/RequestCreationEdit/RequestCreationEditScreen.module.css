@@ -503,6 +503,10 @@
   width: 326px;
 }
 
+.previewFixedApplyButton > * {
+  width: 100%;
+}
+
 .previewBudgetType {
   font-size: var(--ds-font-size-14);
   line-height: var(--ds-line-height-20);
