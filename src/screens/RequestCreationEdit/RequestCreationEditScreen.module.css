@@ -306,11 +306,12 @@
   align-items: center;
   margin-bottom: var(--ds-space-32);
   flex-shrink: 0;
+  height: fit-content;
 }
 
 .phoneMockup {
   width: 375px;
-  height: 812px;
+  height: 720px;
   background: #1a1a1a;
   border-radius: 40px;
   padding: 8px;
@@ -354,6 +355,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--ds-space-8);
+}
+
+.previewPublishedDate {
+  font-family: 'Suisse Int\'l', var(--ds-font-family-body);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: #8A8686;
+  margin: 0;
 }
 
 .previewTitle {
@@ -462,6 +473,36 @@
   color: var(--ds-color-text-primary);
 }
 
+.previewMarketRateBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-6);
+  padding: 4px 8px;
+  background: #FFEAD4;
+  border-radius: 6px;
+  margin-top: var(--ds-space-8);
+  width: fit-content;
+}
+
+.previewMarketRateText {
+  font-size: var(--ds-font-size-12);
+  line-height: var(--ds-line-height-16);
+  font-weight: 600;
+  color: #FF6F23;
+}
+
+.previewFixedApplyButton {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: unset;
+  padding: 0;
+  margin-top: auto;
+  border-top: none;
+  width: 326px;
+}
+
 .previewBudgetType {
   font-size: var(--ds-font-size-14);
   line-height: var(--ds-line-height-20);
@@ -499,6 +540,81 @@
   margin: 0;
 }
 
+.previewVideoNote {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-12);
+  padding: var(--ds-space-8);
+  background: white;
+  border-radius: 40px;
+  margin-top: var(--ds-space-12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(228, 236, 233, 1);
+  width: 100%;
+}
+
+.previewVideoNoteThumbnail {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #B1C6C3 0%, #8FA5A2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.previewVideoNoteThumbnail::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.previewVideoNoteThumbnail svg {
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  width: 24px;
+  height: 24px;
+}
+
+.previewVideoNote {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.previewVideoNote:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.previewVideoNoteInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-4);
+  flex: 1;
+}
+
+.previewVideoNoteTitle {
+  font-size: var(--ds-font-size-14);
+  line-height: var(--ds-line-height-20);
+  font-weight: 500;
+  color: var(--ds-color-text-primary);
+}
+
+.previewVideoNoteDuration {
+  font-size: var(--ds-font-size-12);
+  line-height: var(--ds-line-height-16);
+  color: var(--ds-color-text-secondary);
+}
+
 .previewList {
   margin: 0;
   padding-left: 20px;
@@ -511,6 +627,47 @@
   font-size: var(--ds-font-size-14);
   line-height: var(--ds-line-height-20);
   color: var(--ds-color-text-primary);
+}
+
+.previewNextStepsCard {
+  background: #F5F1E4;
+  border-radius: var(--ds-radius-16);
+  padding: var(--ds-space-24);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.previewNextStepsIcon {
+  flex-shrink: 0;
+}
+
+.previewNextStepsImage {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.previewNextStepsContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.previewNextStepsTitle {
+  font-size: var(--ds-font-size-18);
+  line-height: var(--ds-line-height-24);
+  font-weight: 600;
+  margin: 0;
+  color: var(--ds-color-text-primary);
+}
+
+.previewNextStepsText {
+  font-size: var(--ds-font-size-14);
+  line-height: var(--ds-line-height-20);
+  color: var(--ds-color-text-primary);
+  margin: 0;
 }
 
 .previewApplicationCard {
@@ -709,6 +866,59 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+
+.marketRateNotification {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-space-12);
+  padding: var(--ds-space-16);
+  background: #FAF6F2;
+  border-radius: var(--ds-radius-12);
+  border: 1px solid #EAD8BE;
+  position: relative;
+}
+
+.marketRateNotificationIcons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.marketRateNotificationContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.marketRateNotificationTitle {
+  font-family: 'Suisse Int\'l', var(--ds-font-family-body);
+  font-style: normal;
+  font-weight: 600;
+  font-size: var(--ds-font-size-16);
+  line-height: var(--ds-line-height-22);
+  color: var(--ds-color-text-primary);
+  margin: 0;
+}
+
+.marketRateNotificationText {
+  font-family: 'Suisse Int\'l', var(--ds-font-family-body);
+  font-style: normal;
+  font-weight: 400;
+  font-size: var(--ds-font-size-14);
+  line-height: var(--ds-line-height-20);
+  color: var(--ds-color-text-secondary);
+  margin: 0;
+}
+
+.marketRateNotificationText strong {
+  font-weight: 600;
+  color: var(--ds-color-text-primary);
 }
 
 .radioRow {

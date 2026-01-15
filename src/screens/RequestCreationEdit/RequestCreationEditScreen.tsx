@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { DevButtons } from "../../components/DevButtons/DevButtons";
 import { Button } from "../../design-system/primitives/Button/Button";
 import { Chip } from "../../design-system/primitives/Chip/Chip";
@@ -10,6 +10,7 @@ import { Toggle } from "../../design-system/primitives/Toggle/Toggle";
 import "../../design-system/typography.css";
 import styles from "./RequestCreationEditScreen.module.css";
 import { Header } from "../../components/Header/Header";
+import thumbsUpImage from "../../assets/thumbs-up.png";
 
 function IconChevronDown({ size = 16, color = "currentColor" }: { size?: number; color?: string }) {
   return (
@@ -52,6 +53,76 @@ function IconAlert({ size = 16, color = "currentColor" }: { size?: number; color
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+function IconVideo({ size = 16, color = "currentColor" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="4" width="10" height="8" rx="1.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 6L14 5V11L12 10" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function IconPlay({ size = 16, color = "white" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 4L12 8L6 12V4Z" fill={color} />
+    </svg>
+  );
+}
+
+function IconCheck({ size = 16, color = "white" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M13 4L6 11L3 8" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function IconFire({ size = 16, color = "white" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g clipPath="url(#clip0_15435_48961)">
+        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke={color} strokeWidth="1.8" strokeLinecap="square"/>
+      </g>
+      <defs>
+        <clipPath id="clip0_15435_48961">
+          <rect width="24" height="24" fill="white"/>
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+
+function IconThumbsUp({ size = 48 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Orange circle background */}
+      <circle cx="16" cy="16" r="18" fill="#FF6F23"/>
+      
+      {/* Sparkles */}
+      <g opacity="0.9">
+        <path d="M8 12L9 10L8 8L10 9L12 8L10 9L11 11L10 9L8 12Z" fill="white" stroke="black" strokeWidth="0.5"/>
+        <path d="M6 20L7 18L6 16L8 17L10 16L8 17L9 19L8 17L6 20Z" fill="white" stroke="black" strokeWidth="0.5"/>
+      </g>
+      
+      {/* Thumbs up hand */}
+      <g transform="translate(24, 20)">
+        {/* Fist/knuckles */}
+        <path d="M-4 8C-4 6 -2 4 0 4C2 4 4 6 4 8C4 10 2 12 0 12C-2 12 -4 10 -4 8Z" fill="white" stroke="black" strokeWidth="1.5"/>
+        <line x1="-2" y1="6" x2="2" y2="6" stroke="black" strokeWidth="1.5" strokeLinecap="round"/>
+        <line x1="-2" y1="8" x2="2" y2="8" stroke="black" strokeWidth="1.5" strokeLinecap="round"/>
+        <line x1="-2" y1="10" x2="2" y2="10" stroke="black" strokeWidth="1.5" strokeLinecap="round"/>
+        
+        {/* Thumb with smiley face */}
+        <path d="M-8 -4L-8 4C-8 6 -6 8 -4 8" fill="white" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="-10" cy="-2" r="1.5" fill="black"/>
+        <circle cx="-6" cy="-2" r="1.5" fill="black"/>
+        <path d="M-10 -4Q-8 -5 -6 -4" stroke="black" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+      </g>
     </svg>
   );
 }
@@ -574,7 +645,7 @@ function BudgetSummary({
   onEdit: () => void;
 }) {
   const description = negotiable 
-    ? "Set as negotiable"
+    ? "Negotiable"
     : paymentType === "hourly" 
       ? `$${fromRate} - $${toRate} ${currency}/hr`
       : `$${fromRate} - $${toRate} ${currency}`;
@@ -643,6 +714,20 @@ function BudgetSection({
           <Toggle on={negotiable} onToggle={onNegotiableToggle} />
           <p className="ds-b1">Set as negotiable</p>
         </div>
+
+        {negotiable && (
+          <div className={styles.marketRateNotification}>
+            <div className={styles.marketRateNotificationIcons}>
+              <IconSparkNew size={32} color="#FF6F23" />
+            </div>
+            <div className={styles.marketRateNotificationContent}>
+              <h4 className={styles.marketRateNotificationTitle}>Market Rate for Similar Work</h4>
+              <p className={styles.marketRateNotificationText}>
+                Most freelancers charge <strong>$21-50/hr</strong> for projects like this. Experienced professionals may charge more.
+              </p>
+            </div>
+          </div>
+        )}
 
         {!negotiable && (
           <>
@@ -1014,6 +1099,11 @@ function ProjectSummarySection({
             </div>
           </div>
         </div>
+        <div style={{ marginTop: 'var(--ds-space-16)' }}>
+          <Button variant="secondary" leftIcon={<IconVideo size={16} color="#8A8686" />}>
+            Video Note
+          </Button>
+        </div>
       </div>
     </section>
   );
@@ -1164,13 +1254,15 @@ export function RequestPreview({
   preferredSkillsList: string[];
   experienceLevelText: string;
 }) {
+  const applicationCardRef = useRef<HTMLDivElement>(null);
+  const [isApplicationCardVisible, setIsApplicationCardVisible] = useState(false);
   const formatRate = (rate: string) => {
     const num = parseFloat(rate);
     return Number.isInteger(num) ? num.toString() : num.toFixed(0);
   };
 
   const budgetDescription = negotiable 
-    ? "Set as negotiable"
+    ? "Negotiable"
     : paymentType === "hourly" 
       ? `$${formatRate(fromRate)} - ${formatRate(toRate)} ${currency}/hr`
       : `$${formatRate(fromRate)} - ${formatRate(toRate)} ${currency}`;
@@ -1189,6 +1281,30 @@ export function RequestPreview({
 
   const languagesText = languages.length > 0 ? languages.join(", ") : "";
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsApplicationCardVisible(entry.isIntersecting);
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '-50px 0px 0px 0px'
+      }
+    );
+
+    if (applicationCardRef.current) {
+      observer.observe(applicationCardRef.current);
+    }
+
+    return () => {
+      if (applicationCardRef.current) {
+        observer.unobserve(applicationCardRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div className={styles.mobilePreview}>
       <div className={styles.phoneMockup}>
@@ -1201,6 +1317,9 @@ export function RequestPreview({
         <div className={styles.previewHeaderCard}>
           {/* Header with title */}
           <div className={styles.previewHeader}>
+            <p className={styles.previewPublishedDate}>
+              Published on {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </p>
             <h1 className={styles.previewTitle}>{requestTitle}</h1>
             {companyName && (
               <div className={styles.previewMeta}>
@@ -1258,6 +1377,13 @@ export function RequestPreview({
                 <span className={styles.previewBudgetNumbers}>{budgetDescription}</span>
               )}
             </p>
+            {/* High Market Rate Badge */}
+            {!negotiable && (
+              <div className={styles.previewMarketRateBadge}>
+                <IconFire size={14} color="#FF6F23" />
+                <span className={styles.previewMarketRateText}>High Market Rate</span>
+              </div>
+            )}
           </div>
 
           {/* Timeline Block */}
@@ -1280,12 +1406,6 @@ export function RequestPreview({
             )}
           </div>
 
-          {/* Apply Button */}
-          <div style={{ width: '100%', marginTop: 'var(--ds-space-8)' }}>
-            <Button variant="brand" size="xl" className={styles.previewUploadButton}>
-              Apply now
-            </Button>
-          </div>
         </div>
 
         {/* Content Card - Summary through Experience Level */}
@@ -1295,6 +1415,16 @@ export function RequestPreview({
             <div className={styles.previewSection}>
               <h3 className={styles.previewSectionTitle}>Summary</h3>
               <p className={styles.previewText}>{projectSummaryText}</p>
+              {/* Video Note Example */}
+              <div className={styles.previewVideoNote}>
+                <div className={styles.previewVideoNoteThumbnail}>
+                  <IconPlay size={24} color="white" />
+                </div>
+                <div className={styles.previewVideoNoteInfo}>
+                  <span className={styles.previewVideoNoteTitle}>Video Note</span>
+                  <span className={styles.previewVideoNoteDuration}>0:45</span>
+                </div>
+              </div>
             </div>
           )}
 
@@ -1331,16 +1461,23 @@ export function RequestPreview({
             </div>
           )}
 
-          {experienceLevelText && (
-            <div className={styles.previewSection}>
-              <h3 className={styles.previewSectionTitle}>Experience Level</h3>
-              <p className={styles.previewText}>{experienceLevelText}</p>
-            </div>
-          )}
+        </div>
+
+        {/* What happens next */}
+        <div className={styles.previewNextStepsCard}>
+          <div className={styles.previewNextStepsIcon}>
+            <img src={thumbsUpImage} alt="Thumbs up" className={styles.previewNextStepsImage} />
+          </div>
+          <div className={styles.previewNextStepsContent}>
+            <h3 className={styles.previewNextStepsTitle}>What happens next?</h3>
+            <p className={styles.previewNextStepsText}>
+              Submit your application and if you're selected for further discussion, you'll receive an email with the client's contact information to start the conversation directly.
+            </p>
+          </div>
         </div>
 
         {/* Application Form */}
-        <div className={styles.previewApplicationCard}>
+        <div ref={applicationCardRef} className={styles.previewApplicationCard}>
           <h2 className={styles.previewApplicationTitle}>Ready to Apply?</h2>
           <p className={styles.previewApplicationText}>
             Upload your CV and our AI will pre-fill your application form — you just review and send.
@@ -1358,6 +1495,15 @@ export function RequestPreview({
           </div>
           <button className={styles.previewManualLink}>Manual setup</button>
         </div>
+
+        {/* Apply Button - Fixed at bottom of preview */}
+        {!isApplicationCardVisible && (
+          <div className={styles.previewFixedApplyButton}>
+            <Button variant="brand" size="xl" style={{ width: '100%' }}>
+              Apply now
+            </Button>
+          </div>
+        )}
         </div>
       </div>
     </div>
@@ -1922,30 +2068,6 @@ export function RequestCreationEditScreen() {
                     />
                   )}
 
-                  {!isExperienceLevelExpanded ? (
-                    <ProjectSummary
-                      title="Experience Level"
-                      text={experienceLevelText}
-                      showWarning={manuallyEditedSections.experienceLevel && !dismissedWarnings.experienceLevel}
-                      onDismissWarning={() => dismissWarning('experienceLevel')}
-                      onEdit={() => {
-                        setTempExperienceLevelText(experienceLevelText);
-                        setIsExperienceLevelExpanded(true);
-                      }}
-                    />
-                  ) : (
-                    <ProjectSummarySection
-                      title="Experience Level"
-                      text={tempExperienceLevelText}
-                      onTextChange={setTempExperienceLevelText}
-                      onSave={() => {
-                        setExperienceLevelText(tempExperienceLevelText);
-                        setIsExperienceLevelExpanded(false);
-                        handleContentChange('experienceLevel', tempExperienceLevelText);
-                      }}
-                      onCancel={() => setIsExperienceLevelExpanded(false)}
-                    />
-                  )}
                 </div>
               </div>
 
