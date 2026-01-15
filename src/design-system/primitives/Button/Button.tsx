@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode, CSSProperties } from "react";
 import styles from "./Button.module.css";
 
 type ButtonVariant = "secondary" | "brand";
@@ -10,7 +10,8 @@ export function Button({
   leftIcon,
   children,
   className,
-  onClick
+  onClick,
+  style
 }: {
   variant: ButtonVariant;
   size?: ButtonSize;
@@ -18,9 +19,10 @@ export function Button({
   children: ReactNode;
   className?: string;
   onClick?: () => void;
+  style?: CSSProperties;
 }) {
   return (
-    <button className={[styles.button, styles[variant], styles[size], className].filter(Boolean).join(" ")} type="button" onClick={onClick}>
+    <button className={[styles.button, styles[variant], styles[size], className].filter(Boolean).join(" ")} type="button" onClick={onClick} style={style}>
       {leftIcon ? <span className={styles.icon}>{leftIcon}</span> : null}
       {children}
     </button>
