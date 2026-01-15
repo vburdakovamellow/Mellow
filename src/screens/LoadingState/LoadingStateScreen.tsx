@@ -88,15 +88,20 @@ export function LoadingStateScreen() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Получаем base path из Vite
+  const base = import.meta.env.BASE_URL;
+  const basePath = base.endsWith('/') ? base.slice(0, -1) : base;
+  const editPath = basePath ? `${basePath}/edit` : '/edit';
+
   // Если загрузка завершилась и была выбрана цель во время загрузки - перейти через 4 секунды
   useEffect(() => {
     if (!isLoading && shouldNavigateAfterLoad && selectedGoal) {
       const navigateTimer = setTimeout(() => {
-        window.location.href = '/edit';
+        window.location.href = editPath;
       }, 4000);
       return () => clearTimeout(navigateTimer);
     }
-  }, [isLoading, shouldNavigateAfterLoad, selectedGoal]);
+  }, [isLoading, shouldNavigateAfterLoad, selectedGoal, editPath]);
 
   const handleGoalSelect = (goalId: string) => {
     setSelectedGoal(goalId);
@@ -107,7 +112,7 @@ export function LoadingStateScreen() {
     } else {
       // Если загрузка завершена - сразу перейти
       setTimeout(() => {
-        window.location.href = '/edit';
+        window.location.href = editPath;
       }, 300);
     }
   };
