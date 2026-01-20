@@ -28,34 +28,42 @@ function IconCheck({ size = 16 }: { size?: number }) {
   );
 }
 
-function Header() {
+function Header({ isAuthor, onBackToEdit }: { isAuthor?: boolean; onBackToEdit?: () => void }) {
   return (
     <div className={styles.fixedHeader}>
       <div className={[styles.container, styles.headerInner].join(" ")}>
         <div className={styles.logo}>mellow</div>
+        {isAuthor && onBackToEdit && (
+          <button className={styles.backToEditBtn} onClick={onBackToEdit}>
+            Back to Edit
+          </button>
+        )}
       </div>
     </div>
   );
 }
 
-export function ServiceRequestViewScreen() {
+export function ServiceRequestViewScreen({ onBackToEdit }: { onBackToEdit?: () => void }) {
   const [isSaved, setIsSaved] = useState(false);
   const [showVerificationTooltip, setShowVerificationTooltip] = useState(false);
 
-  // Mock data based on RequestCreationEditScreen
+  // Data structure matching production
   const requestData = {
+    id: "12345", // Dynamic request ID
+    isAuthor: true, // Is current user the author of this request
+    publishedDate: "January 20, 2026",
     title: "Graphic Designer for Social Media Optimisation",
-    role: "Graphic Designer",
-    company: "TechCorp",
-    isVerified: true,
-    industryBlind: "Technology / SaaS",
-    timezone: "EST (UTC-5)",
-    experienceLevel: "Senior",
+    talentProfile: "Graphic Designer, Middle", // From production "Talent profile"
+    company: "", // Not filled in production
+    isVerified: false,
+    industryBlind: "Creative Services",
+    timezone: "",
+    experienceLevel: "Middle",
     contractType: "T&M" as const,
     isNew: true,
-    skills: ["Canva", "Adobe Photoshop", "Figma", "Chat GPT"],
-    languages: ["English", "Russian"],
-    hasVideoNote: true,
+    skills: ["Figma", "Canva", "Adobe Photoshop"], // Matching production
+    languages: ["English"], // Matching production
+    hasVideoNote: false,
     description: {
       summary:
         "We are seeking a talented Graphic Designer to lead the redesign of our social media presence. This project aims to enhance visual appeal, improve engagement, and optimize content for various platforms. The ideal candidate will collaborate closely with marketing team to create modern, engaging designs that align with brand goals.",
@@ -77,11 +85,12 @@ export function ServiceRequestViewScreen() {
       from: "20.00",
       to: "30.00",
       currency: "USD",
-      negotiable: false
+      negotiable: false,
+      marketRate: "High" // From production screenshot
     },
     timeline: {
       startDate: "ASAP",
-      workload: "Less than 20 hours per week",
+      workload: "Less 20h/week", // Matching production format
       flexible: false
     },
     location: "Remote from any country",
@@ -95,37 +104,62 @@ export function ServiceRequestViewScreen() {
     alert("Apply flow (stub)");
   };
 
+  const handleBackToRequests = () => {
+    if (requestData.isAuthor) {
+      alert("Navigate to requests list (stub)");
+    }
+  };
+
   return (
     <div className={styles.screen}>
-      <Header />
+      <Header isAuthor={requestData.isAuthor} onBackToEdit={onBackToEdit} />
 
       <div className={styles.content}>
         <div className={styles.container}>
+          {/* Breadcrumbs */}
+          <div className={styles.breadcrumbs}>
+            <span
+              className={[styles.breadcrumbLink, requestData.isAuthor ? styles.breadcrumbClickable : ""]
+                .filter(Boolean)
+                .join(" ")}
+              onClick={requestData.isAuthor ? handleBackToRequests : undefined}
+            >
+              Requests
+            </span>
+            <span className={styles.breadcrumbSeparator}>/</span>
+            <span className={styles.breadcrumbCurrent}>#SR-{requestData.id}</span>
+          </div>
+
           {/* Hero Section */}
           <div className={styles.heroSection}>
             <div className={styles.heroMain}>
+              {requestData.publishedDate && (
+                <p className={styles.publishedDate}>Published on {requestData.publishedDate}</p>
+              )}
               <div className={styles.titleRow}>
                 <h1 className={styles.title}>{requestData.title}</h1>
                 {requestData.isNew && <span className={styles.newBadge}>NEW</span>}
               </div>
-              <p className={styles.role}>{requestData.role}</p>
-              <div className={styles.companyRow}>
-                <span className={styles.companyName}>
-                  {requestData.company || requestData.industryBlind}
-                </span>
-                {requestData.isVerified && (
-                  <div
-                    className={styles.verificationWrapper}
-                    onMouseEnter={() => setShowVerificationTooltip(true)}
-                    onMouseLeave={() => setShowVerificationTooltip(false)}
-                  >
-                    <IconCheck size={16} />
-                    {showVerificationTooltip && (
-                      <div className={styles.tooltip}>Verified by Mellow</div>
-                    )}
-                  </div>
-                )}
-              </div>
+              <p className={styles.talentProfile}>{requestData.talentProfile}</p>
+              {(requestData.company || requestData.industryBlind) && (
+                <div className={styles.companyRow}>
+                  <span className={styles.companyName}>
+                    {requestData.company || requestData.industryBlind}
+                  </span>
+                  {requestData.isVerified && (
+                    <div
+                      className={styles.verificationWrapper}
+                      onMouseEnter={() => setShowVerificationTooltip(true)}
+                      onMouseLeave={() => setShowVerificationTooltip(false)}
+                    >
+                      <IconCheck size={16} />
+                      {showVerificationTooltip && (
+                        <div className={styles.tooltip}>Verified by Mellow</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {requestData.hasVideoNote && (

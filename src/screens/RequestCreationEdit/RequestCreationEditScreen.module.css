@@ -167,6 +167,24 @@
   border: 1px solid var(--ds-color-border-secondary);
   padding: 16px;
   overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.viewFullBtn {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--ds-color-button-brand);
+  color: var(--ds-color-text-inverse);
+  border: none;
+  border-radius: var(--ds-radius-10);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.viewFullBtn:hover {
+  opacity: 0.9;
 }
 
 .previewFrameInnerDesktop {

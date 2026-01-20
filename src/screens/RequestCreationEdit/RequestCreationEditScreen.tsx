@@ -8,6 +8,7 @@ import { Toggle } from "../../design-system/primitives/Toggle/Toggle";
 
 import "../../design-system/typography.css";
 import styles from "./RequestCreationEditScreen.module.css";
+import type { SharePackRequest } from "../SharePack/SharePackScreen";
 
 function IconChevronDown({ size = 16, color = "currentColor" }: { size?: number; color?: string }) {
   return (
@@ -72,10 +73,10 @@ type SelectKey = "location" | "currency" | "workload";
 
 function TitleActionsBarWithActions({
   onPreview,
-  onCreate
+  onSave
 }: {
   onPreview: () => void;
-  onCreate: () => void;
+  onSave: () => void;
 }) {
   return (
     <div className={styles.fixedTitleBar}>
@@ -87,7 +88,7 @@ function TitleActionsBarWithActions({
           <Button variant="secondary" onClick={onPreview}>
             Preview
           </Button>
-          <Button variant="brand" leftIcon={<IconSpark color="var(--ds-color-text-inverse)" />} onClick={onCreate}>
+          <Button variant="brand" leftIcon={<IconSpark color="var(--ds-color-text-inverse)" />} onClick={onSave}>
             Save request
           </Button>
         </div>
@@ -544,7 +545,8 @@ function LandingPreview({
   location,
   skills,
   languages,
-  hasVideoNote
+  hasVideoNote,
+  onViewFull
 }: {
   requestTitle: string;
   companyName: string;
@@ -552,6 +554,7 @@ function LandingPreview({
   skills: string[];
   languages: string[];
   hasVideoNote: boolean;
+  onViewFull?: () => void;
 }) {
   const [mode, setMode] = useState<"desktop" | "mobile">("desktop");
 
@@ -616,12 +619,23 @@ function LandingPreview({
           </p>
         </div>
       </div>
+      {onViewFull && (
+        <button className={styles.viewFullBtn} onClick={onViewFull}>
+          View Full Preview
+        </button>
+      )}
     </div>
   );
 }
 
-export function RequestCreationEditScreen() {
-  const [modal, setModal] = useState<null | "preview" | "create">(null);
+export function RequestCreationEditScreen({
+  onViewFullPreview,
+  onRequestSaved
+}: {
+  onViewFullPreview?: () => void;
+  onRequestSaved?: (req: SharePackRequest) => void;
+}) {
+  const [modal, setModal] = useState<null | "preview">(null);
 
   const [requestTitle, setRequestTitle] = useState("Graphic Designer for Social Media Optimisation");
   const [companyName, setCompanyName] = useState("");
@@ -655,6 +669,24 @@ export function RequestCreationEditScreen() {
 
   const [timelineFlexible, setTimelineFlexible] = useState(false);
   const [startDate, setStartDate] = useState<StartDate>("asap");
+
+  function handleSave() {
+    const req: SharePackRequest = {
+      id: String(Date.now()),
+      title: requestTitle,
+      companyName: companyName || undefined,
+      location,
+      skills,
+      languages,
+      budget: {
+        paymentType,
+        from: fromRate,
+        to: toRate,
+        currency
+      }
+    };
+    onRequestSaved?.(req);
+  }
 
   function toggleSelect(key: SelectKey) {
     setOpenSelectKey((prev) => (prev === key ? null : key));
@@ -693,7 +725,7 @@ export function RequestCreationEditScreen() {
   return (
     <div className={styles.screen}>
       <Header />
-      <TitleActionsBarWithActions onPreview={() => setModal("preview")} onCreate={() => setModal("create")} />
+      <TitleActionsBarWithActions onPreview={() => setModal("preview")} onSave={handleSave} />
 
       <div className={styles.pageSpacer}>
         <div className={styles.container}>
@@ -707,6 +739,7 @@ export function RequestCreationEditScreen() {
                 skills={skills}
                 languages={languages}
                 hasVideoNote={hasVideoNote}
+                onViewFull={onViewFullPreview}
               />
 
               <div style={{ marginTop: 16 }}>
@@ -755,7 +788,7 @@ export function RequestCreationEditScreen() {
                   onAddNewLanguage={addNewLanguage}
                   onToggleVideoNote={() => {
                     setHasVideoNote((v) => !v);
-                    setModal("create");
+                    handleSave();
                   }}
                   onNegotiableToggle={setNegotiable}
                   onPaymentTypeSelect={setPaymentType}
@@ -771,29 +804,18 @@ export function RequestCreationEditScreen() {
       </div>
 
       <Modal
-        title={modal === "preview" ? "Preview" : "Save request"}
+        title={"Preview"}
         open={modal !== null}
         onClose={() => setModal(null)}
       >
-        {modal === "preview" ? (
-          <div>
-            <p className="ds-b2" style={{ margin: 0 }}>
-              This is where we’ll show the full landing preview.
-            </p>
-            <p className="ds-b3 ds-text-secondary" style={{ marginTop: 8 }}>
-              For now you already have the live preview panel on the right.
-            </p>
-          </div>
-        ) : (
-          <div>
-            <p className="ds-b2" style={{ margin: 0 }}>
-              Saved! (stub)
-            </p>
-            <p className="ds-b3 ds-text-secondary" style={{ marginTop: 8 }}>
-              Next step: generate a shareable page link and guide the user to publish/share.
-            </p>
-          </div>
-        )}
+        <div>
+          <p className="ds-b2" style={{ margin: 0 }}>
+            This is where we’ll show the full landing preview.
+          </p>
+          <p className="ds-b3 ds-text-secondary" style={{ marginTop: 8 }}>
+            For now you already have the live preview panel on the right.
+          </p>
+        </div>
       </Modal>
     </div>
   );
