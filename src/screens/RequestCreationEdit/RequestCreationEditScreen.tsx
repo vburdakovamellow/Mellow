@@ -58,26 +58,8 @@ function Header() {
     <div className={styles.fixedHeader}>
       <div className={[styles.container, styles.headerInner].join(" ")}>
         <div className={styles.headerRow}>
-          <div className={styles.logo}>
-            mellow<span className={styles.logoSlash}>/</span>
-          </div>
-          <div className={styles.navRight}>
-            <nav className={styles.menu} aria-label="Primary">
-              <span className={styles.menuLink}>
-                For Businesses <IconChevronDown size={10} color="var(--ds-color-button-brand)" />
-              </span>
-              <span className={styles.menuLink}>
-                For Contractors <IconChevronDown size={10} color="var(--ds-color-button-brand)" />
-              </span>
-              <span className={styles.menuLink}>Pricing</span>
-              <span className={styles.menuLink}>
-                Resources <IconChevronDown size={10} color="var(--ds-color-button-brand)" />
-              </span>
-            </nav>
-            <button className={styles.signUp} type="button">
-              Sign Up
-            </button>
-          </div>
+          <div className={styles.logo}>mellow</div>
+          <div className={styles.logoSubtitle}>AI request editor</div>
         </div>
       </div>
     </div>
@@ -106,7 +88,7 @@ function TitleActionsBarWithActions({
             Preview
           </Button>
           <Button variant="brand" leftIcon={<IconSpark color="var(--ds-color-text-inverse)" />} onClick={onCreate}>
-            Create page
+            Save request
           </Button>
         </div>
       </div>
@@ -226,6 +208,14 @@ function MainColumn({
 }) {
   return (
     <section className={styles.main} aria-label="Main editor">
+      <div className={styles.hintCard}>
+        <p className={styles.hintTitle}>What’s happening here</p>
+        <p className={styles.hintText}>
+          Mellow drafted this request using AI. Your job is to quickly review and tweak it so contractors get a clear,
+          complete brief — then save it to generate a shareable page.
+        </p>
+      </div>
+
       <InputField label="Request title" value={requestTitle} onChange={onRequestTitleChange} />
 
       <div className={styles.editorCard}>
@@ -291,7 +281,10 @@ function Sidebar({
   workload,
   skills,
   aiSuggested,
+  languages,
+  suggestedLanguages,
   newSkill,
+  newLanguage,
   negotiable,
   paymentType,
   fromRate,
@@ -299,6 +292,7 @@ function Sidebar({
   timelineFlexible,
   startDate,
   openSelectKey,
+  hasVideoNote,
   onCompanyNameChange,
   onWebsiteChange,
   onSelectOpenToggle,
@@ -309,6 +303,11 @@ function Sidebar({
   onAddSuggested,
   onNewSkillChange,
   onAddNewSkill,
+  onRemoveLanguage,
+  onAddSuggestedLanguage,
+  onNewLanguageChange,
+  onAddNewLanguage,
+  onToggleVideoNote,
   onNegotiableToggle,
   onPaymentTypeSelect,
   onFromRateChange,
@@ -323,7 +322,10 @@ function Sidebar({
   workload: string;
   skills: string[];
   aiSuggested: string[];
+  languages: string[];
+  suggestedLanguages: string[];
   newSkill: string;
+  newLanguage: string;
   negotiable: boolean;
   paymentType: PaymentType;
   fromRate: string;
@@ -331,6 +333,7 @@ function Sidebar({
   timelineFlexible: boolean;
   startDate: StartDate;
   openSelectKey: SelectKey | null;
+  hasVideoNote: boolean;
   onCompanyNameChange: (next: string) => void;
   onWebsiteChange: (next: string) => void;
   onSelectOpenToggle: (key: SelectKey) => void;
@@ -341,6 +344,11 @@ function Sidebar({
   onAddSuggested: (skill: string) => void;
   onNewSkillChange: (next: string) => void;
   onAddNewSkill: () => void;
+  onRemoveLanguage: (lang: string) => void;
+  onAddSuggestedLanguage: (lang: string) => void;
+  onNewLanguageChange: (next: string) => void;
+  onAddNewLanguage: () => void;
+  onToggleVideoNote: () => void;
   onNegotiableToggle: (next: boolean) => void;
   onPaymentTypeSelect: (next: PaymentType) => void;
   onFromRateChange: (next: string) => void;
@@ -401,6 +409,60 @@ function Sidebar({
           <Button variant="secondary" onClick={onAddNewSkill}>
             Add
           </Button>
+        </div>
+      </div>
+
+      <div className={styles.sidebarGroup}>
+        <p className={styles.groupTitle}>Languages</p>
+        <div className={styles.chipsGrid}>
+          {languages.map((l) => (
+            <Chip key={l} rightIcon={<IconX color="var(--ds-color-text-secondary)" />} onClick={() => onRemoveLanguage(l)}>
+              {l}
+            </Chip>
+          ))}
+        </div>
+
+        <div className={styles.tip}>
+          <p className={styles.sectionLabel}>Suggested</p>
+          <div className={styles.chipsGrid}>
+            {suggestedLanguages.map((l) => (
+              <Chip key={l} leftIcon={<IconPlusCircle />} onClick={() => onAddSuggestedLanguage(l)}>
+                {l}
+              </Chip>
+            ))}
+          </div>
+        </div>
+
+        <InputField
+          label="Add language"
+          value={newLanguage}
+          placeholder="Type and press Enter"
+          onChange={onNewLanguageChange}
+        />
+        <div style={{ marginTop: 8 }}>
+          <Button variant="secondary" onClick={onAddNewLanguage}>
+            Add
+          </Button>
+        </div>
+      </div>
+
+      <div className={styles.sidebarGroup}>
+        <p className={styles.groupTitle}>Manager’s Video Note</p>
+        <p className={styles.sectionLabel} style={{ marginTop: -4 }}>
+          Add a short personal video to increase trust and clarity.
+        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button className={styles.videoBubble} type="button" onClick={onToggleVideoNote} aria-label="Record video note">
+            <div className={styles.videoBubbleInner}>{hasVideoNote ? "▶" : "＋"}</div>
+          </button>
+          <div style={{ flex: 1 }}>
+            <p className="ds-b2" style={{ margin: 0 }}>
+              {hasVideoNote ? "Video note added" : "No video yet"}
+            </p>
+            <p className="ds-b3 ds-text-secondary" style={{ marginTop: 4 }}>
+              {hasVideoNote ? "Click to re-record (stub)." : "Click to record a 30–60s message (stub)."}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -476,6 +538,88 @@ function Sidebar({
   );
 }
 
+function LandingPreview({
+  requestTitle,
+  companyName,
+  location,
+  skills,
+  languages,
+  hasVideoNote
+}: {
+  requestTitle: string;
+  companyName: string;
+  location: string;
+  skills: string[];
+  languages: string[];
+  hasVideoNote: boolean;
+}) {
+  const [mode, setMode] = useState<"desktop" | "mobile">("desktop");
+
+  return (
+    <div className={styles.previewCard} aria-label="Landing preview">
+      <div className={styles.previewHeader}>
+        <p className={styles.previewTitle}>How contractors will see it</p>
+        <div className={styles.previewModes}>
+          <button
+            type="button"
+            className={[styles.modeBtn, mode === "desktop" ? styles.modeBtnActive : ""].filter(Boolean).join(" ")}
+            onClick={() => setMode("desktop")}
+          >
+            Desktop
+          </button>
+          <button
+            type="button"
+            className={[styles.modeBtn, mode === "mobile" ? styles.modeBtnActive : ""].filter(Boolean).join(" ")}
+            onClick={() => setMode("mobile")}
+          >
+            Mobile
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.previewFrame}>
+        <div className={mode === "desktop" ? styles.previewFrameInnerDesktop : styles.previewFrameInnerMobile}>
+          <div className={styles.landingTop}>
+            <div style={{ minWidth: 0 }}>
+              <p className={styles.landingTitle}>{requestTitle || "Untitled request"}</p>
+              <div className={styles.landingMeta}>
+                {companyName ? <span>{companyName} • </span> : null}
+                <span>{location}</span>
+              </div>
+            </div>
+            <button className={styles.videoBubble} type="button" aria-label="Manager video note">
+              <div className={styles.videoBubbleInner}>{hasVideoNote ? "▶" : "🎥"}</div>
+            </button>
+          </div>
+
+          <p className={styles.landingSectionTitle}>Skills</p>
+          <div className={styles.pillRow}>
+            {(skills.length ? skills : ["(add skills)"]).slice(0, 8).map((s) => (
+              <span key={s} className={styles.pill}>
+                {s}
+              </span>
+            ))}
+          </div>
+
+          <p className={styles.landingSectionTitle}>Languages</p>
+          <div className={styles.pillRow}>
+            {(languages.length ? languages : ["(add languages)"]).slice(0, 8).map((l) => (
+              <span key={l} className={styles.pill}>
+                {l}
+              </span>
+            ))}
+          </div>
+
+          <p className={styles.landingSectionTitle}>Summary</p>
+          <p className="ds-b2" style={{ margin: 0, color: "var(--ds-color-text-primary)" }}>
+            This section will contain your edited description. (Preview stub)
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function RequestCreationEditScreen() {
   const [modal, setModal] = useState<null | "preview" | "create">(null);
 
@@ -493,6 +637,16 @@ export function RequestCreationEditScreen() {
 
   const allSuggested = useMemo(() => ["Figma", "Chat GPT", "Midjourney"], []);
   const aiSuggested = useMemo(() => allSuggested.filter((s) => !skills.includes(s)), [allSuggested, skills]);
+
+  const [languages, setLanguages] = useState<string[]>(["English"]);
+  const [newLanguage, setNewLanguage] = useState("");
+  const allSuggestedLanguages = useMemo(() => ["Russian", "Ukrainian", "German", "Spanish"], []);
+  const suggestedLanguages = useMemo(
+    () => allSuggestedLanguages.filter((l) => !languages.includes(l)),
+    [allSuggestedLanguages, languages]
+  );
+
+  const [hasVideoNote, setHasVideoNote] = useState(false);
 
   const [negotiable, setNegotiable] = useState(false);
   const [paymentType, setPaymentType] = useState<PaymentType>("hourly");
@@ -521,6 +675,21 @@ export function RequestCreationEditScreen() {
     setNewSkill("");
   }
 
+  function addLanguage(lang: string) {
+    const trimmed = lang.trim();
+    if (!trimmed) return;
+    setLanguages((prev) => (prev.includes(trimmed) ? prev : [...prev, trimmed]));
+  }
+
+  function removeLanguage(lang: string) {
+    setLanguages((prev) => prev.filter((l) => l !== lang));
+  }
+
+  function addNewLanguage() {
+    addLanguage(newLanguage);
+    setNewLanguage("");
+  }
+
   return (
     <div className={styles.screen}>
       <Header />
@@ -530,73 +699,98 @@ export function RequestCreationEditScreen() {
         <div className={styles.container}>
           <div className={styles.page}>
             <MainColumn requestTitle={requestTitle} onRequestTitleChange={setRequestTitle} />
-            <Sidebar
-              companyName={companyName}
-              website={website}
-              location={location}
-              currency={currency}
-              workload={workload}
-              skills={skills}
-              aiSuggested={aiSuggested}
-              newSkill={newSkill}
-              negotiable={negotiable}
-              paymentType={paymentType}
-              fromRate={fromRate}
-              toRate={toRate}
-              timelineFlexible={timelineFlexible}
-              startDate={startDate}
-              openSelectKey={openSelectKey}
-              onCompanyNameChange={setCompanyName}
-              onWebsiteChange={setWebsite}
-              onSelectOpenToggle={toggleSelect}
-              onLocationSelect={(next) => {
-                setLocation(next);
-                setOpenSelectKey(null);
-              }}
-              onCurrencySelect={(next) => {
-                setCurrency(next);
-                setOpenSelectKey(null);
-              }}
-              onWorkloadSelect={(next) => {
-                setWorkload(next);
-                setOpenSelectKey(null);
-              }}
-              onRemoveSkill={removeSkill}
-              onAddSuggested={(s) => addSkill(s)}
-              onNewSkillChange={setNewSkill}
-              onAddNewSkill={addNewSkill}
-              onNegotiableToggle={setNegotiable}
-              onPaymentTypeSelect={setPaymentType}
-              onFromRateChange={setFromRate}
-              onToRateChange={setToRate}
-              onTimelineFlexibleToggle={setTimelineFlexible}
-              onStartDateSelect={setStartDate}
-            />
+            <div>
+              <LandingPreview
+                requestTitle={requestTitle}
+                companyName={companyName}
+                location={location}
+                skills={skills}
+                languages={languages}
+                hasVideoNote={hasVideoNote}
+              />
+
+              <div style={{ marginTop: 16 }}>
+                <Sidebar
+                  companyName={companyName}
+                  website={website}
+                  location={location}
+                  currency={currency}
+                  workload={workload}
+                  skills={skills}
+                  aiSuggested={aiSuggested}
+                  languages={languages}
+                  suggestedLanguages={suggestedLanguages}
+                  newSkill={newSkill}
+                  newLanguage={newLanguage}
+                  negotiable={negotiable}
+                  paymentType={paymentType}
+                  fromRate={fromRate}
+                  toRate={toRate}
+                  timelineFlexible={timelineFlexible}
+                  startDate={startDate}
+                  openSelectKey={openSelectKey}
+                  hasVideoNote={hasVideoNote}
+                  onCompanyNameChange={setCompanyName}
+                  onWebsiteChange={setWebsite}
+                  onSelectOpenToggle={toggleSelect}
+                  onLocationSelect={(next) => {
+                    setLocation(next);
+                    setOpenSelectKey(null);
+                  }}
+                  onCurrencySelect={(next) => {
+                    setCurrency(next);
+                    setOpenSelectKey(null);
+                  }}
+                  onWorkloadSelect={(next) => {
+                    setWorkload(next);
+                    setOpenSelectKey(null);
+                  }}
+                  onRemoveSkill={removeSkill}
+                  onAddSuggested={(s) => addSkill(s)}
+                  onNewSkillChange={setNewSkill}
+                  onAddNewSkill={addNewSkill}
+                  onRemoveLanguage={removeLanguage}
+                  onAddSuggestedLanguage={(l) => addLanguage(l)}
+                  onNewLanguageChange={setNewLanguage}
+                  onAddNewLanguage={addNewLanguage}
+                  onToggleVideoNote={() => {
+                    setHasVideoNote((v) => !v);
+                    setModal("create");
+                  }}
+                  onNegotiableToggle={setNegotiable}
+                  onPaymentTypeSelect={setPaymentType}
+                  onFromRateChange={setFromRate}
+                  onToRateChange={setToRate}
+                  onTimelineFlexibleToggle={setTimelineFlexible}
+                  onStartDateSelect={setStartDate}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <Modal
-        title={modal === "preview" ? "Preview" : "Create page"}
+        title={modal === "preview" ? "Preview" : "Save request"}
         open={modal !== null}
         onClose={() => setModal(null)}
       >
         {modal === "preview" ? (
           <div>
             <p className="ds-b2" style={{ margin: 0 }}>
-              This is a placeholder preview action.
+              This is where we’ll show the full landing preview.
             </p>
             <p className="ds-b3 ds-text-secondary" style={{ marginTop: 8 }}>
-              (We can wire this to a real preview route later.)
+              For now you already have the live preview panel on the right.
             </p>
           </div>
         ) : (
           <div>
             <p className="ds-b2" style={{ margin: 0 }}>
-              Page creation action triggered.
+              Saved! (stub)
             </p>
             <p className="ds-b3 ds-text-secondary" style={{ marginTop: 8 }}>
-              (Next step: call API / generate shareable link.)
+              Next step: generate a shareable page link and guide the user to publish/share.
             </p>
           </div>
         )}

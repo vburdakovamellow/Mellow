@@ -25,7 +25,7 @@ export function InputField({
       {label ? <span className={styles.label}>{label}</span> : null}
       <span className={[styles.control, rightIcon ? styles.withRightIcon : ""].filter(Boolean).join(" ")}>
         <input
-          aria-label={label}
+          aria-label={label ?? placeholder ?? "Input"}
           className={styles.native}
           value={value ?? ""}
           placeholder={placeholder}
