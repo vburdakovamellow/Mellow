@@ -124,6 +124,167 @@
   height: 44px;
 }
 
+.ogPreviewOuter {
+  margin-top: 14px;
+}
+
+.ogPreview {
+  width: 100%;
+  aspect-ratio: 1200 / 630;
+  border-radius: 18px;
+  border: 1px solid var(--ds-color-border-secondary);
+  overflow: hidden;
+  background: radial-gradient(1200px 630px at 20% 30%, rgba(255, 111, 35, 0.14), transparent 55%),
+    radial-gradient(900px 600px at 70% 60%, rgba(78, 122, 255, 0.12), transparent 55%),
+    linear-gradient(180deg, #0f1220 0%, #0b0e18 100%);
+}
+
+.ogGrid {
+  height: 100%;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 14px;
+}
+
+.ogBlock {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.ogHero {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ogTitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.94);
+  font-family: var(--ds-font-family-accent);
+  font-size: 36px;
+  line-height: 42px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ogClient {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+}
+
+.ogRightCol {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+.ogRate {
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(255, 111, 35, 0.95) 0%, rgba(255, 143, 77, 0.92) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ogRateValue {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.98);
+  font-size: 34px;
+  line-height: 38px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ogRateLabel {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.28);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 700;
+}
+
+.ogStack {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ogStackRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ogPill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 700;
+}
+
+.ogTrust {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ogTrustIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 900;
+}
+
+.ogTrustText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ogTrustTitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 800;
+}
+
+.ogTrustSub {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 20px;
@@ -136,6 +297,15 @@
 
   .twoCol {
     grid-template-columns: 1fr;
+  }
+
+  .ogGrid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1.2fr 1fr;
+  }
+
+  .ogRightCol {
+    grid-template-rows: 1fr 1fr 1fr;
   }
 }
 

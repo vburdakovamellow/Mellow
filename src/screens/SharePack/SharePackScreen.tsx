@@ -76,6 +76,58 @@ function normalizeRemote(location: string) {
   return /remote/i.test(loc) ? "Remote" : loc;
 }
 
+function OgImageBentoPreview({
+  title,
+  clientName,
+  rateLabel,
+  rateValue,
+  pills
+}: {
+  title: string;
+  clientName: string;
+  rateLabel: string;
+  rateValue: string;
+  pills: string[];
+}) {
+  return (
+    <div className={styles.ogPreviewOuter}>
+      <div className={styles.ogPreview} aria-label="OG image preview (bento grid)">
+        <div className={styles.ogGrid}>
+          <div className={[styles.ogBlock, styles.ogHero].join(" ")}>
+            <p className={styles.ogClient}>{clientName}</p>
+            <h3 className={styles.ogTitle}>{title}</h3>
+          </div>
+
+          <div className={styles.ogRightCol}>
+            <div className={[styles.ogBlock, styles.ogRate].join(" ")}>
+              <p className={styles.ogRateValue}>{rateValue}</p>
+              <span className={styles.ogRateLabel}>{rateLabel}</span>
+            </div>
+
+            <div className={[styles.ogBlock, styles.ogStack].join(" ")}>
+              <div className={styles.ogStackRow}>
+                {pills.slice(0, 6).map((p) => (
+                  <span key={p} className={styles.ogPill}>
+                    {p}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className={[styles.ogBlock, styles.ogTrust].join(" ")}>
+              <div className={styles.ogTrustIcon}>✓</div>
+              <div className={styles.ogTrustText}>
+                <p className={styles.ogTrustTitle}>Verified by Mellow</p>
+                <p className={styles.ogTrustSub}>Secure contract via Scout (stub)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 async function copyToClipboard(text: string) {
   if (!text) return;
   try {
@@ -216,6 +268,13 @@ export function SharePackScreen({
             <div style={{ marginTop: 12 }}>
               <CopyRow label="twitter:card" value={twitterCard} monospace />
             </div>
+            <OgImageBentoPreview
+              title={request.title}
+              clientName={request.companyName?.trim() ? request.companyName.trim() : "Client (industry-blind)"}
+              rateLabel={request.budget.paymentType === "hourly" ? "Hourly rate" : "Total project value"}
+              rateValue={budgetText || "Rate"}
+              pills={request.skills.length ? request.skills : ["React", "Node.js", "AWS"]}
+            />
             <p className={styles.helperText}>
               OG tags control the “link preview card” in messengers/social feeds (title/description/image). Rule in this prototype:
               if rate looks “high”, we include it in the title; otherwise we use a market marker (ASAP/Flexible/Remote etc).
