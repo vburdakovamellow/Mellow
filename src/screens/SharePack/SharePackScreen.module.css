@@ -29,6 +29,12 @@
   gap: 12px;
 }
 
+.nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .logo {
   font-family: var(--ds-font-family-accent);
   font-size: 24px;

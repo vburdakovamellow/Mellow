@@ -184,10 +184,12 @@ function CopyRow({
 
 export function SharePackScreen({
   request,
-  onBackToEdit
+  onGoToEdit,
+  onGoToView
 }: {
   request: SharePackRequest;
-  onBackToEdit?: () => void;
+  onGoToEdit?: () => void;
+  onGoToView?: () => void;
 }) {
   const budgetText = useMemo(() => formatBudget(request), [request]);
   const showRateInTitle = useMemo(() => isRateHigh(request), [request]);
@@ -236,11 +238,17 @@ export function SharePackScreen({
       <div className={styles.fixedHeader}>
         <div className={[styles.container, styles.headerInner].join(" ")}>
           <div className={styles.logo}>mellow</div>
-          {onBackToEdit ? (
-            <Button variant="secondary" onClick={onBackToEdit}>
-              Back to edit
+          <div className={styles.nav}>
+            <Button variant="secondary" onClick={onGoToEdit}>
+              Edit
             </Button>
-          ) : null}
+            <Button variant="brand" disabled>
+              Share pack
+            </Button>
+            <Button variant="secondary" onClick={onGoToView}>
+              View
+            </Button>
+          </div>
         </div>
       </div>
 

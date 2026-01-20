@@ -1,71 +1,43 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { RequestCreationEditScreen } from "./screens/RequestCreationEdit/RequestCreationEditScreen";
 import { SharePackScreen, type SharePackRequest } from "./screens/SharePack/SharePackScreen";
 import { ServiceRequestViewScreen } from "./screens/ServiceRequestView/ServiceRequestViewScreen";
 
-function getScreenParam() {
-  if (typeof window === "undefined") return null;
-  return new URLSearchParams(window.location.search).get("screen");
-}
-
-function getInitialState(): { screen: "edit" | "view" | "share"; req: SharePackRequest | null } {
-  if (typeof window === "undefined") return { screen: "edit", req: null };
-  const params = new URLSearchParams(window.location.search);
-  const screen = params.get("screen");
-
-  if (screen === "share") {
-    const req: SharePackRequest = {
-      id: "debug",
-      title: "Senior React Dev",
-      companyName: "Acme Corp.",
-      location: "Remote",
-      skills: ["React", "Node.js", "AWS", "TypeScript", "GraphQL", "Vite"],
-      languages: ["English"],
-      timeline: { workload: "20–40h/week", startDate: "ASAP" },
-      budget: { paymentType: "hourly", from: "70", to: "90", currency: "USD" }
-    };
-    return { screen: "share", req };
-  }
-
-  if (screen === "view") return { screen: "view", req: null };
-  return { screen: "edit", req: null };
-}
+type ScreenId = "edit" | "share" | "view";
 
 export function App() {
-  const forced = getScreenParam();
-  if (forced === "share") {
-    const req: SharePackRequest = {
-      id: "debug",
-      title: "Senior React Dev",
-      companyName: "Acme Corp.",
-      location: "Remote",
-      skills: ["React", "Node.js", "AWS", "TypeScript", "GraphQL", "Vite"],
-      languages: ["English"],
-      timeline: { workload: "20–40h/week", startDate: "ASAP" },
-      budget: { paymentType: "hourly", from: "70", to: "90", currency: "USD" }
-    };
-    return <SharePackScreen request={req} onBackToEdit={() => (window.location.href = "/")} />;
-  }
+  const [currentScreen, setCurrentScreen] = useState<ScreenId>("edit");
+  const [savedRequest, setSavedRequest] = useState<SharePackRequest | null>(null);
 
-  const initial = getInitialState();
-  const [currentScreen, setCurrentScreen] = useState<"edit" | "view" | "share">(initial.screen);
-  const [savedRequest, setSavedRequest] = useState<SharePackRequest | null>(initial.req);
+  const nav = useMemo(() => {
+    return {
+      toEdit: () => setCurrentScreen("edit"),
+      toView: () => setCurrentScreen("view"),
+      toShare: (req?: SharePackRequest) => {
+        if (req) setSavedRequest(req);
+        if (req || savedRequest) setCurrentScreen("share");
+      }
+    };
+  }, [savedRequest]);
 
   if (currentScreen === "view") {
-    return <ServiceRequestViewScreen onBackToEdit={() => setCurrentScreen("edit")} />;
+    return (
+      <ServiceRequestViewScreen
+        onGoToEdit={nav.toEdit}
+        onGoToShare={(req) => nav.toShare(req)}
+        onGoToView={nav.toView}
+      />
+    );
   }
 
   if (currentScreen === "share" && savedRequest) {
-    return <SharePackScreen request={savedRequest} onBackToEdit={() => setCurrentScreen("edit")} />;
+    return <SharePackScreen request={savedRequest} onGoToEdit={nav.toEdit} onGoToView={nav.toView} />;
   }
 
   return (
     <RequestCreationEditScreen
-      onViewFullPreview={() => setCurrentScreen("view")}
-      onRequestSaved={(req) => {
-        setSavedRequest(req);
-        setCurrentScreen("share");
-      }}
+      onGoToView={nav.toView}
+      onRequestSaved={(req) => nav.toShare(req)}
     />
   );
 }

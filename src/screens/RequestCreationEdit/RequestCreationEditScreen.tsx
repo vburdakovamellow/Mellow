@@ -54,13 +54,32 @@ function IconSpark({ size = 20, color = "currentColor" }: { size?: number; color
   );
 }
 
-function Header() {
+function Header({
+  onGoToEdit,
+  onGoToShare,
+  onGoToView
+}: {
+  onGoToEdit?: () => void;
+  onGoToShare?: () => void;
+  onGoToView?: () => void;
+}) {
   return (
     <div className={styles.fixedHeader}>
       <div className={[styles.container, styles.headerInner].join(" ")}>
         <div className={styles.headerRow}>
           <div className={styles.logo}>mellow</div>
           <div className={styles.logoSubtitle}>AI request editor</div>
+        </div>
+        <div className={styles.nav}>
+          <Button variant="brand" disabled>
+            Edit
+          </Button>
+          <Button variant="secondary" onClick={onGoToShare}>
+            Share pack
+          </Button>
+          <Button variant="secondary" onClick={onGoToView}>
+            View
+          </Button>
         </div>
       </div>
     </div>
@@ -629,10 +648,10 @@ function LandingPreview({
 }
 
 export function RequestCreationEditScreen({
-  onViewFullPreview,
+  onGoToView,
   onRequestSaved
 }: {
-  onViewFullPreview?: () => void;
+  onGoToView?: () => void;
   onRequestSaved?: (req: SharePackRequest) => void;
 }) {
   const [modal, setModal] = useState<null | "preview">(null);
@@ -724,7 +743,7 @@ export function RequestCreationEditScreen({
 
   return (
     <div className={styles.screen}>
-      <Header />
+      <Header onGoToShare={handleSave} onGoToView={onGoToView} />
       <TitleActionsBarWithActions onPreview={() => setModal("preview")} onSave={handleSave} />
 
       <div className={styles.pageSpacer}>
@@ -739,7 +758,7 @@ export function RequestCreationEditScreen({
                 skills={skills}
                 languages={languages}
                 hasVideoNote={hasVideoNote}
-                onViewFull={onViewFullPreview}
+                onViewFull={onGoToView}
               />
 
               <div style={{ marginTop: 16 }}>

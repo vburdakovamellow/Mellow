@@ -4,6 +4,7 @@ import { Chip } from "../../design-system/primitives/Chip/Chip";
 
 import "../../design-system/typography.css";
 import styles from "./ServiceRequestViewScreen.module.css";
+import type { SharePackRequest } from "../SharePack/SharePackScreen";
 
 function IconStar({ size = 20, filled = false }: { size?: number; filled?: boolean }) {
   return (
@@ -28,22 +29,46 @@ function IconCheck({ size = 16 }: { size?: number }) {
   );
 }
 
-function Header({ isAuthor, onBackToEdit }: { isAuthor?: boolean; onBackToEdit?: () => void }) {
+function Header({
+  active,
+  onGoToEdit,
+  onGoToShare,
+  onGoToView
+}: {
+  active: "view";
+  onGoToEdit?: () => void;
+  onGoToShare?: () => void;
+  onGoToView?: () => void;
+}) {
   return (
     <div className={styles.fixedHeader}>
       <div className={[styles.container, styles.headerInner].join(" ")}>
         <div className={styles.logo}>mellow</div>
-        {isAuthor && onBackToEdit && (
-          <button className={styles.backToEditBtn} onClick={onBackToEdit}>
-            Back to Edit
-          </button>
-        )}
+        <div className={styles.nav}>
+          <Button variant="secondary" onClick={onGoToEdit}>
+            Edit
+          </Button>
+          <Button variant="secondary" onClick={onGoToShare}>
+            Share pack
+          </Button>
+          <Button variant="brand" disabled={active === "view"} onClick={onGoToView}>
+            View
+          </Button>
+        </div>
       </div>
     </div>
   );
 }
 
-export function ServiceRequestViewScreen({ onBackToEdit }: { onBackToEdit?: () => void }) {
+export function ServiceRequestViewScreen({
+  onGoToEdit,
+  onGoToShare,
+  onGoToView
+}: {
+  onGoToEdit?: () => void;
+  onGoToShare?: (req: SharePackRequest) => void;
+  onGoToView?: () => void;
+}) {
   const [isSaved, setIsSaved] = useState(false);
   const [showVerificationTooltip, setShowVerificationTooltip] = useState(false);
 
@@ -110,9 +135,37 @@ export function ServiceRequestViewScreen({ onBackToEdit }: { onBackToEdit?: () =
     }
   };
 
+  function buildShareRequest(): SharePackRequest {
+    return {
+      id: requestData.id,
+      title: requestData.title,
+      companyName: requestData.company || undefined,
+      location: requestData.location,
+      skills: requestData.skills,
+      languages: requestData.languages,
+      timeline: {
+        workload: requestData.timeline.workload,
+        startDate: requestData.timeline.startDate,
+        flexible: requestData.timeline.flexible
+      },
+      marketMarker: requestData.budget.marketRate,
+      budget: {
+        paymentType: requestData.budget.type,
+        from: requestData.budget.from,
+        to: requestData.budget.to,
+        currency: requestData.budget.currency
+      }
+    };
+  }
+
   return (
     <div className={styles.screen}>
-      <Header isAuthor={requestData.isAuthor} onBackToEdit={onBackToEdit} />
+      <Header
+        active="view"
+        onGoToEdit={onGoToEdit}
+        onGoToShare={() => onGoToShare?.(buildShareRequest())}
+        onGoToView={onGoToView}
+      />
 
       <div className={styles.content}>
         <div className={styles.container}>
