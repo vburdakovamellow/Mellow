@@ -11,6 +11,12 @@ export type SharePackRequest = {
   location: string;
   skills: string[];
   languages: string[];
+  timeline?: {
+    workload?: string;
+    startDate?: string;
+    flexible?: boolean;
+  };
+  marketMarker?: string;
   budget: {
     paymentType: "hourly" | "fixed";
     from: string;
@@ -18,6 +24,17 @@ export type SharePackRequest = {
     currency: "USD" | "EUR" | "GBP" | string;
   };
 };
+
+function clampText(text: string, max: number) {
+  if (text.length <= max) return text;
+  if (max <= 1) return text.slice(0, max);
+  return `${text.slice(0, max - 1)}…`;
+}
+
+function parseNumber(value: string) {
+  const n = Number.parseFloat(String(value).replace(",", "."));
+  return Number.isFinite(n) ? n : null;
+}
 
 function formatBudget(req: SharePackRequest) {
   const cur = req.budget.currency || "USD";
@@ -30,6 +47,33 @@ function formatBudget(req: SharePackRequest) {
   if (from) return `${symbol}${from}${suffix}`;
   if (to) return `${symbol}${to}${suffix}`;
   return "";
+}
+
+function isRateHigh(req: SharePackRequest) {
+  // Prototype heuristic. In production this should use market benchmarks by role + geo.
+  const to = parseNumber(req.budget.to) ?? parseNumber(req.budget.from);
+  if (to === null) return false;
+  if (req.budget.paymentType === "hourly") return to >= 60;
+  return to >= 10000;
+}
+
+function buildOgTitle(title: string, secondPart: string, maxLen = 60) {
+  const sep = " — ";
+  const second = secondPart.trim();
+  const base = title.trim();
+  if (!second) return clampText(base, maxLen);
+
+  const remainingForTitle = maxLen - sep.length - second.length;
+  if (remainingForTitle <= 0) {
+    return clampText(`${base}${sep}${second}`, maxLen);
+  }
+  return `${clampText(base, remainingForTitle)}${sep}${second}`;
+}
+
+function normalizeRemote(location: string) {
+  const loc = location.trim();
+  if (!loc) return "";
+  return /remote/i.test(loc) ? "Remote" : loc;
 }
 
 async function copyToClipboard(text: string) {
@@ -46,19 +90,30 @@ function CopyRow({
   label,
   value,
   monospace = false,
-  copiedText = "Copied"
+  copiedText = "Copied",
+  maxLen
 }: {
   label: string;
   value: string;
   monospace?: boolean;
   copiedText?: string;
+  maxLen?: number;
 }) {
   const [copied, setCopied] = useState(false);
+  const over = maxLen ? value.length > maxLen : false;
 
   return (
     <div className={styles.row}>
       <div className={styles.rowGrow}>
         <InputField label={label} value={value} readOnly className={monospace ? styles.mono : undefined} />
+        {maxLen ? (
+          <div className={styles.fieldMeta}>
+            <span className={[styles.counter, over ? styles.counterWarn : ""].filter(Boolean).join(" ")}>
+              {value.length}/{maxLen}
+            </span>
+            {over ? <span className={styles.counterWarn}>Too long</span> : null}
+          </div>
+        ) : null}
       </div>
       <Button
         variant="secondary"
@@ -83,6 +138,7 @@ export function SharePackScreen({
   onBackToEdit?: () => void;
 }) {
   const budgetText = useMemo(() => formatBudget(request), [request]);
+  const showRateInTitle = useMemo(() => isRateHigh(request), [request]);
 
   const shareUrl = useMemo(() => {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
@@ -90,15 +146,30 @@ export function SharePackScreen({
   }, [request.id]);
 
   const ogTitle = useMemo(() => {
-    const rate = budgetText ? ` — ${budgetText}` : "";
-    return `${request.title}${rate}`.slice(0, 60);
-  }, [request.title, budgetText]);
+    const marketMarker =
+      request.marketMarker?.trim() ||
+      (request.timeline?.flexible ? "Flexible" : "") ||
+      request.timeline?.startDate?.trim() ||
+      normalizeRemote(request.location);
+
+    const second = showRateInTitle ? budgetText : marketMarker;
+    return buildOgTitle(request.title, second || "", 60);
+  }, [request.title, request.marketMarker, request.timeline, request.location, showRateInTitle, budgetText]);
 
   const ogDescription = useMemo(() => {
     const skills = request.skills.slice(0, 3).join(", ");
-    const bits = [skills, request.location].filter(Boolean);
-    return bits.join(" • ").slice(0, 120);
-  }, [request.skills, request.location]);
+    const timelineBits = [
+      request.timeline?.workload?.trim() || "",
+      request.timeline?.startDate?.trim() ? `Start: ${request.timeline.startDate.trim()}` : ""
+    ].filter(Boolean);
+    const timeline = timelineBits.join(" • ");
+
+    const remote = normalizeRemote(request.location);
+    const bits = [skills, timeline, remote].filter(Boolean);
+    return clampText(bits.join(" • "), 120);
+  }, [request.skills, request.location, request.timeline]);
+
+  const twitterCard = "summary_large_image";
 
   const linkedInCopy = useMemo(() => {
     const line1 = `Looking for: ${request.title}${budgetText ? ` (${budgetText})` : ""}`;
@@ -139,12 +210,16 @@ export function SharePackScreen({
           <div className={styles.section}>
             <p className={styles.sectionTitle}>Protocols & metadata (OG preview)</p>
             <div className={styles.twoCol}>
-              <CopyRow label="og:title" value={ogTitle} />
-              <CopyRow label="og:description" value={ogDescription} />
+              <CopyRow label="og:title" value={ogTitle} maxLen={60} />
+              <CopyRow label="og:description" value={ogDescription} maxLen={120} />
+            </div>
+            <div style={{ marginTop: 12 }}>
+              <CopyRow label="twitter:card" value={twitterCard} monospace />
             </div>
             <p className={styles.helperText}>
-              OG tags control the “link preview card” in messengers/social feeds (title/description/image). In this prototype we only
-              generate strings; true OG injection requires server-side rendering.
+              OG tags control the “link preview card” in messengers/social feeds (title/description/image). Rule in this prototype:
+              if rate looks “high”, we include it in the title; otherwise we use a market marker (ASAP/Flexible/Remote etc).
+              True dynamic OG injection needs server-side rendering.
             </p>
           </div>
 

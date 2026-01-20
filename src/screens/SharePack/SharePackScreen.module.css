@@ -84,6 +84,25 @@
   min-width: 0;
 }
 
+.fieldMeta {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.counter {
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--ds-color-text-secondary);
+}
+
+.counterWarn {
+  color: #b42318;
+  font-weight: 600;
+}
+
 .helperText {
   margin: 10px 0 0 0;
   color: var(--ds-color-text-secondary);
