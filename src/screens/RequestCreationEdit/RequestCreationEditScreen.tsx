@@ -633,7 +633,7 @@ function LandingPreview({
           </div>
 
           <p className={styles.landingSectionTitle}>Summary</p>
-          <p className="ds-b2" style={{ margin: 0, color: "var(--ds-color-text-primary)" }}>
+          <p className="ds-b2" style={{ margin: 0, color: "#000000" }}>
             This section will contain your edited description. (Preview stub)
           </p>
         </div>

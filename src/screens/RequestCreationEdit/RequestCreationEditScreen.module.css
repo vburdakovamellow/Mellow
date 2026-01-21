@@ -126,9 +126,9 @@
 }
 
 .previewCard {
-  background: var(--ds-color-bg-surface);
+  background: #ffffff;
   border-radius: var(--ds-radius-16);
-  border: 1px solid var(--ds-color-border-secondary);
+  border: 1px solid #000000;
   padding: 16px;
   position: sticky;
   top: 170px;
@@ -144,9 +144,11 @@
 
 .previewTitle {
   margin: 0;
+  font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-16);
   line-height: var(--ds-line-height-22);
   font-weight: 600;
+  color: #000000;
 }
 
 .previewModes {
@@ -158,20 +160,23 @@
   height: 32px;
   padding: 0 12px;
   border-radius: var(--ds-radius-10);
-  border: 1px solid var(--ds-color-border-secondary);
-  background: var(--ds-color-bg-secondary);
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
   cursor: pointer;
+  font-family: var(--ds-font-family-body);
 }
 
 .modeBtnActive {
-  background: var(--ds-color-bg-surface-brand-2);
-  border-color: transparent;
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
 }
 
 .previewFrame {
-  background: var(--ds-color-bg-porcelain);
+  background: #ffffff;
   border-radius: var(--ds-radius-16);
-  border: 1px solid var(--ds-color-border-secondary);
+  border: 1px solid #000000;
   padding: 16px;
   overflow: hidden;
   margin-bottom: 12px;
@@ -180,9 +185,9 @@
 .viewFullBtn {
   width: 100%;
   padding: 12px 16px;
-  background: var(--ds-color-button-brand);
-  color: var(--ds-color-text-inverse);
-  border: none;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
   border-radius: var(--ds-radius-10);
   cursor: pointer;
   font-size: 14px;
@@ -191,12 +196,12 @@
 }
 
 .viewFullBtn:hover {
-  opacity: 0.9;
+  opacity: 0.7;
 }
 
 .previewFrameInnerDesktop {
   border-radius: 14px;
-  background: var(--ds-color-bg-surface);
+  background: #ffffff;
   padding: 18px;
 }
 
@@ -204,9 +209,9 @@
   width: 360px;
   margin: 0 auto;
   border-radius: 22px;
-  background: var(--ds-color-bg-surface);
+  background: #ffffff;
   padding: 18px;
-  border: 1px solid var(--ds-color-border-secondary);
+  border: 1px solid #000000;
 }
 
 .landingTop {
@@ -218,15 +223,16 @@
 
 .landingTitle {
   margin: 0;
-  font-family: var(--ds-font-family-accent);
+  font-family: var(--ds-font-family-body);
   font-size: 28px;
   line-height: 34px;
   font-weight: 400;
+  color: #000000;
 }
 
 .landingMeta {
   margin-top: 8px;
-  color: var(--ds-color-text-secondary);
+  color: #000000;
   font-size: var(--ds-font-size-14);
   line-height: var(--ds-line-height-18);
 }
@@ -235,8 +241,8 @@
   width: 84px;
   height: 84px;
   border-radius: 999px;
-  background: var(--ds-color-bg-surface-brand-2);
-  border: 2px solid var(--ds-color-button-brand);
+  background: #ffffff;
+  border: 2px solid #000000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -248,8 +254,8 @@
   width: 64px;
   height: 64px;
   border-radius: 999px;
-  background: var(--ds-color-button-brand);
-  color: var(--ds-color-text-inverse);
+  background: #000000;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -261,6 +267,7 @@
   font-size: var(--ds-font-size-16);
   line-height: var(--ds-line-height-22);
   font-weight: 600;
+  color: #000000;
 }
 
 .pillRow {
@@ -273,12 +280,13 @@
   height: 28px;
   padding: 0 10px;
   border-radius: 999px;
-  background: var(--ds-color-bg-secondary);
-  border: 1px solid var(--ds-color-border-secondary);
+  background: #ffffff;
+  border: 1px solid #000000;
   display: inline-flex;
   align-items: center;
   font-size: var(--ds-font-size-14);
   line-height: var(--ds-line-height-18);
+  color: #000000;
 }
 
 .editorCard {
