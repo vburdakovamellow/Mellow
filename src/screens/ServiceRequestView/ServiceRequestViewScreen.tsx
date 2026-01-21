@@ -342,34 +342,34 @@ export function ServiceRequestViewScreen({
                   </li>
                 </ul>
               </div>
+            </div>
+          </div>
 
-              {/* What Happens Next Card */}
-              <div className={styles.sidebarCard}>
-                <h4 className={styles.sidebarCardTitle}>What happens next?</h4>
-                <div className={styles.processSteps}>
-                  <div className={styles.processStep}>
-                    <div className={styles.stepNumber}>1</div>
-                    <div className={styles.stepContent}>
-                      <strong className={styles.stepTitle}>Submit your application</strong>
-                      <p className={styles.stepText}>Fill out a brief form with your details and portfolio</p>
-                    </div>
-                  </div>
+          {/* What Happens Next - Full Width Bottom Section */}
+          <div className={styles.processSection}>
+            <h2 className={styles.processSectionTitle}>What happens next?</h2>
+            <div className={styles.processSteps}>
+              <div className={styles.processStep}>
+                <div className={styles.stepNumber}>1</div>
+                <div className={styles.stepContent}>
+                  <strong className={styles.stepTitle}>Submit your application</strong>
+                  <p className={styles.stepText}>Fill out a brief form with your details and portfolio</p>
+                </div>
+              </div>
 
-                  <div className={styles.processStep}>
-                    <div className={styles.stepNumber}>2</div>
-                    <div className={styles.stepContent}>
-                      <strong className={styles.stepTitle}>Manager reviews within 48h</strong>
-                      <p className={styles.stepText}>The hiring manager will review your application and respond</p>
-                    </div>
-                  </div>
+              <div className={styles.processStep}>
+                <div className={styles.stepNumber}>2</div>
+                <div className={styles.stepContent}>
+                  <strong className={styles.stepTitle}>Manager reviews within 48h</strong>
+                  <p className={styles.stepText}>The hiring manager will review your application and respond</p>
+                </div>
+              </div>
 
-                  <div className={styles.processStep}>
-                    <div className={styles.stepNumber}>3</div>
-                    <div className={styles.stepContent}>
-                      <strong className={styles.stepTitle}>Interview if shortlisted</strong>
-                      <p className={styles.stepText}>Selected candidates will be invited for a brief interview</p>
-                    </div>
-                  </div>
+              <div className={styles.processStep}>
+                <div className={styles.stepNumber}>3</div>
+                <div className={styles.stepContent}>
+                  <strong className={styles.stepTitle}>Interview if shortlisted</strong>
+                  <p className={styles.stepText}>Selected candidates will be invited for a brief interview</p>
                 </div>
               </div>
             </div>

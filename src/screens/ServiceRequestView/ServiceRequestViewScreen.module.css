@@ -460,49 +460,72 @@
   color: #000000;
 }
 
-/* Process Steps (in sidebar) */
+/* Process Section - Full Width Bottom */
+.processSection {
+  margin-top: 48px;
+  padding: 40px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 16px;
+}
+
+.processSectionTitle {
+  font-family: var(--ds-font-family-body);
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 32px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .processSteps {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  flex-direction: row;
+  gap: 32px;
+  align-items: flex-start;
 }
 
 .processStep {
+  flex: 1;
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 16px;
   align-items: flex-start;
 }
 
 .stepNumber {
-  width: 28px;
-  height: 28px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: #000000;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   flex-shrink: 0;
 }
 
 .stepContent {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .stepTitle {
   display: block;
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 600;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 700;
   color: #000000;
-  margin-bottom: 4px;
 }
 
 .stepText {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 14px;
+  line-height: 20px;
   color: #000000;
   margin: 0;
 }
@@ -539,5 +562,32 @@
   .qualRow {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  .processSection {
+    padding: 24px;
+    margin-top: 32px;
+  }
+
+  .processSectionTitle {
+    font-size: 20px;
+    line-height: 26px;
+    margin-bottom: 24px;
+  }
+
+  .processSteps {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .processStep {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .stepNumber {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
   }
 }
