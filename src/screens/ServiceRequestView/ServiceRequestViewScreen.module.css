@@ -460,9 +460,35 @@
   color: #000000;
 }
 
+/* Sticky Apply Bar */
+.stickyApplyBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 2px solid #000000;
+  padding: 20px 0;
+  z-index: 50;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stickyApplyButton {
+  width: 100%;
+  max-width: 400px;
+  height: 56px;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 auto;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 /* Process Section - Full Width Bottom */
 .processSection {
   margin-top: 48px;
+  margin-bottom: 100px;
   padding: 40px;
   background: #ffffff;
   border: 1px solid #000000;
@@ -589,5 +615,15 @@
     width: 40px;
     height: 40px;
     font-size: 18px;
+  }
+
+  .stickyApplyBar {
+    padding: 16px 0;
+  }
+
+  .stickyApplyButton {
+    max-width: none;
+    height: 48px;
+    font-size: 16px;
   }
 }

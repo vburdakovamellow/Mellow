@@ -372,6 +372,15 @@ export function ServiceRequestViewScreen({
           </div>
         </div>
       </div>
+
+      {/* Sticky Apply Button */}
+      <div className={styles.stickyApplyBar}>
+        <div className={styles.container}>
+          <Button variant="brand" onClick={handleApply} className={styles.stickyApplyButton}>
+            Apply Now
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
