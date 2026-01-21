@@ -169,196 +169,210 @@ export function ServiceRequestViewScreen({
 
       <div className={styles.content}>
         <div className={styles.container}>
-          {/* Breadcrumbs */}
-          <div className={styles.breadcrumbs}>
-            <span
-              className={[styles.breadcrumbLink, requestData.isAuthor ? styles.breadcrumbClickable : ""]
-                .filter(Boolean)
-                .join(" ")}
-              onClick={requestData.isAuthor ? handleBackToRequests : undefined}
-            >
-              Requests
-            </span>
-            <span className={styles.breadcrumbSeparator}>/</span>
-            <span className={styles.breadcrumbCurrent}>#SR-{requestData.id}</span>
-          </div>
-
-          {/* Hero Section */}
-          <div className={styles.heroSection}>
-            <div className={styles.heroMain}>
-              {requestData.publishedDate && (
-                <p className={styles.publishedDate}>Published on {requestData.publishedDate}</p>
-              )}
-              <div className={styles.titleRow}>
-                <h1 className={styles.title}>{requestData.title}</h1>
-                {requestData.isNew && <span className={styles.newBadge}>NEW</span>}
-              </div>
-              <p className={styles.talentProfile}>{requestData.talentProfile}</p>
-              {(requestData.company || requestData.industryBlind) && (
-                <div className={styles.companyRow}>
-                  <span className={styles.companyName}>
-                    {requestData.company || requestData.industryBlind}
+          {/* Header: Identity & Action */}
+          <div className={styles.requestHeader}>
+            <div className={styles.requestHeaderLeft}>
+              {/* Breadcrumbs - only for author */}
+              {requestData.isAuthor && (
+                <div className={styles.breadcrumbs}>
+                  <span className={styles.breadcrumbLink} onClick={handleBackToRequests}>
+                    Requests
                   </span>
-                  {requestData.isVerified && (
-                    <div
-                      className={styles.verificationWrapper}
-                      onMouseEnter={() => setShowVerificationTooltip(true)}
-                      onMouseLeave={() => setShowVerificationTooltip(false)}
-                    >
-                      <IconCheck size={16} />
-                      {showVerificationTooltip && (
-                        <div className={styles.tooltip}>Verified by Mellow</div>
-                      )}
+                  <span className={styles.breadcrumbSeparator}>/</span>
+                  <span className={styles.breadcrumbCurrent}>#SR-{requestData.id}</span>
+                </div>
+              )}
+              
+              {/* Title */}
+              <h1 className={styles.requestTitle}>{requestData.title}</h1>
+              
+              {/* Trust Row: Company + Verified */}
+              <div className={styles.trustRow}>
+                <span className={styles.clientName}>
+                  {requestData.company || requestData.industryBlind}
+                </span>
+                {requestData.isVerified && (
+                  <div
+                    className={styles.verifiedIcon}
+                    onMouseEnter={() => setShowVerificationTooltip(true)}
+                    onMouseLeave={() => setShowVerificationTooltip(false)}
+                  >
+                    <IconCheck size={16} />
+                    {showVerificationTooltip && (
+                      <div className={styles.tooltip}>Verified Customer</div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.requestHeaderRight}>
+              {/* Timer Badge */}
+              <div className={styles.timerBadge}>
+                Remaining {requestData.deadline.days}d {requestData.deadline.hours}h
+              </div>
+              
+              {/* Save Button */}
+              <button
+                type="button"
+                className={[styles.iconButton, isSaved ? styles.iconButtonActive : ""].filter(Boolean).join(" ")}
+                onClick={() => setIsSaved(!isSaved)}
+                aria-label="Save request"
+              >
+                <IconStar size={20} filled={isSaved} />
+              </button>
+              
+              {/* Primary CTA */}
+              <Button variant="brand" onClick={handleApply}>
+                Reply
+              </Button>
+            </div>
+          </div>
+
+          {/* Body: Two Column Layout */}
+          <div className={styles.bodyLayout}>
+            {/* Left Column: Main Content */}
+            <div className={styles.mainColumn}>
+              {/* Qualification Block */}
+              <div className={styles.qualificationBlock}>
+                <div className={styles.qualRow}>
+                  <span className={styles.qualLabel}>Experience</span>
+                  <div className={styles.levelSwitcher}>
+                    <span className={styles.levelSegment}>Junior</span>
+                    <span className={`${styles.levelSegment} ${styles.levelActive}`}>{requestData.experienceLevel}</span>
+                    <span className={styles.levelSegment}>Senior</span>
+                  </div>
+                </div>
+
+                <div className={styles.qualRow}>
+                  <span className={styles.qualLabel}>Tech Stack</span>
+                  <div className={styles.tagsList}>
+                    {requestData.skills.map((skill) => (
+                      <span key={skill} className={styles.techTag}>{skill}</span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.qualRow}>
+                  <span className={styles.qualLabel}>Languages</span>
+                  <div className={styles.tagsList}>
+                    {requestData.languages.map((lang) => (
+                      <span key={lang} className={styles.softTag}>{lang}</span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.qualRow}>
+                  <span className={styles.qualLabel}>Contract</span>
+                  <span className={styles.qualValue}>{requestData.contractType}</span>
+                </div>
+              </div>
+
+              {/* Summary Block */}
+              <div className={styles.summaryBlock}>
+                <div className={styles.summaryContent}>
+                  <h3 className={styles.blockTitle}>Project Summary</h3>
+                  <p className={styles.bodyText}>{requestData.description.summary}</p>
+                </div>
+                {requestData.hasVideoNote && (
+                  <div className={styles.videoNoteContainer}>
+                    <div className={styles.videoBubble}>
+                      <div className={styles.videoBubbleInner}>▶</div>
                     </div>
-                  )}
+                    <p className={styles.videoCaption}>Manager's Note</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Deliverables/SOW Block */}
+              <div className={styles.sowBlock}>
+                <h3 className={styles.blockTitle}>Key Responsibilities</h3>
+                <ul className={styles.sowList}>
+                  {requestData.description.responsibilities.map((item, idx) => (
+                    <li key={idx} className={styles.sowItem}>
+                      <span className={styles.checkmark}>✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Requirements Block */}
+              <div className={styles.sowBlock}>
+                <h3 className={styles.blockTitle}>Requirements</h3>
+                <ul className={styles.sowList}>
+                  {requestData.description.requirements.map((item, idx) => (
+                    <li key={idx} className={styles.sowItem}>
+                      <span className={styles.checkmark}>✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Right Column: Sidebar */}
+            <div className={styles.sidebarColumn}>
+              {/* Budget Card */}
+              <div className={styles.sidebarCard}>
+                <h4 className={styles.sidebarCardTitle}>Budget</h4>
+                <div className={styles.budgetAmount}>
+                  ${requestData.budget.from} - ${requestData.budget.to}/{requestData.budget.type === "hourly" ? "hr" : "project"}
                 </div>
-              )}
-            </div>
-
-            {requestData.hasVideoNote && (
-              <div className={styles.videoBubble}>
-                <div className={styles.videoBubbleInner}>▶</div>
-              </div>
-            )}
-          </div>
-
-          {/* Meta Bar */}
-          <div className={styles.metaBar}>
-            <div className={styles.metaItem}>
-              <span className={styles.metaLabel}>Closes in</span>
-              <span className={styles.timerValue}>
-                {requestData.deadline.days}d {requestData.deadline.hours}h
-              </span>
-            </div>
-            <div className={styles.metaDivider} />
-            <div className={styles.metaItem}>
-              <span className={styles.metaLabel}>Experience</span>
-              <span className={styles.metaValue}>{requestData.experienceLevel}</span>
-            </div>
-            <div className={styles.metaDivider} />
-            <div className={styles.metaItem}>
-              <span className={styles.metaLabel}>Contract</span>
-              <span className={styles.metaValue}>{requestData.contractType}</span>
-            </div>
-          </div>
-
-          {/* Skills, Languages & Budget */}
-          <div className={styles.tagsSection}>
-            <div className={styles.tagGroup}>
-              <p className={styles.tagGroupTitle}>Skills</p>
-              <div className={styles.chipGrid}>
-                {requestData.skills.map((skill) => (
-                  <Chip key={skill}>{skill}</Chip>
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.tagGroup}>
-              <p className={styles.tagGroupTitle}>Languages</p>
-              <div className={styles.chipGrid}>
-                {requestData.languages.map((lang) => (
-                  <Chip key={lang}>{lang}</Chip>
-                ))}
-              </div>
-            </div>
-
-            <div className={[styles.tagGroup, styles.budgetGroup].join(" ")}>
-              <p className={styles.tagGroupTitle}>Budget</p>
-              <p className={styles.budgetValue}>
-                ${requestData.budget.from} - ${requestData.budget.to}/
-                {requestData.budget.type === "hourly" ? "hour" : "project"}
-              </p>
-              {requestData.budget.negotiable && (
-                <span className={styles.negotiableBadge}>Negotiable</span>
-              )}
-            </div>
-          </div>
-
-          {/* CTA Section */}
-          <div className={styles.ctaSection}>
-            <Button variant="brand" onClick={handleApply} className={styles.applyButton}>
-              Apply now
-            </Button>
-            <button
-              type="button"
-              className={[styles.saveButton, isSaved ? styles.saveButtonActive : ""].filter(Boolean).join(" ")}
-              onClick={() => setIsSaved(!isSaved)}
-              aria-label="Save request"
-            >
-              <IconStar size={20} filled={isSaved} />
-            </button>
-          </div>
-
-          {/* Main Description */}
-          <div className={styles.descriptionSection}>
-            <h2 className={styles.sectionTitle}>Project Summary</h2>
-            <p className={styles.descriptionText}>{requestData.description.summary}</p>
-
-            <h2 className={styles.sectionTitle}>Key Responsibilities</h2>
-            <ul className={styles.list}>
-              {requestData.description.responsibilities.map((item, idx) => (
-                <li key={idx}>{item}</li>
-              ))}
-            </ul>
-
-            <h2 className={styles.sectionTitle}>Requirements</h2>
-            <ul className={styles.list}>
-              {requestData.description.requirements.map((item, idx) => (
-                <li key={idx}>{item}</li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Additional Info */}
-          <div className={styles.additionalInfo}>
-            <div className={styles.infoCard}>
-              <h3 className={styles.infoCardTitle}>Timeline</h3>
-              <p className={styles.infoCardValue}>Start: {requestData.timeline.startDate}</p>
-              <p className={styles.infoCardValue}>Workload: {requestData.timeline.workload}</p>
-            </div>
-
-            <div className={styles.infoCard}>
-              <h3 className={styles.infoCardTitle}>Location & Timezone</h3>
-              <p className={styles.infoCardValue}>{requestData.location}</p>
-              <p className={styles.infoCardValue}>{requestData.timezone}</p>
-            </div>
-          </div>
-
-          {/* What Happens Next */}
-          <div className={styles.processSection}>
-            <h2 className={styles.processSectionTitle}>What happens next?</h2>
-            <div className={styles.processSteps}>
-              <div className={styles.processStep}>
-                <div className={styles.stepNumber}>1</div>
-                <div className={styles.stepContent}>
-                  <h4 className={styles.stepTitle}>Submit your application</h4>
-                  <p className={styles.stepText}>Fill out a brief form with your details and portfolio</p>
+                <div className={styles.budgetMeta}>
+                  {requestData.budget.type === "hourly" ? "Hourly Rate" : "Fixed Price"}
+                  {requestData.budget.negotiable && " • Negotiable"}
                 </div>
               </div>
 
-              <div className={styles.processStep}>
-                <div className={styles.stepNumber}>2</div>
-                <div className={styles.stepContent}>
-                  <h4 className={styles.stepTitle}>Manager reviews within 48h</h4>
-                  <p className={styles.stepText}>The hiring manager will review your application and respond</p>
-                </div>
+              {/* Logistics Card */}
+              <div className={styles.sidebarCard}>
+                <ul className={styles.logisticsList}>
+                  <li className={styles.logisticsItem}>
+                    <span className={styles.logLabel}>Start Date</span>
+                    <span className={styles.logValue}>{requestData.timeline.startDate}</span>
+                  </li>
+                  <li className={styles.logisticsItem}>
+                    <span className={styles.logLabel}>Workload</span>
+                    <span className={styles.logValue}>{requestData.timeline.workload}</span>
+                  </li>
+                  <li className={styles.logisticsItem}>
+                    <span className={styles.logLabel}>Location</span>
+                    <span className={styles.logValue}>{requestData.location}</span>
+                  </li>
+                </ul>
               </div>
 
-              <div className={styles.processStep}>
-                <div className={styles.stepNumber}>3</div>
-                <div className={styles.stepContent}>
-                  <h4 className={styles.stepTitle}>Interview if shortlisted</h4>
-                  <p className={styles.stepText}>Selected candidates will be invited for a brief interview</p>
+              {/* What Happens Next Card */}
+              <div className={styles.sidebarCard}>
+                <h4 className={styles.sidebarCardTitle}>What happens next?</h4>
+                <div className={styles.processSteps}>
+                  <div className={styles.processStep}>
+                    <div className={styles.stepNumber}>1</div>
+                    <div className={styles.stepContent}>
+                      <strong className={styles.stepTitle}>Submit your application</strong>
+                      <p className={styles.stepText}>Fill out a brief form with your details and portfolio</p>
+                    </div>
+                  </div>
+
+                  <div className={styles.processStep}>
+                    <div className={styles.stepNumber}>2</div>
+                    <div className={styles.stepContent}>
+                      <strong className={styles.stepTitle}>Manager reviews within 48h</strong>
+                      <p className={styles.stepText}>The hiring manager will review your application and respond</p>
+                    </div>
+                  </div>
+
+                  <div className={styles.processStep}>
+                    <div className={styles.stepNumber}>3</div>
+                    <div className={styles.stepContent}>
+                      <strong className={styles.stepTitle}>Interview if shortlisted</strong>
+                      <p className={styles.stepText}>Selected candidates will be invited for a brief interview</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Bottom CTA */}
-          <div className={styles.bottomCta}>
-            <Button variant="brand" onClick={handleApply} className={styles.applyButton}>
-              Apply now
-            </Button>
           </div>
         </div>
       </div>
