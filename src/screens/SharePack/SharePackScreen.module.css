@@ -1,6 +1,6 @@
 .screen {
   min-height: 100vh;
-  background: var(--ds-color-bg-porcelain);
+  background: #ffffff;
   padding-bottom: 80px;
 }
 
@@ -9,9 +9,9 @@
   top: 0;
   left: 0;
   right: 0;
-  background: var(--ds-color-bg-primary-72);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--ds-color-border-secondary);
+  border-bottom: 1px solid #000000;
   z-index: 100;
   padding: 16px 0;
 }
@@ -36,10 +36,10 @@
 }
 
 .logo {
-  font-family: var(--ds-font-family-accent);
+  font-family: var(--ds-font-family-body);
   font-size: 24px;
   font-weight: 500;
-  color: var(--ds-color-text-primary);
+  color: #000000;
 }
 
 .content {
@@ -47,16 +47,17 @@
 }
 
 .title {
-  font-family: var(--ds-font-family-accent);
+  font-family: var(--ds-font-family-body);
   font-size: 32px;
   line-height: 38px;
   font-weight: 500;
   margin: 0;
+  color: #000000;
 }
 
 .subtitle {
   margin-top: 10px;
-  color: var(--ds-color-text-secondary);
+  color: #000000;
   font-size: 14px;
   line-height: 20px;
 }
@@ -64,8 +65,8 @@
 .section {
   margin-top: 28px;
   padding: 20px;
-  background: var(--ds-color-bg-surface);
-  border: 1px solid var(--ds-color-border-secondary);
+  background: #ffffff;
+  border: 1px solid #000000;
   border-radius: 16px;
 }
 
@@ -76,7 +77,7 @@
   font-weight: 700;
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: var(--ds-color-text-secondary);
+  color: #000000;
 }
 
 .row {
@@ -101,17 +102,17 @@
 .counter {
   font-size: 12px;
   line-height: 14px;
-  color: var(--ds-color-text-secondary);
+  color: #000000;
 }
 
 .counterWarn {
-  color: #b42318;
+  color: #000000;
   font-weight: 600;
 }
 
 .helperText {
   margin: 10px 0 0 0;
-  color: var(--ds-color-text-secondary);
+  color: #000000;
   font-size: 13px;
   line-height: 18px;
 }
@@ -138,11 +139,9 @@
   width: 100%;
   aspect-ratio: 1200 / 630;
   border-radius: 18px;
-  border: 1px solid var(--ds-color-border-secondary);
+  border: 1px solid #000000;
   overflow: hidden;
-  background: radial-gradient(1200px 630px at 20% 30%, rgba(255, 111, 35, 0.14), transparent 55%),
-    radial-gradient(900px 600px at 70% 60%, rgba(78, 122, 255, 0.12), transparent 55%),
-    linear-gradient(180deg, #0f1220 0%, #0b0e18 100%);
+  background: #ffffff;
 }
 
 .ogGrid {
@@ -155,9 +154,8 @@
 
 .ogBlock {
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  border: 1px solid #000000;
+  background: #ffffff;
 }
 
 .ogHero {
@@ -170,8 +168,8 @@
 
 .ogTitle {
   margin: 0;
-  color: rgba(255, 255, 255, 0.94);
-  font-family: var(--ds-font-family-accent);
+  color: #000000;
+  font-family: var(--ds-font-family-body);
   font-size: 36px;
   line-height: 42px;
   font-weight: 600;
@@ -180,7 +178,7 @@
 
 .ogClient {
   margin: 0;
-  color: rgba(255, 255, 255, 0.72);
+  color: #000000;
   font-size: 14px;
   line-height: 18px;
   font-weight: 600;
@@ -194,8 +192,8 @@
 
 .ogRate {
   padding: 16px;
-  background: linear-gradient(135deg, rgba(255, 111, 35, 0.95) 0%, rgba(255, 143, 77, 0.92) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #000000;
+  border: 1px solid #000000;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -204,7 +202,7 @@
 
 .ogRateValue {
   margin: 0;
-  color: rgba(255, 255, 255, 0.98);
+  color: #ffffff;
   font-size: 34px;
   line-height: 38px;
   font-weight: 800;
@@ -216,8 +214,8 @@
   align-self: flex-start;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.28);
-  color: rgba(255, 255, 255, 0.92);
+  background: #ffffff;
+  color: #000000;
   font-size: 12px;
   line-height: 14px;
   font-weight: 700;
@@ -240,9 +238,9 @@
 .ogPill {
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.88);
+  background: #ffffff;
+  border: 1px solid #000000;
+  color: #000000;
   font-size: 12px;
   line-height: 14px;
   font-weight: 700;
@@ -259,12 +257,12 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #ffffff;
+  border: 1px solid #000000;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.92);
+  color: #000000;
   font-weight: 900;
 }
 
@@ -277,7 +275,7 @@
 
 .ogTrustTitle {
   margin: 0;
-  color: rgba(255, 255, 255, 0.92);
+  color: #000000;
   font-size: 14px;
   line-height: 18px;
   font-weight: 800;
@@ -285,7 +283,7 @@
 
 .ogTrustSub {
   margin: 0;
-  color: rgba(255, 255, 255, 0.68);
+  color: #000000;
   font-size: 12px;
   line-height: 16px;
   font-weight: 600;
