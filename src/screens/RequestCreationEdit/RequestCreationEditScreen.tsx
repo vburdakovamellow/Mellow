@@ -602,41 +602,154 @@ function LandingPreview({
 
       <div className={styles.previewFrame}>
         <div className={mode === "desktop" ? styles.previewFrameInnerDesktop : styles.previewFrameInnerMobile}>
-          <div className={styles.landingTop}>
-            <div style={{ minWidth: 0 }}>
+          {/* Header: Identity & Action */}
+          <div className={styles.landingHeader}>
+            <div className={styles.landingHeaderLeft}>
               <p className={styles.landingTitle}>{requestTitle || "Untitled request"}</p>
               <div className={styles.landingMeta}>
-                {companyName ? <span>{companyName} • </span> : null}
-                <span>{location}</span>
+                {companyName ? <span className={styles.landingCompany}>{companyName}</span> : <span className={styles.landingIndustry}>Creative Services</span>}
+                <span className={styles.landingVerified}>✓</span>
               </div>
             </div>
-            <button className={styles.videoBubble} type="button" aria-label="Manager video note">
-              <div className={styles.videoBubbleInner}>{hasVideoNote ? "▶" : "🎥"}</div>
-            </button>
+            <div className={styles.landingHeaderRight}>
+              <div className={styles.landingTimer}>3d 12h</div>
+              <button className={styles.landingSaveBtn} type="button">☆</button>
+              <button className={styles.landingReplyBtn} type="button">Reply</button>
+            </div>
           </div>
 
-          <p className={styles.landingSectionTitle}>Skills</p>
-          <div className={styles.pillRow}>
-            {(skills.length ? skills : ["(add skills)"]).slice(0, 8).map((s) => (
-              <span key={s} className={styles.pill}>
-                {s}
-              </span>
-            ))}
-          </div>
+          {/* Body: Main Content */}
+          <div className={styles.landingBody}>
+            {/* Left Column: Main content */}
+            <div className={styles.landingMainCol}>
+              {/* Qualification Block */}
+              <div className={styles.landingQualBlock}>
+                <div className={styles.landingQualRow}>
+                  <span className={styles.landingQualLabel}>Experience</span>
+                  <div className={styles.landingLevelSwitcher}>
+                    <span className={styles.landingLevel}>Junior</span>
+                    <span className={`${styles.landingLevel} ${styles.landingLevelActive}`}>Middle</span>
+                    <span className={styles.landingLevel}>Senior</span>
+                  </div>
+                </div>
+                <div className={styles.landingQualRow}>
+                  <span className={styles.landingQualLabel}>Skills</span>
+                  <div className={styles.pillRow}>
+                    {(skills.length ? skills : ["Skill 1", "Skill 2"]).slice(0, 5).map((s) => (
+                      <span key={s} className={styles.pillSkill}>
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className={styles.landingQualRow}>
+                  <span className={styles.landingQualLabel}>Languages</span>
+                  <div className={styles.pillRow}>
+                    {(languages.length ? languages : ["English"]).slice(0, 3).map((l) => (
+                      <span key={l} className={styles.pillLang}>
+                        {l}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
-          <p className={styles.landingSectionTitle}>Languages</p>
-          <div className={styles.pillRow}>
-            {(languages.length ? languages : ["(add languages)"]).slice(0, 8).map((l) => (
-              <span key={l} className={styles.pill}>
-                {l}
-              </span>
-            ))}
-          </div>
+              {/* Summary Block */}
+              <div className={styles.landingSummaryBlock}>
+                <div className={styles.landingSummaryText}>
+                  <h3 className={styles.landingSectionH3}>Project Summary</h3>
+                  <p className={styles.landingTextP}>
+                    We are seeking a talented designer to lead the redesign of our social media presence...
+                  </p>
+                </div>
+                {hasVideoNote && (
+                  <div className={styles.landingVideoContainer}>
+                    <div className={styles.videoBubble}>
+                      <div className={styles.videoBubbleInner}>▶</div>
+                    </div>
+                    <p className={styles.landingVideoCap}>Manager's Note</p>
+                  </div>
+                )}
+              </div>
 
-          <p className={styles.landingSectionTitle}>Summary</p>
-          <p className="ds-b2" style={{ margin: 0, color: "#000000" }}>
-            This section will contain your edited description. (Preview stub)
-          </p>
+              {/* Deliverables */}
+              <div className={styles.landingSowBlock}>
+                <h3 className={styles.landingSectionH3}>Key Responsibilities</h3>
+                <ul className={styles.landingSowList}>
+                  <li className={styles.landingSowItem}>
+                    <span className={styles.landingCheckIcon}>✓</span>
+                    <div>
+                      <strong>Design graphics</strong>
+                      <p>Create engaging visuals for social platforms</p>
+                    </div>
+                  </li>
+                  <li className={styles.landingSowItem}>
+                    <span className={styles.landingCheckIcon}>✓</span>
+                    <div>
+                      <strong>Ensure consistency</strong>
+                      <p>Maintain brand identity across all designs</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Right Column: Sidebar */}
+            <div className={styles.landingSidebar}>
+              {/* Budget Card */}
+              <div className={styles.landingCard}>
+                <div className={styles.landingCardTitle}>Budget</div>
+                <div className={styles.landingBudgetValue}>$20-30/hr</div>
+                <div className={styles.landingBudgetType}>Hourly • Negotiable</div>
+              </div>
+
+              {/* Logistics Card */}
+              <div className={styles.landingCard}>
+                <ul className={styles.landingLogisticsList}>
+                  <li className={styles.landingLogItem}>
+                    <span className={styles.landingLogLabel}>Start Date</span>
+                    <span className={styles.landingLogVal}>ASAP</span>
+                  </li>
+                  <li className={styles.landingLogItem}>
+                    <span className={styles.landingLogLabel}>Workload</span>
+                    <span className={styles.landingLogVal}>20h/week</span>
+                  </li>
+                  <li className={styles.landingLogItem}>
+                    <span className={styles.landingLogLabel}>Location</span>
+                    <span className={styles.landingLogVal}>{location}</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Process Card */}
+              <div className={styles.landingCard}>
+                <div className={styles.landingCardTitle}>What happens next?</div>
+                <div className={styles.landingProcessSteps}>
+                  <div className={styles.landingProcessStep}>
+                    <div className={styles.landingStepNum}>1</div>
+                    <div>
+                      <strong>Submit</strong>
+                      <p>Fill brief form</p>
+                    </div>
+                  </div>
+                  <div className={styles.landingProcessStep}>
+                    <div className={styles.landingStepNum}>2</div>
+                    <div>
+                      <strong>Review</strong>
+                      <p>Manager reviews ~48h</p>
+                    </div>
+                  </div>
+                  <div className={styles.landingProcessStep}>
+                    <div className={styles.landingStepNum}>3</div>
+                    <div>
+                      <strong>Interview</strong>
+                      <p>If shortlisted</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       {onViewFull && (
