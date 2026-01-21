@@ -12,13 +12,15 @@
 }
 
 .secondary {
-  background: var(--ds-color-button-secondary);
-  color: var(--ds-color-text-primary);
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
 }
 
 .brand {
-  background: var(--ds-color-button-brand);
-  color: var(--ds-color-text-inverse);
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
   border-radius: var(--ds-radius-6);
 }
 

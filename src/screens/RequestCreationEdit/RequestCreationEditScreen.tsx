@@ -121,7 +121,7 @@ function WysiwygToolbar() {
     <div className={styles.wysiwyg} aria-label="WYSIWYG toolbar">
       <div className={styles.wysiwygChip}>
         <span className={styles.wysiwygText}>Normal</span>
-        <IconChevronDown size={16} color="var(--ds-color-button-brand)" />
+        <IconChevronDown size={16} color="#000000" />
       </div>
       <div className={styles.wysiwygGroup}>
         <button className={styles.wysiwygBtn} type="button" aria-label="Bold">
@@ -176,7 +176,7 @@ function SelectField({
           label={label}
           value={value}
           readOnly
-          rightIcon={<IconChevronDown size={16} color="var(--ds-color-text-secondary)" />}
+          rightIcon={<IconChevronDown size={16} color="#000000" />}
         />
       </div>
       {open ? (
@@ -186,9 +186,9 @@ function SelectField({
             top: "calc(100% + 6px)",
             left: 0,
             right: 0,
-            background: "var(--ds-color-bg-surface)",
+            background: "#ffffff",
             borderRadius: 12,
-            border: "1px solid var(--ds-color-border-secondary)",
+            border: "1px solid #000000",
             padding: 6,
             zIndex: 50
           }}
@@ -207,7 +207,8 @@ function SelectField({
                 borderRadius: 10,
                 cursor: "pointer",
                 fontSize: 16,
-                lineHeight: "22px"
+                lineHeight: "22px",
+                color: "#000000"
               }}
             >
               {opt}
@@ -436,7 +437,7 @@ function Sidebar({
         <p className={styles.groupTitle}>Languages</p>
         <div className={styles.chipsGrid}>
           {languages.map((l) => (
-            <Chip key={l} rightIcon={<IconX color="var(--ds-color-text-secondary)" />} onClick={() => onRemoveLanguage(l)}>
+            <Chip key={l} rightIcon={<IconX color="#000000" />} onClick={() => onRemoveLanguage(l)}>
               {l}
             </Chip>
           ))}

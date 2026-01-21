@@ -11,7 +11,8 @@
 
 .dialog {
   width: min(640px, 100%);
-  background: var(--ds-color-bg-surface);
+  background: #ffffff;
+  border: 2px solid #000000;
   border-radius: var(--ds-radius-16);
   padding: 20px;
   box-shadow: 0 16px 60px rgba(0, 0, 0, 0.25);
@@ -25,24 +26,28 @@
 }
 
 .title {
+  font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-18);
   line-height: var(--ds-line-height-24);
   font-weight: 600;
   margin: 0;
+  color: #000000;
 }
 
 .close {
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  border: 0;
-  background: var(--ds-color-bg-secondary);
+  border: 1px solid #000000;
+  background: #ffffff;
   cursor: pointer;
+  color: #000000;
 }
 
 .body {
   margin-top: 12px;
   font-size: var(--ds-font-size-16);
   line-height: var(--ds-line-height-22);
+  color: #000000;
 }
 

@@ -3,21 +3,22 @@
   min-width: 0;
   padding: var(--ds-space-14);
   border-radius: var(--ds-radius-8);
-  background: var(--ds-color-bg-secondary);
+  background: #ffffff;
+  border: 1px solid #000000;
   display: flex;
   gap: var(--ds-space-8);
   align-items: flex-start;
-  border: 0;
   cursor: pointer;
   text-align: left;
 }
 
 .cardActive {
-  background: var(--ds-color-bg-surface-brand-2);
+  background: #000000;
+  color: #ffffff;
 }
 
 .card:focus-visible {
-  outline: 2px solid var(--ds-color-bg-fill-control-active);
+  outline: 2px solid #000000;
   outline-offset: 2px;
 }
 
@@ -45,9 +46,11 @@
 }
 
 .title {
+  font-family: var(--ds-font-family-body);
   font-size: var(--ds-font-size-18);
   line-height: var(--ds-line-height-24);
   font-weight: 500;
   margin: 0;
+  color: inherit;
 }
 
