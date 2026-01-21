@@ -237,11 +237,7 @@ export function ServiceRequestViewScreen({
               <div className={styles.qualificationBlock}>
                 <div className={styles.qualRow}>
                   <span className={styles.qualLabel}>Experience</span>
-                  <div className={styles.levelSwitcher}>
-                    <span className={styles.levelSegment}>Junior</span>
-                    <span className={`${styles.levelSegment} ${styles.levelActive}`}>{requestData.experienceLevel}</span>
-                    <span className={styles.levelSegment}>Senior</span>
-                  </div>
+                  <span className={styles.qualValue}>{requestData.experienceLevel}</span>
                 </div>
 
                 <div className={styles.qualRow}>
