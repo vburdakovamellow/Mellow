@@ -23,7 +23,7 @@ function IconStar({ size = 20, filled = false }: { size?: number; filled?: boole
 function IconCheck({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="7" fill="var(--ds-color-button-brand)" />
+      <circle cx="8" cy="8" r="7" fill="#000000" />
       <path d="M5 8l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
