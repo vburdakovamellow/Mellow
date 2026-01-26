@@ -9,8 +9,7 @@ import { Toggle } from "../../design-system/primitives/Toggle/Toggle";
 
 import "../../design-system/typography.css";
 import styles from "./RequestCreationEditScreen.module.css";
-import { Header } from "../../components/Header/Header";
-import thumbsUpImage from "../../assets/thumbs-up.png";
+import type { SharePackRequest } from "../SharePack/SharePackScreen";
 
 function IconChevronDown({ size = 16, color = "currentColor" }: { size?: number; color?: string }) {
   return (
@@ -57,90 +56,35 @@ function IconAlert({ size = 16, color = "currentColor" }: { size?: number; color
   );
 }
 
-function IconVideo({ size = 16, color = "currentColor" }: { size?: number; color?: string }) {
+function Header({
+  onGoToEdit,
+  onGoToShare,
+  onGoToView
+}: {
+  onGoToEdit?: () => void;
+  onGoToShare?: () => void;
+  onGoToView?: () => void;
+}) {
   return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="2" y="4" width="10" height="8" rx="1.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M12 6L14 5V11L12 10" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
-
-function IconPlay({ size = 16, color = "white" }: { size?: number; color?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 4L12 8L6 12V4Z" fill={color} />
-    </svg>
-  );
-}
-
-function IconCheck({ size = 16, color = "white" }: { size?: number; color?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M13 4L6 11L3 8" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
-
-function IconFire({ size = 16, color = "white" }: { size?: number; color?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g clipPath="url(#clip0_15435_48961)">
-        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke={color} strokeWidth="1.8" strokeLinecap="square"/>
-      </g>
-      <defs>
-        <clipPath id="clip0_15435_48961">
-          <rect width="24" height="24" fill="white"/>
-        </clipPath>
-      </defs>
-    </svg>
-  );
-}
-
-function IconThumbsUp({ size = 48 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Orange circle background */}
-      <circle cx="16" cy="16" r="18" fill="#FF6F23"/>
-      
-      {/* Sparkles */}
-      <g opacity="0.9">
-        <path d="M8 12L9 10L8 8L10 9L12 8L10 9L11 11L10 9L8 12Z" fill="white" stroke="black" strokeWidth="0.5"/>
-        <path d="M6 20L7 18L6 16L8 17L10 16L8 17L9 19L8 17L6 20Z" fill="white" stroke="black" strokeWidth="0.5"/>
-      </g>
-      
-      {/* Thumbs up hand */}
-      <g transform="translate(24, 20)">
-        {/* Fist/knuckles */}
-        <path d="M-4 8C-4 6 -2 4 0 4C2 4 4 6 4 8C4 10 2 12 0 12C-2 12 -4 10 -4 8Z" fill="white" stroke="black" strokeWidth="1.5"/>
-        <line x1="-2" y1="6" x2="2" y2="6" stroke="black" strokeWidth="1.5" strokeLinecap="round"/>
-        <line x1="-2" y1="8" x2="2" y2="8" stroke="black" strokeWidth="1.5" strokeLinecap="round"/>
-        <line x1="-2" y1="10" x2="2" y2="10" stroke="black" strokeWidth="1.5" strokeLinecap="round"/>
-        
-        {/* Thumb with smiley face */}
-        <path d="M-8 -4L-8 4C-8 6 -6 8 -4 8" fill="white" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <circle cx="-10" cy="-2" r="1.5" fill="black"/>
-        <circle cx="-6" cy="-2" r="1.5" fill="black"/>
-        <path d="M-10 -4Q-8 -5 -6 -4" stroke="black" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-      </g>
-    </svg>
-  );
-}
-
-function IconAlertCircle({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g clipPath="url(#clip0_alert)">
-        <path d="M9.99984 18.3334C14.6022 18.3334 18.3332 14.6025 18.3332 10.0001C18.3332 5.39771 14.6022 1.66675 9.99984 1.66675C5.39746 1.66675 1.6665 5.39771 1.6665 10.0001C1.6665 14.6025 5.39746 18.3334 9.99984 18.3334Z" stroke="#FF6F23" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M10 6.66675V10.0001" stroke="#FF6F23" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M10 13.3333H10.0083" stroke="#FF6F23" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
-      </g>
-      <defs>
-        <clipPath id="clip0_alert">
-          <rect width="20" height="20" fill="white"/>
-        </clipPath>
-      </defs>
-    </svg>
+    <div className={styles.fixedHeader}>
+      <div className={[styles.container, styles.headerInner].join(" ")}>
+        <div className={styles.headerRow}>
+          <div className={styles.logo}>mellow</div>
+          <div className={styles.logoSubtitle}>AI request editor</div>
+        </div>
+        <div className={styles.nav}>
+          <Button variant="brand" disabled>
+            Edit
+          </Button>
+          <Button variant="secondary" onClick={onGoToShare}>
+            Share pack
+          </Button>
+          <Button variant="secondary" onClick={onGoToView}>
+            View
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -159,9 +103,11 @@ function IconSparkNew({ size = 16, color = "white" }: { size?: number; color?: s
 }
 
 function TitleActionsBarWithActions({
-  onCreate
+  onPreview,
+  onSave
 }: {
-  onCreate: () => void;
+  onPreview: () => void;
+  onSave: () => void;
 }) {
   return (
     <div className={styles.fixedTitleBar}>
@@ -172,7 +118,10 @@ function TitleActionsBarWithActions({
           </p>
         </div>
         <div className={styles.actions}>
-          <Button variant="brand" size="xl" leftIcon={<IconSparkNew size={16} />} onClick={onCreate}>
+          <Button variant="secondary" onClick={onPreview}>
+            Preview
+          </Button>
+          <Button variant="brand" leftIcon={<IconSpark color="var(--ds-color-text-inverse)" />} onClick={onSave}>
             Save request
           </Button>
         </div>
@@ -220,7 +169,7 @@ function WysiwygToolbar() {
     <div className={styles.wysiwyg} aria-label="WYSIWYG toolbar">
       <div className={styles.wysiwygChip}>
         <span className={styles.wysiwygText}>Normal</span>
-        <IconChevronDown size={16} color="var(--ds-color-button-brand)" />
+        <IconChevronDown size={16} color="#000000" />
       </div>
       <div className={styles.wysiwygGroup}>
         <button className={styles.wysiwygBtn} type="button" aria-label="Bold">
@@ -275,7 +224,7 @@ function SelectField({
           label={label}
           value={value}
           readOnly
-          rightIcon={<IconChevronDown size={16} color="var(--ds-color-text-secondary)" />}
+          rightIcon={<IconChevronDown size={16} color="#000000" />}
         />
       </div>
       {open ? (
@@ -285,9 +234,9 @@ function SelectField({
             top: "calc(100% + 6px)",
             left: 0,
             right: 0,
-            background: "var(--ds-color-bg-surface)",
+            background: "#ffffff",
             borderRadius: 12,
-            border: "1px solid var(--ds-color-border-secondary)",
+            border: "1px solid #000000",
             padding: 6,
             zIndex: 50
           }}
@@ -307,7 +256,7 @@ function SelectField({
                 cursor: "pointer",
                 fontSize: 16,
                 lineHeight: "22px",
-                color: "var(--ds-color-text-primary)"
+                color: "#000000"
               }}
             >
               {opt}
@@ -413,19 +362,16 @@ function RoleAndSkillsSummary({
   const description = `${roleTitle}, ${experienceLevel} • ${skillsText}${languagesText}`;
 
   return (
-    <div className={styles.roleSkillsSummary}>
-      <div className={styles.roleSkillsSummaryContent}>
-        <div style={{ flex: 1 }}>
-          <h3 className={styles.roleSkillsTitle}>Talent profile</h3>
-          <p className={styles.roleSkillsDescription}>{description}</p>
-        </div>
-        <Button variant="secondary" onClick={onEdit}>
-          Edit
-        </Button>
+    <section className={styles.main} aria-label="Main editor">
+      <div className={styles.hintCard}>
+        <p className={styles.hintTitle}>What’s happening here</p>
+        <p className={styles.hintText}>
+          Mellow drafted this request using AI. Your job is to quickly review and tweak it so contractors get a clear,
+          complete brief — then save it to generate a shareable page.
+        </p>
       </div>
-    </div>
-  );
-}
+
+      <InputField label="Request title" value={requestTitle} onChange={onRequestTitleChange} />
 
 function RoleAndSkillsSection({
   roleTitle,
@@ -635,43 +581,35 @@ function BudgetSummary({
   fromRate,
   toRate,
   currency,
-  onEdit
-}: {
-  negotiable: boolean;
-  paymentType: PaymentType;
-  fromRate: string;
-  toRate: string;
-  currency: string;
-  onEdit: () => void;
-}) {
-  const description = negotiable 
-    ? "Negotiable"
-    : paymentType === "hourly" 
-      ? `$${fromRate} - $${toRate} ${currency}/hr`
-      : `$${fromRate} - $${toRate} ${currency}`;
-
-  return (
-    <div className={styles.roleSkillsSummary}>
-      <div className={styles.roleSkillsSummaryContent}>
-        <div style={{ flex: 1 }}>
-          <h3 className={styles.roleSkillsTitle}>Budget</h3>
-          <p className={styles.roleSkillsDescription}>{description}</p>
-        </div>
-        <Button variant="secondary" onClick={onEdit}>
-          Edit
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function BudgetSection({
+  workload,
+  skills,
+  aiSuggested,
+  languages,
+  suggestedLanguages,
+  newSkill,
+  newLanguage,
   negotiable,
   paymentType,
   fromRate,
   toRate,
   currency,
   openSelectKey,
+  hasVideoNote,
+  onCompanyNameChange,
+  onWebsiteChange,
+  onSelectOpenToggle,
+  onLocationSelect,
+  onCurrencySelect,
+  onWorkloadSelect,
+  onRemoveSkill,
+  onAddSuggested,
+  onNewSkillChange,
+  onAddNewSkill,
+  onRemoveLanguage,
+  onAddSuggestedLanguage,
+  onNewLanguageChange,
+  onAddNewLanguage,
+  onToggleVideoNote,
   onNegotiableToggle,
   onPaymentTypeSelect,
   onFromRateChange,
@@ -681,12 +619,39 @@ function BudgetSection({
   onSave,
   onCancel
 }: {
+  companyName: string;
+  website: string;
+  location: string;
+  currency: string;
+  workload: string;
+  skills: string[];
+  aiSuggested: string[];
+  languages: string[];
+  suggestedLanguages: string[];
+  newSkill: string;
+  newLanguage: string;
   negotiable: boolean;
   paymentType: PaymentType;
   fromRate: string;
   toRate: string;
   currency: string;
   openSelectKey: SelectKey | null;
+  hasVideoNote: boolean;
+  onCompanyNameChange: (next: string) => void;
+  onWebsiteChange: (next: string) => void;
+  onSelectOpenToggle: (key: SelectKey) => void;
+  onLocationSelect: (next: string) => void;
+  onCurrencySelect: (next: string) => void;
+  onWorkloadSelect: (next: string) => void;
+  onRemoveSkill: (skill: string) => void;
+  onAddSuggested: (skill: string) => void;
+  onNewSkillChange: (next: string) => void;
+  onAddNewSkill: () => void;
+  onRemoveLanguage: (lang: string) => void;
+  onAddSuggestedLanguage: (lang: string) => void;
+  onNewLanguageChange: (next: string) => void;
+  onAddNewLanguage: () => void;
+  onToggleVideoNote: () => void;
   onNegotiableToggle: (next: boolean) => void;
   onPaymentTypeSelect: (next: PaymentType) => void;
   onFromRateChange: (next: string) => void;
@@ -1109,36 +1074,65 @@ function ProjectSummarySection({
   );
 }
 
-function ProjectListSummary({
-  title,
-  items,
-  onEdit,
-  showWarning,
-  onDismissWarning
-}: {
-  title: string;
-  items: string[];
-  onEdit: () => void;
-  showWarning?: boolean;
-  onDismissWarning?: () => void;
-}) {
-  return (
-    <div className={styles.roleSkillsSummary}>
-      <div className={styles.roleSkillsSummaryContent}>
-        <div style={{ flex: 1 }}>
-          <h3 className={styles.roleSkillsTitle}>{title}</h3>
-          <ul className={styles.list} style={{ margin: 0, paddingLeft: '20px' }}>
-            {items.map((item, idx) => (
-              <li key={idx} className={styles.roleSkillsDescription} style={{ marginBottom: '8px' }}>
-                {item}
-              </li>
+      <div className={styles.sidebarGroup}>
+        <p className={styles.groupTitle}>Languages</p>
+        <div className={styles.chipsGrid}>
+          {languages.map((l) => (
+            <Chip key={l} rightIcon={<IconX color="#000000" />} onClick={() => onRemoveLanguage(l)}>
+              {l}
+            </Chip>
+          ))}
+        </div>
+
+        <div className={styles.tip}>
+          <p className={styles.sectionLabel}>Suggested</p>
+          <div className={styles.chipsGrid}>
+            {suggestedLanguages.map((l) => (
+              <Chip key={l} leftIcon={<IconPlusCircle />} onClick={() => onAddSuggestedLanguage(l)}>
+                {l}
+              </Chip>
             ))}
-          </ul>
-          {showWarning && (
-            <div style={{ marginTop: 'var(--ds-space-12)' }}>
-              <ManualEditWarning onDismiss={onDismissWarning} />
-            </div>
-          )}
+          </div>
+        </div>
+
+        <InputField
+          label="Add language"
+          value={newLanguage}
+          placeholder="Type and press Enter"
+          onChange={onNewLanguageChange}
+        />
+        <div style={{ marginTop: 8 }}>
+          <Button variant="secondary" onClick={onAddNewLanguage}>
+            Add
+          </Button>
+        </div>
+      </div>
+
+      <div className={styles.sidebarGroup}>
+        <p className={styles.groupTitle}>Manager’s Video Note</p>
+        <p className={styles.sectionLabel} style={{ marginTop: -4 }}>
+          Add a short personal video to increase trust and clarity.
+        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button className={styles.videoBubble} type="button" onClick={onToggleVideoNote} aria-label="Record video note">
+            <div className={styles.videoBubbleInner}>{hasVideoNote ? "▶" : "＋"}</div>
+          </button>
+          <div style={{ flex: 1 }}>
+            <p className="ds-b2" style={{ margin: 0 }}>
+              {hasVideoNote ? "Video note added" : "No video yet"}
+            </p>
+            <p className="ds-b3 ds-text-secondary" style={{ marginTop: 4 }}>
+              {hasVideoNote ? "Click to re-record (stub)." : "Click to record a 30–60s message (stub)."}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.sidebarGroup}>
+        <p className={styles.groupTitle}>Budget</p>
+        <div className={styles.toggleRow}>
+          <Toggle on={negotiable} onToggle={onNegotiableToggle} />
+          <p className="ds-b1">Set as negotiable</p>
         </div>
         <Button variant="secondary" onClick={onEdit}>
           Edit
@@ -1510,8 +1504,216 @@ export function RequestPreview({
   );
 }
 
-export function RequestCreationEditScreen() {
-  const [modal, setModal] = useState<null | "create">(null);
+function LandingPreview({
+  requestTitle,
+  companyName,
+  location,
+  skills,
+  languages,
+  hasVideoNote,
+  onViewFull
+}: {
+  requestTitle: string;
+  companyName: string;
+  location: string;
+  skills: string[];
+  languages: string[];
+  hasVideoNote: boolean;
+  onViewFull?: () => void;
+}) {
+  const [mode, setMode] = useState<"desktop" | "mobile">("desktop");
+
+  return (
+    <div className={styles.previewCard} aria-label="Landing preview">
+      <div className={styles.previewHeader}>
+        <p className={styles.previewTitle}>How contractors will see it</p>
+        <div className={styles.previewModes}>
+          <button
+            type="button"
+            className={[styles.modeBtn, mode === "desktop" ? styles.modeBtnActive : ""].filter(Boolean).join(" ")}
+            onClick={() => setMode("desktop")}
+          >
+            Desktop
+          </button>
+          <button
+            type="button"
+            className={[styles.modeBtn, mode === "mobile" ? styles.modeBtnActive : ""].filter(Boolean).join(" ")}
+            onClick={() => setMode("mobile")}
+          >
+            Mobile
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.previewFrame}>
+        <div className={mode === "desktop" ? styles.previewFrameInnerDesktop : styles.previewFrameInnerMobile}>
+          {/* Header: Identity & Action */}
+          <div className={styles.landingHeader}>
+            <div className={styles.landingHeaderLeft}>
+              <p className={styles.landingTitle}>{requestTitle || "Untitled request"}</p>
+              <div className={styles.landingMeta}>
+                {companyName ? <span className={styles.landingCompany}>{companyName}</span> : <span className={styles.landingIndustry}>Creative Services</span>}
+                <span className={styles.landingVerified}>✓</span>
+              </div>
+            </div>
+            <div className={styles.landingHeaderRight}>
+              <div className={styles.landingTimer}>3d 12h</div>
+              <button className={styles.landingSaveBtn} type="button">☆</button>
+              <button className={styles.landingReplyBtn} type="button">Reply</button>
+            </div>
+          </div>
+
+          {/* Body: Main Content */}
+          <div className={styles.landingBody}>
+            {/* Left Column: Main content */}
+            <div className={styles.landingMainCol}>
+              {/* Qualification Block */}
+              <div className={styles.landingQualBlock}>
+                <div className={styles.landingQualRow}>
+                  <span className={styles.landingQualLabel}>Experience</span>
+                  <div className={styles.landingLevelSwitcher}>
+                    <span className={styles.landingLevel}>Junior</span>
+                    <span className={`${styles.landingLevel} ${styles.landingLevelActive}`}>Middle</span>
+                    <span className={styles.landingLevel}>Senior</span>
+                  </div>
+                </div>
+                <div className={styles.landingQualRow}>
+                  <span className={styles.landingQualLabel}>Skills</span>
+                  <div className={styles.pillRow}>
+                    {(skills.length ? skills : ["Skill 1", "Skill 2"]).slice(0, 5).map((s) => (
+                      <span key={s} className={styles.pillSkill}>
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className={styles.landingQualRow}>
+                  <span className={styles.landingQualLabel}>Languages</span>
+                  <div className={styles.pillRow}>
+                    {(languages.length ? languages : ["English"]).slice(0, 3).map((l) => (
+                      <span key={l} className={styles.pillLang}>
+                        {l}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Summary Block */}
+              <div className={styles.landingSummaryBlock}>
+                <div className={styles.landingSummaryText}>
+                  <h3 className={styles.landingSectionH3}>Project Summary</h3>
+                  <p className={styles.landingTextP}>
+                    We are seeking a talented designer to lead the redesign of our social media presence...
+                  </p>
+                </div>
+                {hasVideoNote && (
+                  <div className={styles.landingVideoContainer}>
+                    <div className={styles.videoBubble}>
+                      <div className={styles.videoBubbleInner}>▶</div>
+                    </div>
+                    <p className={styles.landingVideoCap}>Manager's Note</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Deliverables */}
+              <div className={styles.landingSowBlock}>
+                <h3 className={styles.landingSectionH3}>Key Responsibilities</h3>
+                <ul className={styles.landingSowList}>
+                  <li className={styles.landingSowItem}>
+                    <span className={styles.landingCheckIcon}>✓</span>
+                    <div>
+                      <strong>Design graphics</strong>
+                      <p>Create engaging visuals for social platforms</p>
+                    </div>
+                  </li>
+                  <li className={styles.landingSowItem}>
+                    <span className={styles.landingCheckIcon}>✓</span>
+                    <div>
+                      <strong>Ensure consistency</strong>
+                      <p>Maintain brand identity across all designs</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Right Column: Sidebar */}
+            <div className={styles.landingSidebar}>
+              {/* Budget Card */}
+              <div className={styles.landingCard}>
+                <div className={styles.landingCardTitle}>Budget</div>
+                <div className={styles.landingBudgetValue}>$20-30/hr</div>
+                <div className={styles.landingBudgetType}>Hourly • Negotiable</div>
+              </div>
+
+              {/* Logistics Card */}
+              <div className={styles.landingCard}>
+                <ul className={styles.landingLogisticsList}>
+                  <li className={styles.landingLogItem}>
+                    <span className={styles.landingLogLabel}>Start Date</span>
+                    <span className={styles.landingLogVal}>ASAP</span>
+                  </li>
+                  <li className={styles.landingLogItem}>
+                    <span className={styles.landingLogLabel}>Workload</span>
+                    <span className={styles.landingLogVal}>20h/week</span>
+                  </li>
+                  <li className={styles.landingLogItem}>
+                    <span className={styles.landingLogLabel}>Location</span>
+                    <span className={styles.landingLogVal}>{location}</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Process Card */}
+              <div className={styles.landingCard}>
+                <div className={styles.landingCardTitle}>What happens next?</div>
+                <div className={styles.landingProcessSteps}>
+                  <div className={styles.landingProcessStep}>
+                    <div className={styles.landingStepNum}>1</div>
+                    <div>
+                      <strong>Submit</strong>
+                      <p>Fill brief form</p>
+                    </div>
+                  </div>
+                  <div className={styles.landingProcessStep}>
+                    <div className={styles.landingStepNum}>2</div>
+                    <div>
+                      <strong>Review</strong>
+                      <p>Manager reviews ~48h</p>
+                    </div>
+                  </div>
+                  <div className={styles.landingProcessStep}>
+                    <div className={styles.landingStepNum}>3</div>
+                    <div>
+                      <strong>Interview</strong>
+                      <p>If shortlisted</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {onViewFull && (
+        <button className={styles.viewFullBtn} onClick={onViewFull}>
+          View Full Preview
+        </button>
+      )}
+    </div>
+  );
+}
+
+export function RequestCreationEditScreen({
+  onGoToView,
+  onRequestSaved
+}: {
+  onGoToView?: () => void;
+  onRequestSaved?: (req: SharePackRequest) => void;
+}) {
+  const [modal, setModal] = useState<null | "preview">(null);
 
   const [requestTitle, setRequestTitle] = useState("Graphic Designer for Social Media Optimisation");
   const [companyName, setCompanyName] = useState("");
@@ -1543,6 +1745,16 @@ export function RequestCreationEditScreen() {
   const aiSuggested = useMemo(() => allSuggested.filter((s) => !skills.includes(s)), [allSuggested, skills]);
   const popularLanguages = useMemo(() => ["English", "Spanish", "French", "German", "Italian", "Portuguese", "Chinese", "Japanese", "Korean", "Russian", "Arabic", "Hindi"], []);
 
+  const [languages, setLanguages] = useState<string[]>(["English"]);
+  const [newLanguage, setNewLanguage] = useState("");
+  const allSuggestedLanguages = useMemo(() => ["Russian", "Ukrainian", "German", "Spanish"], []);
+  const suggestedLanguages = useMemo(
+    () => allSuggestedLanguages.filter((l) => !languages.includes(l)),
+    [allSuggestedLanguages, languages]
+  );
+
+  const [hasVideoNote, setHasVideoNote] = useState(false);
+
   const [negotiable, setNegotiable] = useState(false);
   const [paymentType, setPaymentType] = useState<PaymentType>("hourly");
   const [fromRate, setFromRate] = useState("20.00");
@@ -1551,98 +1763,23 @@ export function RequestCreationEditScreen() {
   const [timelineFlexible, setTimelineFlexible] = useState(false);
   const [startDate, setStartDate] = useState<StartDate>("asap");
 
-  // Temporary values for editing
-  const [tempRoleTitle, setTempRoleTitle] = useState(roleTitle);
-  const [tempExperienceLevel, setTempExperienceLevel] = useState(experienceLevel);
-  const [tempSkills, setTempSkills] = useState(skills);
-  const [tempNewSkill, setTempNewSkill] = useState("");
-  const [tempLanguages, setTempLanguages] = useState(languages);
-  const [tempNewLanguage, setTempNewLanguage] = useState("");
-  
-  const [tempNegotiable, setTempNegotiable] = useState(negotiable);
-  const [tempPaymentType, setTempPaymentType] = useState(paymentType);
-  const [tempFromRate, setTempFromRate] = useState(fromRate);
-  const [tempToRate, setTempToRate] = useState(toRate);
-  const [tempCurrency, setTempCurrency] = useState(currency);
-  
-  const [tempTimelineFlexible, setTempTimelineFlexible] = useState(timelineFlexible);
-  const [tempStartDate, setTempStartDate] = useState(startDate);
-  const [tempWorkload, setTempWorkload] = useState(workload);
-  
-  const [tempCompanyName, setTempCompanyName] = useState(companyName);
-  const [tempWebsite, setTempWebsite] = useState(website);
-  const [tempTimezone, setTempTimezone] = useState(timezone);
-
-  // Project Title state
-  const [projectTitle, setProjectTitle] = useState("Graphic Designer for Social Media Optimisation");
-  const [tempProjectTitle, setTempProjectTitle] = useState(projectTitle);
-
-  // Project Summary state
-  const [projectSummaryText, setProjectSummaryText] = useState("We are seeking a talented Graphic Designer to lead the visual redesign of our social media presence and marketing materials. This project aims to enhance brand identity, improve visual appeal, and optimize graphics for engagement and clarity. The ideal candidate will collaborate closely with marketing managers and content creators to create intuitive, engaging, and modern visual designs that align with brand guidelines and audience preferences.");
-  const [tempProjectSummaryText, setTempProjectSummaryText] = useState(projectSummaryText);
-
-  // Key Responsibilities state
-  const [keyResponsibilitiesList, setKeyResponsibilitiesList] = useState([
-    "Design and deliver high-quality visual content for social media platforms",
-    "Create engaging graphics, illustrations, and layouts that align with brand guidelines",
-    "Collaborate with marketing team to develop creative concepts and visual strategies",
-    "Ensure consistency across all marketing materials and social media channels"
-  ]);
-  const [tempKeyResponsibilitiesList, setTempKeyResponsibilitiesList] = useState(keyResponsibilitiesList);
-
-  // Requirements state
-  const [requirementsList, setRequirementsList] = useState([
-    "Proficiency in design software such as Figma, Adobe Creative Suite, and Canva",
-    "Strong portfolio demonstrating creative design skills",
-    "Ability to work independently and meet deadlines",
-    "Excellent communication skills and attention to detail"
-  ]);
-  const [tempRequirementsList, setTempRequirementsList] = useState(requirementsList);
-
-  // Preferred Skills state
-  const [preferredSkillsList, setPreferredSkillsList] = useState([
-    "Experience with social media design and marketing materials",
-    "Knowledge of current design trends and best practices",
-    "Understanding of brand identity and visual communication",
-    "Ability to adapt designs for different platforms and formats"
-  ]);
-  const [tempPreferredSkillsList, setTempPreferredSkillsList] = useState(preferredSkillsList);
-
-  // Experience Level state
-  const [experienceLevelText, setExperienceLevelText] = useState("We are looking for a mid-level to senior graphic designer with 3-5 years of experience in social media and marketing design. The ideal candidate should have a proven track record of creating engaging visual content and working collaboratively with marketing teams.");
-  const [tempExperienceLevelText, setTempExperienceLevelText] = useState(experienceLevelText);
-
-  // Content state
-  const [descriptionContent, setDescriptionContent] = useState({
-    summary: "We are seeking a talented UI Designer to lead the redesign of our SaaS platform. This project aims to enhance user experience, improve visual appeal, and optimize the interface for efficiency and clarity. The ideal candidate will collaborate closely with product managers and developers to create intuitive, engaging, and modern UI designs that align with user needs and business goals.",
-    responsibilities: [
-      "Design and deliver high-quality user interfaces for the SaaS.",
-      "Ensure the dashboard design is consistent with the overall brand.",
-      "Iterate designs based on user feedback and usability testing results.",
-      "Stay up-to-date with the latest UI trends, techniques, and technologies."
-    ],
-    requirements: [
-      "Proven experience as a UI designer, preferably with SaaS or web application projects.",
-      "Strong proficiency in design tools such as Figma, Sketch, Adobe XD, or similar.",
-      "Excellent understanding of design principles, typography, color theory.",
-      "Ability to translate complex concepts into simple and engaging interfaces.",
-      "Strong communication skills and ability to work collaboratively in a team environment."
-    ],
-    preferredSkills: [
-      "Basic knowledge of front-end development.",
-      "Experience with user experience (UX) design methodologies and user research.",
-      "Familiarity with accessibility standards and best practices.",
-      "Experience using design systems and component libraries."
-    ],
-    experienceLevel: "Intermediate to Senior UI Designer with 3+ years of relevant experience in SaaS platform design."
-  });
-
-  // Track if parameters changed after last generation
-  const [parametersChanged, setParametersChanged] = useState(false);
-  const [isParametersWarningDismissed, setIsParametersWarningDismissed] = useState(false);
-  const [isManuallyEdited, setIsManuallyEdited] = useState(false);
-  const [manuallyEditedSections, setManuallyEditedSections] = useState<Record<string, boolean>>({});
-  const [dismissedWarnings, setDismissedWarnings] = useState<Record<string, boolean>>({});
+  function handleSave() {
+    const req: SharePackRequest = {
+      id: String(Date.now()),
+      title: requestTitle,
+      companyName: companyName || undefined,
+      location,
+      skills,
+      languages,
+      budget: {
+        paymentType,
+        from: fromRate,
+        to: toRate,
+        currency
+      }
+    };
+    onRequestSaved?.(req);
+  }
 
   function toggleSelect(key: SelectKey) {
     setOpenSelectKey((prev) => (prev === key ? null : key));
@@ -1663,453 +1800,113 @@ export function RequestCreationEditScreen() {
     setNewSkill("");
   }
 
-  function handleParameterChange() {
-    setParametersChanged(true);
-    setIsParametersWarningDismissed(false);
+  function addLanguage(lang: string) {
+    const trimmed = lang.trim();
+    if (!trimmed) return;
+    setLanguages((prev) => (prev.includes(trimmed) ? prev : [...prev, trimmed]));
   }
 
-  function handleContentChange(section: string, value: string | string[]) {
-    setIsManuallyEdited(true);
-    setManuallyEditedSections((prev) => ({
-      ...prev,
-      [section]: true
-    }));
-    // Clear dismissed flag when user edits the section again
-    setDismissedWarnings((prev) => {
-      const next = { ...prev };
-      delete next[section];
-      return next;
-    });
-    setDescriptionContent((prev) => ({
-      ...prev,
-      [section]: value
-    }));
+  function removeLanguage(lang: string) {
+    setLanguages((prev) => prev.filter((l) => l !== lang));
   }
 
-  function handleRegenerate() {
-    // Reset flags and regenerate content
-    setParametersChanged(false);
-    setIsParametersWarningDismissed(false);
-    setIsManuallyEdited(false);
-    setManuallyEditedSections({});
-    setDismissedWarnings({});
-    // In real app, this would call API to regenerate
-    console.log("Regenerating description...");
-  }
-
-  function dismissParametersWarning() {
-    setIsParametersWarningDismissed(true);
-  }
-
-  function dismissWarning(section: string) {
-    setManuallyEditedSections((prev) => {
-      const next = { ...prev };
-      delete next[section];
-      // If no sections are manually edited, reset global flag
-      if (Object.keys(next).length === 0) {
-        setIsManuallyEdited(false);
-      }
-      return next;
-    });
-    // Mark this warning as dismissed so it won't show again after parameter changes
-    setDismissedWarnings((prev) => ({
-      ...prev,
-      [section]: true
-    }));
+  function addNewLanguage() {
+    addLanguage(newLanguage);
+    setNewLanguage("");
   }
 
   return (
     <div className={styles.screen}>
-      <Header />
-      <DevButtons />
-      <TitleActionsBarWithActions 
-        onCreate={() => setModal("create")} 
-      />
+      <Header onGoToShare={handleSave} onGoToView={onGoToView} />
+      <TitleActionsBarWithActions onPreview={() => setModal("preview")} onSave={handleSave} />
 
       <div className={styles.pageSpacer}>
         <div className={styles.container}>
           <div className={styles.page}>
-            <div className={styles.mainContent}>
-              <div className={styles.requestParametersContainer}>
-                <div className={styles.requestParametersHeader}>
-                  <h2 className={styles.requestParametersTitle}>Request Parameters</h2>
-                  <p className={styles.requestParametersDescription}>
-                    Set up the key details for your request. You can come back and edit these anytime.
-                  </p>
-                </div>
+            <MainColumn requestTitle={requestTitle} onRequestTitleChange={setRequestTitle} />
+            <div>
+              <LandingPreview
+                requestTitle={requestTitle}
+                companyName={companyName}
+                location={location}
+                skills={skills}
+                languages={languages}
+                hasVideoNote={hasVideoNote}
+                onViewFull={onGoToView}
+              />
 
-                <div className={styles.requestParametersWrapper}>
-                {!isRoleSkillsExpanded ? (
-                  <RoleAndSkillsSummary
-                    roleTitle={roleTitle}
-                    experienceLevel={experienceLevel}
-                    skills={skills}
-                    languages={languages}
-                    onEdit={() => {
-                      setTempRoleTitle(roleTitle);
-                      setTempExperienceLevel(experienceLevel);
-                      setTempSkills([...skills]);
-                      setTempNewSkill("");
-                      setTempLanguages([...languages]);
-                      setTempNewLanguage("");
-                      setIsRoleSkillsExpanded(true);
-                    }}
-                  />
-                ) : (
-                  <RoleAndSkillsSection
-                    roleTitle={tempRoleTitle}
-                    onRoleTitleChange={setTempRoleTitle}
-                    experienceLevel={tempExperienceLevel}
-                    onExperienceLevelChange={setTempExperienceLevel}
-                    skills={tempSkills}
-                    aiSuggested={allSuggested.filter((s) => !tempSkills.includes(s))}
-                    newSkill={tempNewSkill}
-                    onRemoveSkill={(skill) => setTempSkills(tempSkills.filter((s) => s !== skill))}
-                    onAddSuggested={(s) => setTempSkills([...tempSkills, s])}
-                    onNewSkillChange={setTempNewSkill}
-                    onAddNewSkill={() => {
-                      const trimmed = tempNewSkill.trim();
-                      if (trimmed && !tempSkills.includes(trimmed)) {
-                        setTempSkills([...tempSkills, trimmed]);
-                        setTempNewSkill("");
-                      }
-                    }}
-                    languages={tempLanguages}
-                    filteredLanguages={popularLanguages.filter(l => 
-                      !tempLanguages.includes(l) && 
-                      (tempNewLanguage.trim() === "" || l.toLowerCase().includes(tempNewLanguage.toLowerCase()))
-                    )}
-                    newLanguage={tempNewLanguage}
-                    onRemoveLanguage={(language) => setTempLanguages(tempLanguages.filter((l) => l !== language))}
-                    onAddLanguage={(language) => {
-                      if (!tempLanguages.includes(language)) {
-                        setTempLanguages([...tempLanguages, language]);
-                        setTempNewLanguage("");
-                      }
-                    }}
-                    onNewLanguageChange={setTempNewLanguage}
-                    onAddNewLanguage={() => {
-                      const trimmed = tempNewLanguage.trim();
-                      if (trimmed && !tempLanguages.includes(trimmed)) {
-                        setTempLanguages([...tempLanguages, trimmed]);
-                        setTempNewLanguage("");
-                      }
-                    }}
-                    onSave={() => {
-                      setRoleTitle(tempRoleTitle);
-                      setExperienceLevel(tempExperienceLevel);
-                      setSkills([...tempSkills]);
-                      setLanguages([...tempLanguages]);
-                      setIsRoleSkillsExpanded(false);
-                      handleParameterChange();
-                    }}
-                    onCancel={() => {
-                      setIsRoleSkillsExpanded(false);
-                    }}
-                  />
-                )}
-              {!isBudgetExpanded ? (
-                <BudgetSummary
+              <div style={{ marginTop: 16 }}>
+                <Sidebar
+                  companyName={companyName}
+                  website={website}
+                  location={location}
+                  currency={currency}
+                  workload={workload}
+                  skills={skills}
+                  aiSuggested={aiSuggested}
+                  languages={languages}
+                  suggestedLanguages={suggestedLanguages}
+                  newSkill={newSkill}
+                  newLanguage={newLanguage}
                   negotiable={negotiable}
                   paymentType={paymentType}
                   fromRate={fromRate}
                   toRate={toRate}
-                  currency={currency}
-                  onEdit={() => {
-                    setTempNegotiable(negotiable);
-                    setTempPaymentType(paymentType);
-                    setTempFromRate(fromRate);
-                    setTempToRate(toRate);
-                    setTempCurrency(currency);
-                    setIsBudgetExpanded(true);
-                  }}
-                />
-              ) : (
-                <BudgetSection
-                  negotiable={tempNegotiable}
-                  paymentType={tempPaymentType}
-                  fromRate={tempFromRate}
-                  toRate={tempToRate}
-                  currency={tempCurrency}
-                  openSelectKey={openSelectKey}
-                  onNegotiableToggle={setTempNegotiable}
-                  onPaymentTypeSelect={setTempPaymentType}
-                  onFromRateChange={setTempFromRate}
-                  onToRateChange={setTempToRate}
-                  onCurrencySelect={(next) => {
-                    setTempCurrency(next);
-                    setOpenSelectKey(null);
-                  }}
-                  onSelectOpenToggle={toggleSelect}
-                  onSave={() => {
-                    setNegotiable(tempNegotiable);
-                    setPaymentType(tempPaymentType);
-                    setFromRate(tempFromRate);
-                    setToRate(tempToRate);
-                    setCurrency(tempCurrency);
-                    setIsBudgetExpanded(false);
-                    handleParameterChange();
-                  }}
-                  onCancel={() => setIsBudgetExpanded(false)}
-                />
-              )}
-
-              {!isTimelineExpanded ? (
-                <TimelineSummary
                   timelineFlexible={timelineFlexible}
-                  workload={workload}
                   startDate={startDate}
-                  onEdit={() => {
-                    setTempTimelineFlexible(timelineFlexible);
-                    setTempStartDate(startDate);
-                    setTempWorkload(workload);
-                    setIsTimelineExpanded(true);
-                  }}
-                />
-              ) : (
-                <TimelineSection
-                  timelineFlexible={tempTimelineFlexible}
-                  startDate={tempStartDate}
-                  workload={tempWorkload}
                   openSelectKey={openSelectKey}
-                  onTimelineFlexibleToggle={setTempTimelineFlexible}
-                  onStartDateSelect={setTempStartDate}
+                  hasVideoNote={hasVideoNote}
+                  onCompanyNameChange={setCompanyName}
+                  onWebsiteChange={setWebsite}
+                  onSelectOpenToggle={toggleSelect}
+                  onLocationSelect={(next) => {
+                    setLocation(next);
+                    setOpenSelectKey(null);
+                  }}
+                  onCurrencySelect={(next) => {
+                    setCurrency(next);
+                    setOpenSelectKey(null);
+                  }}
                   onWorkloadSelect={(next) => {
-                    setTempWorkload(next);
+                    setWorkload(next);
                     setOpenSelectKey(null);
                   }}
-                  onSelectOpenToggle={toggleSelect}
-                  onSave={() => {
-                    setTimelineFlexible(tempTimelineFlexible);
-                    setStartDate(tempStartDate);
-                    setWorkload(tempWorkload);
-                    setIsTimelineExpanded(false);
-                    handleParameterChange();
+                  onRemoveSkill={removeSkill}
+                  onAddSuggested={(s) => addSkill(s)}
+                  onNewSkillChange={setNewSkill}
+                  onAddNewSkill={addNewSkill}
+                  onRemoveLanguage={removeLanguage}
+                  onAddSuggestedLanguage={(l) => addLanguage(l)}
+                  onNewLanguageChange={setNewLanguage}
+                  onAddNewLanguage={addNewLanguage}
+                  onToggleVideoNote={() => {
+                    setHasVideoNote((v) => !v);
+                    handleSave();
                   }}
-                  onCancel={() => setIsTimelineExpanded(false)}
+                  onNegotiableToggle={setNegotiable}
+                  onPaymentTypeSelect={setPaymentType}
+                  onFromRateChange={setFromRate}
+                  onToRateChange={setToRate}
+                  onTimelineFlexibleToggle={setTimelineFlexible}
+                  onStartDateSelect={setStartDate}
                 />
-              )}
-
-              {!isCompanyExpanded ? (
-                <CompanySummary
-                  companyName={companyName}
-                  website={website}
-                  onEdit={() => {
-                    setTempCompanyName(companyName);
-                    setTempWebsite(website);
-                    setTempTimezone(timezone);
-                    setIsCompanyExpanded(true);
-                  }}
-                />
-              ) : (
-                <CompanySection
-                  companyName={tempCompanyName}
-                  website={tempWebsite}
-                  timezone={tempTimezone}
-                  openSelectKey={openSelectKey}
-                  onCompanyNameChange={setTempCompanyName}
-                  onWebsiteChange={setTempWebsite}
-                  onTimezoneSelect={(next) => {
-                    setTempTimezone(next);
-                    setOpenSelectKey(null);
-                  }}
-                  onSelectOpenToggle={toggleSelect}
-                  onSave={() => {
-                    setCompanyName(tempCompanyName);
-                    setWebsite(tempWebsite);
-                    setTimezone(tempTimezone);
-                    setIsCompanyExpanded(false);
-                    handleParameterChange();
-                  }}
-                  onCancel={() => setIsCompanyExpanded(false)}
-                />
-              )}
-
-                </div>
-
-                {parametersChanged && !isParametersWarningDismissed && (
-                  <div style={{ marginTop: 'var(--ds-space-12)' }}>
-                    <ParametersChangedWarning onRegenerate={handleRegenerate} onDismiss={dismissParametersWarning} />
-                  </div>
-                )}
               </div>
-
-              <div className={styles.requestDescriptionContainer}>
-                <div className={styles.requestDescriptionHeader}>
-                  <h2 className={styles.requestParametersTitle}>Request Description</h2>
-                  <p className={styles.requestParametersDescription}>
-                    Review and edit each section of your generated description. You can edit sections independently.
-                  </p>
-                </div>
-
-                <div className={styles.requestDescriptionWrapper}>
-                  {!isProjectTitleExpanded ? (
-                    <ProjectSummary
-                      title="Title"
-                      text={projectTitle}
-                      showWarning={manuallyEditedSections.projectTitle && !dismissedWarnings.projectTitle}
-                      onDismissWarning={() => dismissWarning('projectTitle')}
-                      onEdit={() => {
-                        setTempProjectTitle(projectTitle);
-                        setIsProjectTitleExpanded(true);
-                      }}
-                    />
-                  ) : (
-                    <ProjectTitleSection
-                      title="Title"
-                      text={tempProjectTitle}
-                      onTextChange={setTempProjectTitle}
-                      onSave={() => {
-                        setProjectTitle(tempProjectTitle);
-                        setIsProjectTitleExpanded(false);
-                        handleContentChange('projectTitle', tempProjectTitle);
-                      }}
-                      onCancel={() => setIsProjectTitleExpanded(false)}
-                    />
-                  )}
-
-                  {!isProjectSummaryExpanded ? (
-                    <ProjectSummary
-                      title="Summary"
-                      text={projectSummaryText}
-                      showWarning={manuallyEditedSections.summary && !dismissedWarnings.summary}
-                      onDismissWarning={() => dismissWarning('summary')}
-                      onEdit={() => {
-                        setTempProjectSummaryText(projectSummaryText);
-                        setIsProjectSummaryExpanded(true);
-                      }}
-                    />
-                  ) : (
-                    <ProjectSummarySection
-                      title="Summary"
-                      text={tempProjectSummaryText}
-                      onTextChange={setTempProjectSummaryText}
-                      onSave={() => {
-                        setProjectSummaryText(tempProjectSummaryText);
-                        setIsProjectSummaryExpanded(false);
-                        handleContentChange('summary', tempProjectSummaryText);
-                      }}
-                      onCancel={() => setIsProjectSummaryExpanded(false)}
-                    />
-                  )}
-
-                  {!isKeyResponsibilitiesExpanded ? (
-                    <ProjectListSummary
-                      title="Key Responsibilities"
-                      items={keyResponsibilitiesList}
-                      showWarning={manuallyEditedSections.responsibilities && !dismissedWarnings.responsibilities}
-                      onDismissWarning={() => dismissWarning('responsibilities')}
-                      onEdit={() => {
-                        setTempKeyResponsibilitiesList(keyResponsibilitiesList);
-                        setIsKeyResponsibilitiesExpanded(true);
-                      }}
-                    />
-                  ) : (
-                    <ProjectListSection
-                      title="Key Responsibilities"
-                      items={tempKeyResponsibilitiesList}
-                      onItemsChange={setTempKeyResponsibilitiesList}
-                      onSave={() => {
-                        setKeyResponsibilitiesList(tempKeyResponsibilitiesList);
-                        setIsKeyResponsibilitiesExpanded(false);
-                        handleContentChange('responsibilities', tempKeyResponsibilitiesList);
-                      }}
-                      onCancel={() => setIsKeyResponsibilitiesExpanded(false)}
-                    />
-                  )}
-
-                  {!isRequirementsExpanded ? (
-                    <ProjectListSummary
-                      title="Requirements"
-                      items={requirementsList}
-                      showWarning={manuallyEditedSections.requirements && !dismissedWarnings.requirements}
-                      onDismissWarning={() => dismissWarning('requirements')}
-                      onEdit={() => {
-                        setTempRequirementsList(requirementsList);
-                        setIsRequirementsExpanded(true);
-                      }}
-                    />
-                  ) : (
-                    <ProjectListSection
-                      title="Requirements"
-                      items={tempRequirementsList}
-                      onItemsChange={setTempRequirementsList}
-                      onSave={() => {
-                        setRequirementsList(tempRequirementsList);
-                        setIsRequirementsExpanded(false);
-                        handleContentChange('requirements', tempRequirementsList);
-                      }}
-                      onCancel={() => setIsRequirementsExpanded(false)}
-                    />
-                  )}
-
-                  {!isPreferredSkillsExpanded ? (
-                    <ProjectListSummary
-                      title="Preferred Skills"
-                      items={preferredSkillsList}
-                      showWarning={manuallyEditedSections.preferredSkills && !dismissedWarnings.preferredSkills}
-                      onDismissWarning={() => dismissWarning('preferredSkills')}
-                      onEdit={() => {
-                        setTempPreferredSkillsList(preferredSkillsList);
-                        setIsPreferredSkillsExpanded(true);
-                      }}
-                    />
-                  ) : (
-                    <ProjectListSection
-                      title="Preferred Skills"
-                      items={tempPreferredSkillsList}
-                      onItemsChange={setTempPreferredSkillsList}
-                      onSave={() => {
-                        setPreferredSkillsList(tempPreferredSkillsList);
-                        setIsPreferredSkillsExpanded(false);
-                        handleContentChange('preferredSkills', tempPreferredSkillsList);
-                      }}
-                      onCancel={() => setIsPreferredSkillsExpanded(false)}
-                    />
-                  )}
-
-                </div>
-              </div>
-
             </div>
-
-            <RequestPreview
-              requestTitle={requestTitle}
-              roleTitle={roleTitle}
-              experienceLevel={experienceLevel}
-              skills={skills}
-              languages={languages}
-              negotiable={negotiable}
-              paymentType={paymentType}
-              fromRate={fromRate}
-              toRate={toRate}
-              currency={currency}
-              timelineFlexible={timelineFlexible}
-              startDate={startDate}
-              workload={workload}
-              companyName={companyName}
-              website={website}
-              projectSummaryText={projectSummaryText}
-              keyResponsibilitiesList={keyResponsibilitiesList}
-              requirementsList={requirementsList}
-              preferredSkillsList={preferredSkillsList}
-              experienceLevelText={experienceLevelText}
-            />
           </div>
         </div>
       </div>
 
       <Modal
-        title="Save request"
+        title={"Preview"}
         open={modal !== null}
         onClose={() => setModal(null)}
       >
         <div>
           <p className="ds-b2" style={{ margin: 0 }}>
-            Page creation action triggered.
+            This is where we’ll show the full landing preview.
           </p>
           <p className="ds-b3 ds-text-secondary" style={{ marginTop: 8 }}>
-            (Next step: call API / generate shareable link.)
+            For now you already have the live preview panel on the right.
           </p>
         </div>
       </Modal>

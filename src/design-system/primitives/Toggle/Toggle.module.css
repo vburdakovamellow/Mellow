@@ -1,11 +1,11 @@
 .toggle {
   width: 36px;
   height: 20px;
-  background: var(--ds-color-bg-fill-control-default);
+  background: #ffffff;
+  border: 1px solid #000000;
   border-radius: var(--ds-radius-10);
   position: relative;
   overflow: hidden;
-  border: 0;
   padding: 0;
   cursor: pointer;
 }
@@ -13,7 +13,7 @@
 .indicator {
   width: 16px;
   height: 16px;
-  background: var(--ds-color-bg-surface);
+  background: #000000;
   border-radius: var(--ds-radius-8);
   position: absolute;
   top: 2px;
@@ -21,10 +21,11 @@
 }
 
 .on {
-  background: var(--ds-color-bg-fill-control-active);
+  background: #000000;
 }
 
 .on .indicator {
   left: 18px;
+  background: #ffffff;
 }
 

@@ -2,7 +2,6 @@
 .screen {
   min-height: 100vh;
   background: #ffffff;
-  padding-bottom: 80px;
 }
 
 /* Header */
@@ -50,10 +49,15 @@
 
 /* Request Header: Identity & Action */
 .requestHeader {
+  position: sticky;
+  top: 65px;
+  background: #ffffff;
+  z-index: 90;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 32px;
+  padding-top: 24px;
   padding-bottom: 24px;
   border-bottom: 1px solid #000000;
   margin-bottom: 32px;
@@ -99,13 +103,122 @@
   font-weight: 500;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .requestTitle {
   font-family: var(--ds-font-family-body);
   font-size: 32px;
   line-height: 40px;
   font-weight: 600;
   color: #000000;
-  margin: 0 0 12px 0;
+  margin: 0;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  margin-left: auto;
+}
+
+.companyRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.companyName {
+  color: #000000;
+  font-weight: 500;
+}
+
+.separator {
+  color: #000000;
+  user-select: none;
+}
+
+.companyLink {
+  color: #000000;
+  text-decoration: underline;
+  transition: opacity 0.2s ease;
+}
+
+.companyLink:hover {
+  opacity: 0.7;
+}
+
+.companyLocation {
+  color: #000000;
+}
+
+.experienceRow {
+  margin-top: 8px;
+}
+
+.experienceText {
+  font-size: 14px;
+  line-height: 20px;
+  color: #666666;
+}
+
+.budgetRow {
+  margin-top: 8px;
+}
+
+.budgetText {
+  font-size: 16px;
+  line-height: 22px;
+  color: #000000;
+  font-weight: 500;
+}
+
+.verifiedIconSmall {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.tooltipSmall {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000000;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.tooltipSmall::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-bottom-color: #000000;
 }
 
 .trustRow {
@@ -460,49 +573,97 @@
   color: #000000;
 }
 
-/* Process Steps (in sidebar) */
+/* Sticky Apply Bar */
+.stickyApplyBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 2px solid #000000;
+  padding: 20px 0;
+  z-index: 50;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stickyApplyButton {
+  width: 100%;
+  max-width: 400px;
+  height: 56px;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 auto;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Process Section - Full Width Bottom */
+.processSection {
+  margin-top: 48px;
+  margin-bottom: 48px;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 12px;
+}
+
+.processSectionTitle {
+  font-family: var(--ds-font-family-body);
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 24px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .processSteps {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  align-items: flex-start;
 }
 
 .processStep {
   display: flex;
+  flex-direction: column;
   gap: 12px;
   align-items: flex-start;
 }
 
 .stepNumber {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #000000;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   flex-shrink: 0;
 }
 
 .stepContent {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .stepTitle {
   display: block;
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
   color: #000000;
-  margin-bottom: 4px;
 }
 
 .stepText {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 13px;
+  line-height: 18px;
   color: #000000;
   margin: 0;
 }
@@ -539,5 +700,42 @@
   .qualRow {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  .processSection {
+    padding: 24px;
+    margin-top: 32px;
+  }
+
+  .processSectionTitle {
+    font-size: 20px;
+    line-height: 26px;
+    margin-bottom: 24px;
+  }
+
+  .processSteps {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .processStep {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .stepNumber {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .stickyApplyBar {
+    padding: 16px 0;
+  }
+
+  .stickyApplyButton {
+    max-width: none;
+    height: 48px;
+    font-size: 16px;
   }
 }

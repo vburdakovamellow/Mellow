@@ -5,7 +5,7 @@
 }
 
 .label {
-  color: var(--ds-color-text-secondary);
+  color: #000000;
   font-size: var(--ds-font-size-14);
   line-height: var(--ds-line-height-18);
   font-weight: 500;
@@ -16,8 +16,8 @@
   width: 100%;
   padding: 0 15px;
   border-radius: var(--ds-radius-8);
-  border: 1px solid var(--ds-color-bg-surface);
-  background: var(--ds-color-bg-surface);
+  border: 1px solid #000000;
+  background: #ffffff;
   display: grid;
   grid-template-columns: 1fr;
   align-items: center;
@@ -27,12 +27,12 @@
   width: 100%;
   border: 0;
   background: transparent;
-  color: var(--ds-color-text-primary);
+  color: #000000;
   outline: none;
 }
 
 .native::placeholder {
-  color: var(--ds-color-text-tertiary);
+  color: #666666;
 }
 
 .withRightIcon {
@@ -48,6 +48,6 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-color-text-secondary);
+  color: #000000;
 }
 

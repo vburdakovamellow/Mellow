@@ -1,0 +1,315 @@
+.screen {
+  min-height: 100vh;
+  background: #ffffff;
+  padding-bottom: 80px;
+}
+
+.fixedHeader {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #000000;
+  z-index: 100;
+  padding: 16px 0;
+}
+
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  font-family: var(--ds-font-family-body);
+  font-size: 24px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.content {
+  padding-top: 40px;
+}
+
+.title {
+  font-family: var(--ds-font-family-body);
+  font-size: 32px;
+  line-height: 38px;
+  font-weight: 500;
+  margin: 0;
+  color: #000000;
+}
+
+.subtitle {
+  margin-top: 10px;
+  color: #000000;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.section {
+  margin-top: 28px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 16px;
+}
+
+.sectionTitle {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #000000;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.rowGrow {
+  flex: 1;
+  min-width: 0;
+}
+
+.fieldMeta {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.counter {
+  font-size: 12px;
+  line-height: 14px;
+  color: #000000;
+}
+
+.counterWarn {
+  color: #000000;
+  font-weight: 600;
+}
+
+.helperText {
+  margin: 10px 0 0 0;
+  color: #000000;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.copyBtn {
+  height: 44px;
+}
+
+.ogPreviewOuter {
+  margin-top: 14px;
+}
+
+.ogPreview {
+  width: 100%;
+  aspect-ratio: 1200 / 630;
+  border-radius: 18px;
+  border: 1px solid #000000;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.ogGrid {
+  height: 100%;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 14px;
+}
+
+.ogBlock {
+  border-radius: 14px;
+  border: 1px solid #000000;
+  background: #ffffff;
+}
+
+.ogHero {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ogTitle {
+  margin: 0;
+  color: #000000;
+  font-family: var(--ds-font-family-body);
+  font-size: 36px;
+  line-height: 42px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ogClient {
+  margin: 0;
+  color: #000000;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+}
+
+.ogRightCol {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+.ogRate {
+  padding: 16px;
+  background: #000000;
+  border: 1px solid #000000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ogRateValue {
+  margin: 0;
+  color: #ffffff;
+  font-size: 34px;
+  line-height: 38px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ogRateLabel {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 700;
+}
+
+.ogStack {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ogStackRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ogPill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  color: #000000;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 700;
+}
+
+.ogTrust {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ogTrustIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  font-weight: 900;
+}
+
+.ogTrustText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ogTrustTitle {
+  margin: 0;
+  color: #000000;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 800;
+}
+
+.ogTrustSub {
+  margin: 0;
+  color: #000000;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 20px;
+  }
+
+  .row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .twoCol {
+    grid-template-columns: 1fr;
+  }
+
+  .ogGrid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1.2fr 1fr;
+  }
+
+  .ogRightCol {
+    grid-template-rows: 1fr 1fr 1fr;
+  }
+}
+

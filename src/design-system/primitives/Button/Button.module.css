@@ -39,14 +39,16 @@
 
 /* Variants */
 .secondary {
-  background: white;
-  color: #8A8686;
-  border: 1px solid var(--ds-color-border-secondary);
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
 }
 
 .brand {
-  background: #FF6F23;
-  color: #FFFFFF;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: var(--ds-radius-6);
 }
 
 .icon {

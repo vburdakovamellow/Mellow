@@ -44,17 +44,6 @@ function Header({
     <div className={styles.fixedHeader}>
       <div className={[styles.container, styles.headerInner].join(" ")}>
         <div className={styles.logo}>mellow</div>
-        <div className={styles.nav}>
-          <Button variant="secondary" onClick={onGoToEdit}>
-            Edit
-          </Button>
-          <Button variant="secondary" onClick={onGoToShare}>
-            Share pack
-          </Button>
-          <Button variant="brand" disabled={active === "view"} onClick={onGoToView}>
-            View
-          </Button>
-        </div>
       </div>
     </div>
   );
@@ -79,8 +68,8 @@ export function ServiceRequestViewScreen({
     publishedDate: "January 20, 2026",
     title: "Graphic Designer for Social Media Optimisation",
     talentProfile: "Graphic Designer, Middle", // From production "Talent profile"
-    company: "", // Not filled in production
-    isVerified: false,
+    company: "Mellow", // Company name
+    isVerified: true,
     industryBlind: "Creative Services",
     timezone: "",
     experienceLevel: "Middle",
@@ -114,11 +103,11 @@ export function ServiceRequestViewScreen({
       marketRate: "High" // From production screenshot
     },
     timeline: {
-      startDate: "ASAP",
+      startDate: "Ongoing project",
       workload: "Less 20h/week", // Matching production format
       flexible: false
     },
-    location: "Remote from any country",
+    location: "Cyprus",
     deadline: {
       days: 3,
       hours: 12
@@ -172,44 +161,26 @@ export function ServiceRequestViewScreen({
           {/* Header: Identity & Action */}
           <div className={styles.requestHeader}>
             <div className={styles.requestHeaderLeft}>
-              {/* Breadcrumbs - only for author */}
-              {requestData.isAuthor && (
-                <div className={styles.breadcrumbs}>
-                  <span className={styles.breadcrumbLink} onClick={handleBackToRequests}>
-                    Requests
-                  </span>
-                  <span className={styles.breadcrumbSeparator}>/</span>
-                  <span className={styles.breadcrumbCurrent}>#SR-{requestData.id}</span>
-                </div>
-              )}
-              
               {/* Title */}
               <h1 className={styles.requestTitle}>{requestData.title}</h1>
               
-              {/* Trust Row: Company + Verified */}
-              <div className={styles.trustRow}>
-                <span className={styles.clientName}>
-                  {requestData.company || requestData.industryBlind}
+              {/* Experience Level */}
+              <div className={styles.experienceRow}>
+                <span className={styles.experienceText}>{requestData.experienceLevel}</span>
+              </div>
+              
+              {/* Budget Row */}
+              <div className={styles.budgetRow}>
+                <span className={styles.budgetText}>
+                  ${requestData.budget.from} - ${requestData.budget.to} • {requestData.budget.type === "hourly" ? "Hourly Rate" : "Fixed Price"}
                 </span>
-                {requestData.isVerified && (
-                  <div
-                    className={styles.verifiedIcon}
-                    onMouseEnter={() => setShowVerificationTooltip(true)}
-                    onMouseLeave={() => setShowVerificationTooltip(false)}
-                  >
-                    <IconCheck size={16} />
-                    {showVerificationTooltip && (
-                      <div className={styles.tooltip}>Verified Customer</div>
-                    )}
-                  </div>
-                )}
               </div>
             </div>
 
             <div className={styles.requestHeaderRight}>
               {/* Timer Badge */}
               <div className={styles.timerBadge}>
-                Remaining {requestData.deadline.days}d {requestData.deadline.hours}h
+                Expires in {requestData.deadline.days}d {requestData.deadline.hours}h
               </div>
               
               {/* Save Button */}
@@ -224,7 +195,7 @@ export function ServiceRequestViewScreen({
               
               {/* Primary CTA */}
               <Button variant="brand" onClick={handleApply}>
-                Reply
+                Apply
               </Button>
             </div>
           </div>
@@ -236,16 +207,7 @@ export function ServiceRequestViewScreen({
               {/* Qualification Block */}
               <div className={styles.qualificationBlock}>
                 <div className={styles.qualRow}>
-                  <span className={styles.qualLabel}>Experience</span>
-                  <div className={styles.levelSwitcher}>
-                    <span className={styles.levelSegment}>Junior</span>
-                    <span className={`${styles.levelSegment} ${styles.levelActive}`}>{requestData.experienceLevel}</span>
-                    <span className={styles.levelSegment}>Senior</span>
-                  </div>
-                </div>
-
-                <div className={styles.qualRow}>
-                  <span className={styles.qualLabel}>Tech Stack</span>
+                  <span className={styles.qualLabel}>Skills & Tech</span>
                   <div className={styles.tagsList}>
                     {requestData.skills.map((skill) => (
                       <span key={skill} className={styles.techTag}>{skill}</span>
@@ -260,11 +222,6 @@ export function ServiceRequestViewScreen({
                       <span key={lang} className={styles.softTag}>{lang}</span>
                     ))}
                   </div>
-                </div>
-
-                <div className={styles.qualRow}>
-                  <span className={styles.qualLabel}>Contract</span>
-                  <span className={styles.qualValue}>{requestData.contractType}</span>
                 </div>
               </div>
 
@@ -313,28 +270,12 @@ export function ServiceRequestViewScreen({
 
             {/* Right Column: Sidebar */}
             <div className={styles.sidebarColumn}>
-              {/* Budget Card */}
-              <div className={styles.sidebarCard}>
-                <h4 className={styles.sidebarCardTitle}>Budget</h4>
-                <div className={styles.budgetAmount}>
-                  ${requestData.budget.from} - ${requestData.budget.to}/{requestData.budget.type === "hourly" ? "hr" : "project"}
-                </div>
-                <div className={styles.budgetMeta}>
-                  {requestData.budget.type === "hourly" ? "Hourly Rate" : "Fixed Price"}
-                  {requestData.budget.negotiable && " • Negotiable"}
-                </div>
-              </div>
-
-              {/* Logistics Card */}
+              {/* Company Info Card */}
               <div className={styles.sidebarCard}>
                 <ul className={styles.logisticsList}>
                   <li className={styles.logisticsItem}>
-                    <span className={styles.logLabel}>Start Date</span>
-                    <span className={styles.logValue}>{requestData.timeline.startDate}</span>
-                  </li>
-                  <li className={styles.logisticsItem}>
-                    <span className={styles.logLabel}>Workload</span>
-                    <span className={styles.logValue}>{requestData.timeline.workload}</span>
+                    <span className={styles.logLabel}>Company</span>
+                    <span className={styles.logValue}>{requestData.company}</span>
                   </li>
                   <li className={styles.logisticsItem}>
                     <span className={styles.logLabel}>Location</span>
@@ -343,33 +284,55 @@ export function ServiceRequestViewScreen({
                 </ul>
               </div>
 
-              {/* What Happens Next Card */}
+              {/* Logistics Card */}
               <div className={styles.sidebarCard}>
-                <h4 className={styles.sidebarCardTitle}>What happens next?</h4>
-                <div className={styles.processSteps}>
-                  <div className={styles.processStep}>
-                    <div className={styles.stepNumber}>1</div>
-                    <div className={styles.stepContent}>
-                      <strong className={styles.stepTitle}>Submit your application</strong>
-                      <p className={styles.stepText}>Fill out a brief form with your details and portfolio</p>
-                    </div>
-                  </div>
+                <ul className={styles.logisticsList}>
+                  <li className={styles.logisticsItem}>
+                    <span className={styles.logLabel}>Project Type</span>
+                    <span className={styles.logValue}>{requestData.timeline.startDate}</span>
+                  </li>
+                  <li className={styles.logisticsItem}>
+                    <span className={styles.logLabel}>Workload</span>
+                    <span className={styles.logValue}>{requestData.timeline.workload}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
 
-                  <div className={styles.processStep}>
-                    <div className={styles.stepNumber}>2</div>
-                    <div className={styles.stepContent}>
-                      <strong className={styles.stepTitle}>Manager reviews within 48h</strong>
-                      <p className={styles.stepText}>The hiring manager will review your application and respond</p>
-                    </div>
-                  </div>
+          {/* What Happens Next - Full Width Bottom Section */}
+          <div className={styles.processSection}>
+            <h2 className={styles.processSectionTitle}>What happens next?</h2>
+            <div className={styles.processSteps}>
+              <div className={styles.processStep}>
+                <div className={styles.stepNumber}>1</div>
+                <div className={styles.stepContent}>
+                  <strong className={styles.stepTitle}>Submit Your Application</strong>
+                  <p className={styles.stepText}>Complete the form with your details and work samples</p>
+                </div>
+              </div>
 
-                  <div className={styles.processStep}>
-                    <div className={styles.stepNumber}>3</div>
-                    <div className={styles.stepContent}>
-                      <strong className={styles.stepTitle}>Interview if shortlisted</strong>
-                      <p className={styles.stepText}>Selected candidates will be invited for a brief interview</p>
-                    </div>
-                  </div>
+              <div className={styles.processStep}>
+                <div className={styles.stepNumber}>2</div>
+                <div className={styles.stepContent}>
+                  <strong className={styles.stepTitle}>Wait for Response</strong>
+                  <p className={styles.stepText}>You'll hear back if the client wants to move forward</p>
+                </div>
+              </div>
+
+              <div className={styles.processStep}>
+                <div className={styles.stepNumber}>3</div>
+                <div className={styles.stepContent}>
+                  <strong className={styles.stepTitle}>Discuss the Project</strong>
+                  <p className={styles.stepText}>Selected candidates connect directly with the client</p>
+                </div>
+              </div>
+
+              <div className={styles.processStep}>
+                <div className={styles.stepNumber}>4</div>
+                <div className={styles.stepContent}>
+                  <strong className={styles.stepTitle}>Close the Deal via Mellow</strong>
+                  <p className={styles.stepText}>Complete the deal through the Mellow platform</p>
                 </div>
               </div>
             </div>
