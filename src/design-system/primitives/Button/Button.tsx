@@ -8,16 +8,18 @@ export function Button({
   leftIcon,
   children,
   className,
-  onClick
+  onClick,
+  type = "button"
 }: {
   variant: ButtonVariant;
   leftIcon?: ReactNode;
   children: ReactNode;
   className?: string;
   onClick?: () => void;
+  type?: "button" | "submit";
 }) {
   return (
-    <button className={[styles.button, styles[variant], className].filter(Boolean).join(" ")} type="button" onClick={onClick}>
+    <button className={[styles.button, styles[variant], className].filter(Boolean).join(" ")} type={type} onClick={onClick}>
       {leftIcon ? <span className={styles.icon}>{leftIcon}</span> : null}
       {children}
     </button>

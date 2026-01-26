@@ -2,12 +2,15 @@ import { useMemo, useState } from "react";
 import { RequestCreationEditScreen } from "./screens/RequestCreationEdit/RequestCreationEditScreen";
 import { SharePackScreen, type SharePackRequest } from "./screens/SharePack/SharePackScreen";
 import { ServiceRequestViewScreen } from "./screens/ServiceRequestView/ServiceRequestViewScreen";
+import { AuthScreen } from "./screens/Auth/AuthScreen";
+import { RequestManagementScreen } from "./screens/RequestManagement/RequestManagementScreen";
 
-type ScreenId = "edit" | "share" | "view";
+type ScreenId = "edit" | "share" | "view" | "auth" | "management";
 
 export function App() {
-  const [currentScreen, setCurrentScreen] = useState<ScreenId>("view");
+  const [currentScreen, setCurrentScreen] = useState<ScreenId>("management");
   const [savedRequest, setSavedRequest] = useState<SharePackRequest | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const nav = useMemo(() => {
     return {
@@ -15,10 +18,30 @@ export function App() {
       toView: () => setCurrentScreen("view"),
       toShare: (req?: SharePackRequest) => {
         if (req) setSavedRequest(req);
-        if (req || savedRequest) setCurrentScreen("share");
-      }
+        // After saving, check if authenticated
+        if (!isAuthenticated) {
+          setCurrentScreen("auth");
+        } else if (req || savedRequest) {
+          setCurrentScreen("share");
+        }
+      },
+      toAuth: () => setCurrentScreen("auth"),
+      toManagement: () => setCurrentScreen("management")
     };
-  }, [savedRequest]);
+  }, [savedRequest, isAuthenticated]);
+
+  const handleAuthComplete = () => {
+    setIsAuthenticated(true);
+    setCurrentScreen("management");
+  };
+
+  if (currentScreen === "auth") {
+    return <AuthScreen onComplete={handleAuthComplete} />;
+  }
+
+  if (currentScreen === "management") {
+    return <RequestManagementScreen />;
+  }
 
   if (currentScreen === "view") {
     return (
