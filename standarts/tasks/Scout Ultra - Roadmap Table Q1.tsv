@@ -1,0 +1,12 @@
+Неделя	Фаза	Эпики	Development	Design	Operations	Ключевая веха
+0-2	Pre-Dev	Подготовка	Tech Spec, Architecture Decision (Monolith)	Design System v0.1	—	Architecture: Monolith Extension
+3-4	Phase 0.5 + Phase 1	EPIC 1, EPIC 10 начало	Data Model, Assignment Logic	WF-A01, WF-A02 minimal	Hiring Orchestrators	DB ready, 2-3 hired
+5-6	Phase 1	EPIC 1, EPIC 2 minimal	Scoring + Attribution, Admin Console minimal	—	Onboarding (manual workflow)	Admin Console ready
+7-8	Phase 2	EPIC 3	Implicit triggers, Silent Orchestration	WF-C01, WF-C02, WF-C03	First real cases, SOP testing	Implicit triggers work
+9-10	Phase 2	EPIC 3	Implicit Beta (5-10 SR), Notifications	WF-C04, WF-C05	SOP iteration	Implicit Live (20%)
+10.5	BUFFER 1	—	Bug fixes, Implicit optimization	—	Orchestrators feedback	Phase 2 stable
+11-12	Phase 3	EPIC 4, EPIC 5 начало	Paywall, Booking, Stripe compliance	Final Review WF-C*	VIP-клиенты отбор	Paywall + Booking ready
+13-14	Phase 3	EPIC 4, EPIC 5, EPIC 7 базовый, EPIC 11	Progress Widget, Concierge, Notifications, Feedback	UI Components	Email campaigns, Help Center	Progress Widget + Feedback
+15-16	Phase 3	EPIC 4, EPIC 5, EPIC 11	Enhanced Shortlist (БЕЗ видео), Full Notifications, GTM	Micro-interactions	Help Center articles	E2E tests passed
+17-18	Phase 3 SOFT LAUNCH	EPIC 11 final	Soft Launch (5-10 VIP), Daily monitoring	—	Feedback collection, User interviews	Soft Launch running
+19	BUFFER 2 & DECISION	—	Hotfixes, Metrics review, Retrospective	—	Q2 backlog prep	Go/No-Go Q2 Decision 🎯

@@ -1,0 +1,12 @@
+Epic	Название	Описание	Оценка (недели)	Приоритет	Ценность для бизнеса	Зависимости
+EPIC 1	Foundation & Core Infrastructure	Базовая инфраструктура: Data Model, Assignment Logic, Scoring Integrity, Attribution	3-4	Must Have	Фундамент для обоих режимов работы	Нет
+EPIC 2	Orchestrator Admin Console (MVP)	Минимальный интерфейс для менеджера: Queue, SR Workbench, Enrichment, Release	4-5	Must Have	Возможность запустить Implicit-режим	EPIC 1
+EPIC 3	Implicit Mode (Client-Side)	"Магический" режим: автотриггеры, silent orchestration, seamless notifications	2-3	Must Have	Решение проблемы холодного старта	EPIC 1, EPIC 2
+EPIC 4	Explicit Mode Activation & UI	Платный режим: Entry Points, Booking, Progress Widget, Concierge Card, Enhanced Shortlist	5-6	Must Have	Монетизация услуги, SLA-обязательства	EPIC 1, EPIC 2, EPIC 3
+EPIC 5	Notifications & Communication Layer	Система уведомлений: Orchestrator alerts (Slack/Telegram), Client notifications, Candidate emails	3-4	Must Have	Минимизация пропущенных SLA	EPIC 2, EPIC 4
+EPIC 6	Advanced Orchestrator Tools	Инструменты для scale: AI Recommendations, Shadow Profiles, Bulk Invite, Analytics	4-5	Should Have	Масштабирование (1 менеджер → 10+ SR)	EPIC 2
+EPIC 7	Quality Control & Feedback Loop	Контроль качества: Client Feedback, Rating System, Audit Trail, Rejection Loop, GDPR	3-4	Should Have	Защита репутации, основа для роста команды	EPIC 4
+EPIC 8	Video Infrastructure & Enrichment	Видео-верификация: Recording, Storage, In-App Player, Transcription	4-5	Nice to Have	Ключевой дифференциатор Ultra	EPIC 4
+EPIC 9	Design System & Wireframes	12 wireframes (7 Client-Side + 5 Admin-Side), UI Components Library, Design Tokens	3-4	Must Have	Единообразие UX, ускорение frontend-разработки	Нет
+EPIC 10	Operations & Enablement	Найм, обучение Orchestrators, SOP (5+ документов), Playbooks, Knowledge Base, QA процессы	3-4	Must Have	Без обученных менеджеров функционал не работает	EPIC 2
+EPIC 11	GTM & Communication Plan	Email campaigns, Help Center, Video tutorials, Blog, Social media, Sales enablement	2-3	Should Have	Пользователи должны узнать о Ultra и начать использовать	EPIC 4

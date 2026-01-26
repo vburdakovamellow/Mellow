@@ -1,0 +1,12 @@
+Epic	Название	Описание Q1	Оценка (недели)	Приоритет Q1	Зависимости	Статус
+EPIC 1	Foundation & Core Infrastructure	Data Model, Assignment Logic, Scoring Integrity, Attribution	3-4	Must Have	Нет	Q1
+EPIC 2	Orchestrator Admin Console (Минимальный)	Базовый интерфейс: список SR, Copy Share/Invite Pack, кнопка Notify Client	1-2	Must Have	EPIC 1	Q1 (урезанный)
+EPIC 3	Implicit Mode (Client-Side)	"Магический" режим: автотриггеры, silent orchestration, базовые уведомления	2-3	Must Have	EPIC 1, EPIC 2	Q1
+EPIC 4	Explicit Mode Activation & UI (без видео)	Платный режим: Entry Points, Booking, Progress Widget, Concierge Card, Shortlist БЕЗ видео	4-5	Must Have	EPIC 1, 2, 3	Q1 (без видео)
+EPIC 5	Notifications & Communication Layer	Базовые уведомления: Email, Slack для Orchestrator, Client notifications	3-4	Must Have	EPIC 2, 4	Q1
+EPIC 6	Advanced Orchestrator Tools	AI Recommendations, Shadow Profiles, Bulk Invite, Analytics	4-5	Won't Have Q1	EPIC 2	Q2
+EPIC 7	Quality Control & Feedback Loop	Q1: Базовый Client Feedback (NPS + текст). Q2-Q3: Полная версия с KPI tracking	1 (Q1), 3-4 (Q2-Q3)	Частично Q1	EPIC 4	Q1 (базовый)
+EPIC 8	Video Infrastructure & Enrichment	Recording, Storage, In-App Player, Transcription	4-5	Won't Have Q1	EPIC 4	Q2-Q3
+EPIC 9	Design System & Wireframes	Q1: 6 Client-Side + 2 Admin-Side (без видео). Q2-Q3: Остальные wireframes	2-3 (Q1), 1-2 (Q2-Q3)	Must Have	Нет	Q1 (урезанный)
+EPIC 10	Operations & Enablement	Q1: Найм, обучение, 4 SOP, Playbooks, manual tracking. Q2-Q3: Video SOP, Automated metrics	2-3 (Q1), 1-2 (Q2-Q3)	Must Have	EPIC 2	Q1 (базовый)
+EPIC 11	GTM & Communication Plan	Email campaigns, Help Center (базовый), Product video tutorials, Sales enablement	2-3	Must Have	EPIC 4	Q1

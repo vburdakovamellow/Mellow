@@ -1,0 +1,20 @@
+Неделя	Фаза	Эпики	Development	Design	Operations	Grooming	Ключевая веха
+0-2	Pre-Dev	EPIC 9 начало	Tech Spec, Architecture	Design System v0.1, Moodboard	—	EPIC 1-2	Specs approved, Design System v0.1
+3-4	Phase 0.5 + Phase 1	EPIC 1, EPIC 10 начало	Data Model, Assignment Logic (1.1-1.2)	WF-A01, WF-A02 Hi-Fi	Hiring 2-3 Orchestrators	EPIC 3	DB ready, Orchestrators hired
+5-6	Phase 1	EPIC 1, EPIC 2	Scoring (1.3-1.4), Admin Console UI (2.1-2.3)	WF-A03, Components Lib	Onboarding (SOP training)	EPIC 4-5	Admin Console MVP
+7	Phase 1 BUFFER	EPIC 2 доработки	Bug fixes, Admin Console iteration	—	SOP finalization	—	Orchestrators certified
+8-9	Phase 2	EPIC 3, EPIC 9 Client	Implicit triggers (3.1-3.2)	WF-C01, WF-C02, WF-C03	First real cases	EPIC 4-5, 11	Implicit triggers work
+10-11	Phase 2	EPIC 3	Implicit Beta (3.3), Testing 5-10 SR	WF-C04, WF-C05, WF-C06	SOP iteration	—	Testing on real SR
+12	Phase 2 BUFFER	EPIC 3 optimization	Implicit optimization	Client-Side final review	—	—	Implicit Live (20%)
+13-14	Phase 3	EPIC 4, EPIC 5, EPIC 11	Paywall, Booking (4.1-4.2), Stripe	Final Review WF-C*	VIP clients selection	EPIC 6-7	Paywall + Booking ready
+15-16	Phase 3	EPIC 4, EPIC 5, EPIC 11	Progress Widget (4.3-4.4), Notifications (5.1-5.2)	UI Components handoff	Email campaigns	—	Progress Widget done
+17-18	Phase 3	EPIC 4, EPIC 5, EPIC 11	Enhanced Shortlist (4.5), Notifications (5.3-5.4), Help Center	Micro-interactions polish	Help Center articles	EPIC 8	E2E tests passed
+19	Phase 3 BUFFER	EPIC 4 polishing	Bug fixes, Soft Launch (5-10 VIP)	—	Feedback collection	—	First payments 💰
+20-21	Phase 4	EPIC 6, EPIC 7, EPIC 10	AI Recommendations (6.1-6.2), Feedback (7.1)	—	Metrics Dashboard	—	AI Recommendations live
+22-23	Phase 4	EPIC 6, EPIC 7	Analytics (6.3-6.4), Rating (7.2), Rejection Loop (7.4)	WF-C06 implementation	Continuous Improvement	EPIC 8 detail	Analytics Dashboard
+24-25	Phase 4	EPIC 7	Audit Trail (7.3), GDPR, Performance tuning	—	SOP updates	Post-Launch Plan	Quality Control done
+26	Phase 4 BUFFER	EPIC 6-7 polishing	Bug fixes, A/B test analysis	—	Retrospective	—	Scaling ready
+27-28	Phase 5	EPIC 8, EPIC 9	Video infra (8.1-8.2)	WF-C05 Video Player	Video training	—	Video upload works
+29-30	Phase 5	EPIC 8	Video Player (8.3), Transcription (8.4)	Video UX polish	—	—	Player integrated
+31	Phase 5	EPIC 8	Stress Testing (100+ videos)	Accessibility audit	—	—	Load tests passed
+32	Phase 5 FINAL	All EPICs	Complete Regression, Launch Prep	Final QA	Scaling plan	—	FULL ULTRA LIVE 🚀
