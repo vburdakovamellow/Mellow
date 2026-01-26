@@ -283,10 +283,10 @@ export function ServiceRequestViewScreen({
               <div className={styles.sidebarCard}>
                 <h4 className={styles.sidebarCardTitle}>Budget</h4>
                 <div className={styles.budgetAmount}>
-                  ${requestData.budget.from} - ${requestData.budget.to}/{requestData.budget.type === "hourly" ? "hr" : "project"}
+                  ${requestData.budget.from} - ${requestData.budget.to}
                 </div>
                 <div className={styles.budgetMeta}>
-                  {requestData.contractType} • {requestData.budget.type === "hourly" ? "Hourly Rate" : "Fixed Price"}
+                  {requestData.budget.type === "hourly" ? "Hourly Rate" : "Fixed Price"}
                   {requestData.budget.negotiable && " • Negotiable"}
                 </div>
               </div>
