@@ -68,8 +68,8 @@ export function ServiceRequestViewScreen({
     publishedDate: "January 20, 2026",
     title: "Graphic Designer for Social Media Optimisation",
     talentProfile: "Graphic Designer, Middle", // From production "Talent profile"
-    company: "", // Not filled in production
-    isVerified: false,
+    company: "Mellow", // Company name
+    isVerified: true,
     industryBlind: "Creative Services",
     timezone: "",
     experienceLevel: "Middle",
@@ -103,11 +103,11 @@ export function ServiceRequestViewScreen({
       marketRate: "High" // From production screenshot
     },
     timeline: {
-      startDate: "ASAP",
+      startDate: "Ongoing project",
       workload: "Less 20h/week", // Matching production format
       flexible: false
     },
-    location: "Remote from any country",
+    location: "Cyprus",
     deadline: {
       days: 3,
       hours: 12
@@ -161,37 +161,33 @@ export function ServiceRequestViewScreen({
           {/* Header: Identity & Action */}
           <div className={styles.requestHeader}>
             <div className={styles.requestHeaderLeft}>
-              {/* Breadcrumbs - only for author */}
-              {requestData.isAuthor && (
-                <div className={styles.breadcrumbs}>
-                  <span className={styles.breadcrumbLink} onClick={handleBackToRequests}>
-                    Requests
-                  </span>
-                  <span className={styles.breadcrumbSeparator}>/</span>
-                  <span className={styles.breadcrumbCurrent}>#SR-{requestData.id}</span>
-                </div>
-              )}
+              {/* Title with Status Badge */}
+              <div className={styles.titleRow}>
+                <h1 className={styles.requestTitle}>{requestData.title}</h1>
+                <span className={styles.statusBadge}>New</span>
+              </div>
               
-              {/* Title */}
-              <h1 className={styles.requestTitle}>{requestData.title}</h1>
-              
-              {/* Trust Row: Company + Verified */}
-              <div className={styles.trustRow}>
-                <span className={styles.clientName}>
-                  {requestData.company || requestData.industryBlind}
-                </span>
+              {/* Company Info Row */}
+              <div className={styles.companyRow}>
+                <span className={styles.companyName}>{requestData.company}</span>
                 {requestData.isVerified && (
                   <div
-                    className={styles.verifiedIcon}
+                    className={styles.verifiedIconSmall}
                     onMouseEnter={() => setShowVerificationTooltip(true)}
                     onMouseLeave={() => setShowVerificationTooltip(false)}
                   >
                     <IconCheck size={16} />
                     {showVerificationTooltip && (
-                      <div className={styles.tooltip}>Verified Customer</div>
+                      <div className={styles.tooltipSmall}>Verified Customer</div>
                     )}
                   </div>
                 )}
+                <span className={styles.separator}>•</span>
+                <a href="https://mellow.io" target="_blank" rel="noopener noreferrer" className={styles.companyLink}>
+                  mellow.io
+                </a>
+                <span className={styles.separator}>•</span>
+                <span className={styles.companyLocation}>{requestData.location}</span>
               </div>
             </div>
 
@@ -200,16 +196,6 @@ export function ServiceRequestViewScreen({
               <div className={styles.timerBadge}>
                 Remaining {requestData.deadline.days}d {requestData.deadline.hours}h
               </div>
-              
-              {/* Save Button */}
-              <button
-                type="button"
-                className={[styles.iconButton, isSaved ? styles.iconButtonActive : ""].filter(Boolean).join(" ")}
-                onClick={() => setIsSaved(!isSaved)}
-                aria-label="Save request"
-              >
-                <IconStar size={20} filled={isSaved} />
-              </button>
               
               {/* Primary CTA */}
               <Button variant="brand" onClick={handleApply}>
@@ -230,7 +216,7 @@ export function ServiceRequestViewScreen({
                 </div>
 
                 <div className={styles.qualRow}>
-                  <span className={styles.qualLabel}>Tech Stack</span>
+                  <span className={styles.qualLabel}>Skills & Tech</span>
                   <div className={styles.tagsList}>
                     {requestData.skills.map((skill) => (
                       <span key={skill} className={styles.techTag}>{skill}</span>
@@ -245,11 +231,6 @@ export function ServiceRequestViewScreen({
                       <span key={lang} className={styles.softTag}>{lang}</span>
                     ))}
                   </div>
-                </div>
-
-                <div className={styles.qualRow}>
-                  <span className={styles.qualLabel}>Contract</span>
-                  <span className={styles.qualValue}>{requestData.contractType}</span>
                 </div>
               </div>
 
@@ -305,7 +286,7 @@ export function ServiceRequestViewScreen({
                   ${requestData.budget.from} - ${requestData.budget.to}/{requestData.budget.type === "hourly" ? "hr" : "project"}
                 </div>
                 <div className={styles.budgetMeta}>
-                  {requestData.budget.type === "hourly" ? "Hourly Rate" : "Fixed Price"}
+                  {requestData.contractType} • {requestData.budget.type === "hourly" ? "Hourly Rate" : "Fixed Price"}
                   {requestData.budget.negotiable && " • Negotiable"}
                 </div>
               </div>
@@ -314,16 +295,12 @@ export function ServiceRequestViewScreen({
               <div className={styles.sidebarCard}>
                 <ul className={styles.logisticsList}>
                   <li className={styles.logisticsItem}>
-                    <span className={styles.logLabel}>Start Date</span>
+                    <span className={styles.logLabel}>Project Type</span>
                     <span className={styles.logValue}>{requestData.timeline.startDate}</span>
                   </li>
                   <li className={styles.logisticsItem}>
                     <span className={styles.logLabel}>Workload</span>
                     <span className={styles.logValue}>{requestData.timeline.workload}</span>
-                  </li>
-                  <li className={styles.logisticsItem}>
-                    <span className={styles.logLabel}>Location</span>
-                    <span className={styles.logValue}>{requestData.location}</span>
                   </li>
                 </ul>
               </div>
