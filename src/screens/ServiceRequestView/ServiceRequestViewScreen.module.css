@@ -2,7 +2,6 @@
 .screen {
   min-height: 100vh;
   background: #ffffff;
-  padding-bottom: 80px;
 }
 
 /* Header */
@@ -488,7 +487,7 @@
 /* Process Section - Full Width Bottom */
 .processSection {
   margin-top: 48px;
-  margin-bottom: 100px;
+  margin-bottom: 48px;
   padding: 40px;
   background: #ffffff;
   border: 1px solid #000000;

@@ -44,17 +44,6 @@ function Header({
     <div className={styles.fixedHeader}>
       <div className={[styles.container, styles.headerInner].join(" ")}>
         <div className={styles.logo}>mellow</div>
-        <div className={styles.nav}>
-          <Button variant="secondary" onClick={onGoToEdit}>
-            Edit
-          </Button>
-          <Button variant="secondary" onClick={onGoToShare}>
-            Share pack
-          </Button>
-          <Button variant="brand" disabled={active === "view"} onClick={onGoToView}>
-            View
-          </Button>
-        </div>
       </div>
     </div>
   );
@@ -224,7 +213,7 @@ export function ServiceRequestViewScreen({
               
               {/* Primary CTA */}
               <Button variant="brand" onClick={handleApply}>
-                Reply
+                Apply
               </Button>
             </div>
           </div>
@@ -370,15 +359,6 @@ export function ServiceRequestViewScreen({
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Sticky Apply Button */}
-      <div className={styles.stickyApplyBar}>
-        <div className={styles.container}>
-          <Button variant="brand" onClick={handleApply} className={styles.stickyApplyButton}>
-            Apply Now
-          </Button>
         </div>
       </div>
     </div>

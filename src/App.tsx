@@ -6,7 +6,7 @@ import { ServiceRequestViewScreen } from "./screens/ServiceRequestView/ServiceRe
 type ScreenId = "edit" | "share" | "view";
 
 export function App() {
-  const [currentScreen, setCurrentScreen] = useState<ScreenId>("edit");
+  const [currentScreen, setCurrentScreen] = useState<ScreenId>("view");
   const [savedRequest, setSavedRequest] = useState<SharePackRequest | null>(null);
 
   const nav = useMemo(() => {
