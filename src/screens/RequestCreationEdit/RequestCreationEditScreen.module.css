@@ -134,6 +134,23 @@
   margin: 0;
 }
 
+.descriptionHeader {
+  font-family: 'PP Neue World', var(--ds-font-family-accent);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 32px;
+  color: #232222;
+  margin: 0;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.descriptionHeader:first-child {
+  margin-top: 0;
+}
+
 .requestParametersDescription {
   font-family: 'Suisse Int\'l', var(--ds-font-family-body);
   font-style: normal;

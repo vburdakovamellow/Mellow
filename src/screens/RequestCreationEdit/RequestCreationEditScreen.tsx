@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect, ReactNode } from "react";
 import { DevButtons } from "../../components/DevButtons/DevButtons";
 import { Button } from "../../design-system/primitives/Button/Button";
 import { Chip } from "../../design-system/primitives/Chip/Chip";
@@ -993,12 +993,115 @@ function ProjectSummary({
   showWarning?: boolean;
   onDismissWarning?: () => void;
 }) {
+  // Format text with headers and paragraphs
+  const formatTextWithHeaders = (text: string): ReactNode => {
+    if (!text) return null;
+    
+    // Split by lines and format headers
+    const lines = text.split('\n');
+    const formattedLines: ReactNode[] = [];
+    const headerPatterns = ['Summary', 'Key Responsibilities', 'Requirements', 'Preferred Skills'];
+    
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      // Check if line is exactly a header
+      const isExactHeader = headerPatterns.some(header => trimmedLine === header);
+      
+      // Check if line starts with a header followed by text (e.g., "Summary We are seeking...")
+      let headerMatch: string | null = null;
+      let contentAfterHeader = '';
+      for (const header of headerPatterns) {
+        if (trimmedLine.startsWith(header)) {
+          const afterHeader = trimmedLine.substring(header.length).trim();
+          if (afterHeader.length > 0 || trimmedLine === header) {
+            headerMatch = header;
+            contentAfterHeader = afterHeader;
+            break;
+          }
+        }
+      }
+      
+      if (isExactHeader) {
+        formattedLines.push(
+          <strong 
+            key={`header-${index}`} 
+            style={{ 
+              fontWeight: 600, 
+              display: 'block', 
+              marginTop: index > 0 ? '16px' : '0', 
+              marginBottom: '8px',
+              fontSize: '14px',
+              lineHeight: '18px',
+              color: 'var(--ds-color-text-primary)'
+            }}
+          >
+            {trimmedLine}
+          </strong>
+        );
+      } else if (headerMatch) {
+        // Line starts with header but has content after it
+        formattedLines.push(
+          <strong 
+            key={`header-${index}`} 
+            style={{ 
+              fontWeight: 600, 
+              display: 'block', 
+              marginTop: index > 0 ? '16px' : '0', 
+              marginBottom: '8px',
+              fontSize: '14px',
+              lineHeight: '18px',
+              color: 'var(--ds-color-text-primary)'
+            }}
+          >
+            {headerMatch}
+          </strong>
+        );
+        if (contentAfterHeader) {
+          formattedLines.push(
+            <span 
+              key={`content-${index}`} 
+              style={{ 
+                display: 'block', 
+                marginBottom: '8px'
+              }}
+            >
+              {contentAfterHeader}
+            </span>
+          );
+        }
+      } else if (trimmedLine) {
+        // Check if line starts with bullet point
+        const isBullet = trimmedLine.startsWith('•');
+        formattedLines.push(
+          <span 
+            key={`line-${index}`} 
+            style={{ 
+              display: 'block', 
+              marginBottom: isBullet ? '4px' : '8px',
+              paddingLeft: isBullet ? '0' : '0'
+            }}
+          >
+            {line}
+          </span>
+        );
+      } else {
+        // Empty line for paragraph break
+        formattedLines.push(<br key={`br-${index}`} />);
+      }
+    });
+    
+    return <>{formattedLines}</>;
+  };
+
   return (
     <div className={styles.roleSkillsSummary}>
       <div className={styles.roleSkillsSummaryContent}>
         <div style={{ flex: 1 }}>
           <h3 className={styles.roleSkillsTitle}>{title}</h3>
-          <p className={styles.roleSkillsDescription}>{text}</p>
+          <div className={styles.roleSkillsDescription}>
+            {formatTextWithHeaders(text)}
+          </div>
           {showWarning && (
             <div style={{ marginTop: 'var(--ds-space-12)' }}>
               <ManualEditWarning onDismiss={onDismissWarning} />
@@ -1063,6 +1166,77 @@ function ProjectSummarySection({
   onSave: () => void;
   onCancel: () => void;
 }) {
+  const editorRef = useRef<HTMLDivElement>(null);
+  const isEditingRef = useRef(false);
+  const lastTextRef = useRef(text);
+
+  // Format text with headers for editor display (same as preview) - returns HTML string
+  const formatEditorTextAsHTML = (text: string): string => {
+    if (!text) return '';
+    
+    // Split by lines and format headers
+    const lines = text.split('\n');
+    const formattedParts: string[] = [];
+    const headerPatterns = ['Summary', 'Key Responsibilities', 'Requirements', 'Preferred Skills'];
+    
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      // Check if line is a header
+      const isHeader = headerPatterns.some(header => trimmedLine === header);
+      
+      // Check if line starts with a header followed by text
+      let headerMatch: string | null = null;
+      let contentAfterHeader = '';
+      if (!isHeader) {
+        for (const header of headerPatterns) {
+          if (trimmedLine.startsWith(header)) {
+            const afterHeader = trimmedLine.substring(header.length).trim();
+            if (afterHeader.length > 0) {
+              headerMatch = header;
+              contentAfterHeader = afterHeader;
+              break;
+            }
+          }
+        }
+      }
+      
+      if (isHeader) {
+        const marginTop = index > 0 ? '16px' : '0';
+        formattedParts.push(
+          `<h2 class="${styles.descriptionHeader}" style="margin-top: ${marginTop};">${trimmedLine}</h2>`
+        );
+      } else if (headerMatch) {
+        const marginTop = index > 0 ? '16px' : '0';
+        formattedParts.push(
+          `<h2 class="${styles.descriptionHeader}" style="margin-top: ${marginTop};">${headerMatch}</h2>`
+        );
+        if (contentAfterHeader) {
+          formattedParts.push(
+            `<span style="display: block; margin-bottom: 8px;">${contentAfterHeader}</span>`
+          );
+        }
+      } else if (trimmedLine) {
+        formattedParts.push(
+          `<span style="display: block; margin-bottom: 8px;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`
+        );
+      } else {
+        formattedParts.push('<br />');
+      }
+    });
+    
+    return formattedParts.join('');
+  };
+
+  // Initialize and update HTML when text changes externally (not during editing)
+  useEffect(() => {
+    if (editorRef.current && !isEditingRef.current) {
+      if (text !== lastTextRef.current || !editorRef.current.innerHTML) {
+        editorRef.current.innerHTML = formatEditorTextAsHTML(text);
+        lastTextRef.current = text;
+      }
+    }
+  }, [text]);
+
   return (
     <section className={styles.roleSkillsSection}>
       <div className={styles.roleSkillsSummaryContent}>
@@ -1081,21 +1255,37 @@ function ProjectSummarySection({
           <WysiwygToolbar />
           <div className={styles.content}>
             <div className={styles.block}>
-              <p 
+              <div 
+                ref={editorRef}
                 className="ds-b1" 
                 contentEditable 
                 suppressContentEditableWarning
-                onInput={(e) => onTextChange(e.currentTarget.textContent || '')}
+                onFocus={() => {
+                  isEditingRef.current = true;
+                }}
+                onBlur={(e) => {
+                  isEditingRef.current = false;
+                  const newText = e.currentTarget.textContent || '';
+                  onTextChange(newText);
+                  lastTextRef.current = newText;
+                  // Re-format after editing
+                  if (editorRef.current) {
+                    editorRef.current.innerHTML = formatEditorTextAsHTML(newText);
+                  }
+                }}
+                onInput={(e) => {
+                  // Don't update during typing to avoid cursor jumps
+                }}
                 style={{ 
                   minHeight: '60px',
                   outline: 'none',
                   border: '1px solid transparent',
                   borderRadius: '4px',
-                  padding: '4px'
+                  padding: '4px',
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word'
                 }}
-              >
-                {text}
-              </p>
+              />
             </div>
           </div>
         </div>
@@ -1227,6 +1417,7 @@ export function RequestPreview({
   workload,
   companyName,
   website,
+  descriptionText,
   projectSummaryText,
   keyResponsibilitiesList,
   requirementsList,
@@ -1248,6 +1439,7 @@ export function RequestPreview({
   workload: string;
   companyName: string;
   website: string;
+  descriptionText?: string;
   projectSummaryText: string;
   keyResponsibilitiesList: string[];
   requirementsList: string[];
@@ -1280,6 +1472,91 @@ export function RequestPreview({
       : "Flexible";
 
   const languagesText = languages.length > 0 ? languages.join(", ") : "";
+
+  // Format description text for preview with styled headers
+  const formatPreviewDescription = (text: string): ReactNode => {
+    if (!text) return null;
+    
+    // Split by lines and format headers
+    const lines = text.split('\n');
+    const formattedLines: ReactNode[] = [];
+    const headerPatterns = ['Summary', 'Key Responsibilities', 'Requirements', 'Preferred Skills'];
+    let headerCount = 0;
+    
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      // Check if line is a header (Summary, Key Responsibilities, Requirements, Preferred Skills)
+      const isHeader = headerPatterns.some(header => trimmedLine === header);
+      
+      // Check if line starts with a header followed by text
+      let headerMatch: string | null = null;
+      let contentAfterHeader = '';
+      if (!isHeader) {
+        for (const header of headerPatterns) {
+          if (trimmedLine.startsWith(header)) {
+            const afterHeader = trimmedLine.substring(header.length).trim();
+            if (afterHeader.length > 0) {
+              headerMatch = header;
+              contentAfterHeader = afterHeader;
+              break;
+            }
+          }
+        }
+      }
+      
+      if (isHeader) {
+        headerCount++;
+        formattedLines.push(
+          <h2 key={`header-${index}`} className={styles.descriptionHeader}>
+            {trimmedLine}
+          </h2>
+        );
+      } else if (headerMatch) {
+        headerCount++;
+        formattedLines.push(
+          <h2 key={`header-${index}`} className={styles.descriptionHeader}>
+            {headerMatch}
+          </h2>
+        );
+        if (contentAfterHeader) {
+          formattedLines.push(
+            <span key={`content-${index}`} style={{ display: 'block', marginBottom: '8px' }}>
+              {contentAfterHeader}
+            </span>
+          );
+        }
+      } else if (trimmedLine) {
+        formattedLines.push(
+          <span key={index} style={{ display: 'block', marginBottom: '8px' }}>
+            {line}
+          </span>
+        );
+      } else {
+        // Empty line
+        formattedLines.push(<br key={index} />);
+      }
+    });
+    
+    return <>{formattedLines}</>;
+  };
+
+  const previewDescriptionText = descriptionText || (() => {
+    // Fallback to old format if descriptionText is not available
+    let text = '';
+    if (projectSummaryText) {
+      text += `Summary\n${projectSummaryText}\n\n`;
+    }
+    if (keyResponsibilitiesList.length > 0) {
+      text += `Key Responsibilities\n${keyResponsibilitiesList.map(r => `• ${r}`).join('\n')}\n\n`;
+    }
+    if (requirementsList.length > 0) {
+      text += `Requirements\n${requirementsList.map(r => `• ${r}`).join('\n')}\n\n`;
+    }
+    if (preferredSkillsList.length > 0) {
+      text += `Preferred Skills\n${preferredSkillsList.map(s => `• ${s}`).join('\n')}`;
+    }
+    return text.trim();
+  })();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -1325,13 +1602,14 @@ export function RequestPreview({
               <div className={styles.previewMeta}>
                 <span>{companyName}</span>
                 {website && <span> • {website}</span>}
-                {languagesText && <span> • {languagesText}</span>}
+                {/* {languagesText && <span> • {languagesText}</span>} */}
               </div>
             )}
           </div>
 
+          {/* Talent profile sections hidden for first iteration */}
           {/* Request Parameters */}
-          <div className={styles.previewSection}>
+          {/* <div className={styles.previewSection}>
             <h3 className={styles.previewHeaderSectionTitle}>Experience</h3>
             <div className={styles.previewChips}>
               <span className={styles.previewChip}>{experienceLevel}</span>
@@ -1358,7 +1636,7 @@ export function RequestPreview({
                 ))}
               </div>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Budget Block - отдельно и хорошо виден */}
@@ -1408,13 +1686,14 @@ export function RequestPreview({
 
         </div>
 
-        {/* Content Card - Summary through Experience Level */}
+        {/* Content Card - Description */}
         <div className={styles.previewHeaderCard}>
-          {/* Project Description */}
-          {projectSummaryText && (
+          {/* Project Description - unified text with headers */}
+          {previewDescriptionText && (
             <div className={styles.previewSection}>
-              <h3 className={styles.previewSectionTitle}>Summary</h3>
-              <p className={styles.previewText}>{projectSummaryText}</p>
+              <div className={styles.previewText}>
+                {formatPreviewDescription(previewDescriptionText)}
+              </div>
               {/* Video Note Example */}
               <div className={styles.previewVideoNote}>
                 <div className={styles.previewVideoNoteThumbnail}>
@@ -1425,39 +1704,6 @@ export function RequestPreview({
                   <span className={styles.previewVideoNoteDuration}>0:45</span>
                 </div>
               </div>
-            </div>
-          )}
-
-          {keyResponsibilitiesList.length > 0 && (
-            <div className={styles.previewSection}>
-              <h3 className={styles.previewSectionTitle}>Key Responsibilities</h3>
-              <ul className={styles.previewList}>
-                {keyResponsibilitiesList.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {requirementsList.length > 0 && (
-            <div className={styles.previewSection}>
-              <h3 className={styles.previewSectionTitle}>Requirements</h3>
-              <ul className={styles.previewList}>
-                {requirementsList.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {preferredSkillsList.length > 0 && (
-            <div className={styles.previewSection}>
-              <h3 className={styles.previewSectionTitle}>Preferred Skills</h3>
-              <ul className={styles.previewList}>
-                {preferredSkillsList.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
             </div>
           )}
 
@@ -1528,6 +1774,8 @@ export function RequestCreationEditScreen() {
   const [isTimelineExpanded, setIsTimelineExpanded] = useState(false);
   const [isCompanyExpanded, setIsCompanyExpanded] = useState(false);
   const [isProjectTitleExpanded, setIsProjectTitleExpanded] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  // Keep old expanded states for backward compatibility (will be removed)
   const [isProjectSummaryExpanded, setIsProjectSummaryExpanded] = useState(false);
   const [isKeyResponsibilitiesExpanded, setIsKeyResponsibilitiesExpanded] = useState(false);
   const [isRequirementsExpanded, setIsRequirementsExpanded] = useState(false);
@@ -1577,36 +1825,75 @@ export function RequestCreationEditScreen() {
   const [projectTitle, setProjectTitle] = useState("Graphic Designer for Social Media Optimisation");
   const [tempProjectTitle, setTempProjectTitle] = useState(projectTitle);
 
-  // Project Summary state
-  const [projectSummaryText, setProjectSummaryText] = useState("We are seeking a talented Graphic Designer to lead the visual redesign of our social media presence and marketing materials. This project aims to enhance brand identity, improve visual appeal, and optimize graphics for engagement and clarity. The ideal candidate will collaborate closely with marketing managers and content creators to create intuitive, engaging, and modern visual designs that align with brand guidelines and audience preferences.");
-  const [tempProjectSummaryText, setTempProjectSummaryText] = useState(projectSummaryText);
+  // Helper function to format description with headers
+  const formatDescriptionWithHeaders = (
+    summary: string,
+    responsibilities: string[],
+    requirements: string[],
+    preferredSkills: string[]
+  ): string => {
+    let text = '';
+    if (summary) {
+      text += `Summary\n${summary}\n\n`;
+    }
+    if (responsibilities.length > 0) {
+      text += `Key Responsibilities\n${responsibilities.map(r => `• ${r}`).join('\n')}\n\n`;
+    }
+    if (requirements.length > 0) {
+      text += `Requirements\n${requirements.map(r => `• ${r}`).join('\n')}\n\n`;
+    }
+    if (preferredSkills.length > 0) {
+      text += `Preferred Skills\n${preferredSkills.map(s => `• ${s}`).join('\n')}`;
+    }
+    return text.trim();
+  };
 
-  // Key Responsibilities state
+  // Description state - unified text with headers
+  const initialDescriptionText = formatDescriptionWithHeaders(
+    "We are seeking a talented Graphic Designer to lead the visual redesign of our social media presence and marketing materials. This project aims to enhance brand identity, improve visual appeal, and optimize graphics for engagement and clarity. The ideal candidate will collaborate closely with marketing managers and content creators to create intuitive, engaging, and modern visual designs that align with brand guidelines and audience preferences.",
+    [
+      "Design and deliver high-quality visual content for social media platforms",
+      "Create engaging graphics, illustrations, and layouts that align with brand guidelines",
+      "Collaborate with marketing team to develop creative concepts and visual strategies",
+      "Ensure consistency across all marketing materials and social media channels"
+    ],
+    [
+      "Proficiency in design software such as Figma, Adobe Creative Suite, and Canva",
+      "Strong portfolio demonstrating creative design skills",
+      "Ability to work independently and meet deadlines",
+      "Excellent communication skills and attention to detail"
+    ],
+    [
+      "Experience with social media design and marketing materials",
+      "Knowledge of current design trends and best practices",
+      "Understanding of brand identity and visual communication",
+      "Ability to adapt designs for different platforms and formats"
+    ]
+  );
+  
+  const [descriptionText, setDescriptionText] = useState(initialDescriptionText);
+  const [tempDescriptionText, setTempDescriptionText] = useState(descriptionText);
+
+  // Keep old states for backward compatibility with preview (will be removed later)
+  const [projectSummaryText, setProjectSummaryText] = useState("We are seeking a talented Graphic Designer to lead the visual redesign of our social media presence and marketing materials. This project aims to enhance brand identity, improve visual appeal, and optimize graphics for engagement and clarity. The ideal candidate will collaborate closely with marketing managers and content creators to create intuitive, engaging, and modern visual designs that align with brand guidelines and audience preferences.");
   const [keyResponsibilitiesList, setKeyResponsibilitiesList] = useState([
     "Design and deliver high-quality visual content for social media platforms",
     "Create engaging graphics, illustrations, and layouts that align with brand guidelines",
     "Collaborate with marketing team to develop creative concepts and visual strategies",
     "Ensure consistency across all marketing materials and social media channels"
   ]);
-  const [tempKeyResponsibilitiesList, setTempKeyResponsibilitiesList] = useState(keyResponsibilitiesList);
-
-  // Requirements state
   const [requirementsList, setRequirementsList] = useState([
     "Proficiency in design software such as Figma, Adobe Creative Suite, and Canva",
     "Strong portfolio demonstrating creative design skills",
     "Ability to work independently and meet deadlines",
     "Excellent communication skills and attention to detail"
   ]);
-  const [tempRequirementsList, setTempRequirementsList] = useState(requirementsList);
-
-  // Preferred Skills state
   const [preferredSkillsList, setPreferredSkillsList] = useState([
     "Experience with social media design and marketing materials",
     "Knowledge of current design trends and best practices",
     "Understanding of brand identity and visual communication",
     "Ability to adapt designs for different platforms and formats"
   ]);
-  const [tempPreferredSkillsList, setTempPreferredSkillsList] = useState(preferredSkillsList);
 
   // Experience Level state
   const [experienceLevelText, setExperienceLevelText] = useState("We are looking for a mid-level to senior graphic designer with 3-5 years of experience in social media and marketing design. The ideal candidate should have a proven track record of creating engaging visual content and working collaboratively with marketing teams.");
@@ -1739,7 +2026,8 @@ export function RequestCreationEditScreen() {
                 </div>
 
                 <div className={styles.requestParametersWrapper}>
-                {!isRoleSkillsExpanded ? (
+                {/* Talent profile section hidden for first iteration */}
+                {/* {!isRoleSkillsExpanded ? (
                   <RoleAndSkillsSummary
                     roleTitle={roleTitle}
                     experienceLevel={experienceLevel}
@@ -1807,7 +2095,7 @@ export function RequestCreationEditScreen() {
                       setIsRoleSkillsExpanded(false);
                     }}
                   />
-                )}
+                )} */}
               {!isBudgetExpanded ? (
                 <BudgetSummary
                   negotiable={negotiable}
@@ -1968,103 +2256,28 @@ export function RequestCreationEditScreen() {
                     />
                   )}
 
-                  {!isProjectSummaryExpanded ? (
+                  {!isDescriptionExpanded ? (
                     <ProjectSummary
-                      title="Summary"
-                      text={projectSummaryText}
-                      showWarning={manuallyEditedSections.summary && !dismissedWarnings.summary}
-                      onDismissWarning={() => dismissWarning('summary')}
+                      title="Description"
+                      text={descriptionText}
+                      showWarning={manuallyEditedSections.description && !dismissedWarnings.description}
+                      onDismissWarning={() => dismissWarning('description')}
                       onEdit={() => {
-                        setTempProjectSummaryText(projectSummaryText);
-                        setIsProjectSummaryExpanded(true);
+                        setTempDescriptionText(descriptionText);
+                        setIsDescriptionExpanded(true);
                       }}
                     />
                   ) : (
                     <ProjectSummarySection
-                      title="Summary"
-                      text={tempProjectSummaryText}
-                      onTextChange={setTempProjectSummaryText}
+                      title="Description"
+                      text={tempDescriptionText}
+                      onTextChange={setTempDescriptionText}
                       onSave={() => {
-                        setProjectSummaryText(tempProjectSummaryText);
-                        setIsProjectSummaryExpanded(false);
-                        handleContentChange('summary', tempProjectSummaryText);
+                        setDescriptionText(tempDescriptionText);
+                        setIsDescriptionExpanded(false);
+                        handleContentChange('description', tempDescriptionText);
                       }}
-                      onCancel={() => setIsProjectSummaryExpanded(false)}
-                    />
-                  )}
-
-                  {!isKeyResponsibilitiesExpanded ? (
-                    <ProjectListSummary
-                      title="Key Responsibilities"
-                      items={keyResponsibilitiesList}
-                      showWarning={manuallyEditedSections.responsibilities && !dismissedWarnings.responsibilities}
-                      onDismissWarning={() => dismissWarning('responsibilities')}
-                      onEdit={() => {
-                        setTempKeyResponsibilitiesList(keyResponsibilitiesList);
-                        setIsKeyResponsibilitiesExpanded(true);
-                      }}
-                    />
-                  ) : (
-                    <ProjectListSection
-                      title="Key Responsibilities"
-                      items={tempKeyResponsibilitiesList}
-                      onItemsChange={setTempKeyResponsibilitiesList}
-                      onSave={() => {
-                        setKeyResponsibilitiesList(tempKeyResponsibilitiesList);
-                        setIsKeyResponsibilitiesExpanded(false);
-                        handleContentChange('responsibilities', tempKeyResponsibilitiesList);
-                      }}
-                      onCancel={() => setIsKeyResponsibilitiesExpanded(false)}
-                    />
-                  )}
-
-                  {!isRequirementsExpanded ? (
-                    <ProjectListSummary
-                      title="Requirements"
-                      items={requirementsList}
-                      showWarning={manuallyEditedSections.requirements && !dismissedWarnings.requirements}
-                      onDismissWarning={() => dismissWarning('requirements')}
-                      onEdit={() => {
-                        setTempRequirementsList(requirementsList);
-                        setIsRequirementsExpanded(true);
-                      }}
-                    />
-                  ) : (
-                    <ProjectListSection
-                      title="Requirements"
-                      items={tempRequirementsList}
-                      onItemsChange={setTempRequirementsList}
-                      onSave={() => {
-                        setRequirementsList(tempRequirementsList);
-                        setIsRequirementsExpanded(false);
-                        handleContentChange('requirements', tempRequirementsList);
-                      }}
-                      onCancel={() => setIsRequirementsExpanded(false)}
-                    />
-                  )}
-
-                  {!isPreferredSkillsExpanded ? (
-                    <ProjectListSummary
-                      title="Preferred Skills"
-                      items={preferredSkillsList}
-                      showWarning={manuallyEditedSections.preferredSkills && !dismissedWarnings.preferredSkills}
-                      onDismissWarning={() => dismissWarning('preferredSkills')}
-                      onEdit={() => {
-                        setTempPreferredSkillsList(preferredSkillsList);
-                        setIsPreferredSkillsExpanded(true);
-                      }}
-                    />
-                  ) : (
-                    <ProjectListSection
-                      title="Preferred Skills"
-                      items={tempPreferredSkillsList}
-                      onItemsChange={setTempPreferredSkillsList}
-                      onSave={() => {
-                        setPreferredSkillsList(tempPreferredSkillsList);
-                        setIsPreferredSkillsExpanded(false);
-                        handleContentChange('preferredSkills', tempPreferredSkillsList);
-                      }}
-                      onCancel={() => setIsPreferredSkillsExpanded(false)}
+                      onCancel={() => setIsDescriptionExpanded(false)}
                     />
                   )}
 
@@ -2089,6 +2302,7 @@ export function RequestCreationEditScreen() {
               workload={workload}
               companyName={companyName}
               website={website}
+              descriptionText={descriptionText}
               projectSummaryText={projectSummaryText}
               keyResponsibilitiesList={keyResponsibilitiesList}
               requirementsList={requirementsList}
