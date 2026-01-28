@@ -1,7 +1,7 @@
 import styles from "./Input.module.css";
 import type { ReactNode } from "react";
 
-export function InputField({
+export function Input({
   label,
   value,
   placeholder,

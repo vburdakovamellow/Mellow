@@ -93,23 +93,32 @@
   border-bottom: 1px solid #000000;
 }
 
-.backButton {
-  width: 40px;
-  height: 40px;
-  background: #ffffff;
-  border: 1px solid #000000;
-  border-radius: 8px;
-  display: flex;
+.backLink {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  color: #000000;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 0;
   cursor: pointer;
-  transition: background 0.2s ease;
+  margin-bottom: 16px;
+  transition: opacity 0.2s ease;
 }
 
-.backButton:hover {
-  background: #f5f5f5;
+.backLink:hover {
+  opacity: 0.7;
+}
+
+.backArrow {
+  font-size: 20px;
+  color: #000000;
+  line-height: 1;
+}
+
+.backText {
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
 }
 
 .requestTitle {
@@ -121,11 +130,172 @@
   margin: 0;
 }
 
+/* Progress Stepper */
+.progressStepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 24px 0;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stepIconCompleted {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #000000;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.stepIconActive {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #000000;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+}
+
+.stepLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666666;
+}
+
+.stepLabelActive {
+  font-size: 15px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: -0.01em;
+}
+
+.stepLine {
+  flex: 1;
+  height: 2px;
+  background: #000000;
+  margin: 0 12px;
+  min-width: 40px;
+}
+
+.stepLineActive {
+  flex: 1;
+  height: 2px;
+  background: #000000;
+  margin: 0 12px;
+  min-width: 40px;
+}
+
+/* Filter Row */
+.filterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+/* Status Tabs */
+.statusTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.statusTab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.statusTab:hover {
+  border-color: #000000;
+  color: #000000;
+}
+
+.statusTabActive {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.statusTabActive .statusBadge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* Sort Button */
+.sortButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.sortButton:hover {
+  border-color: #000000;
+}
+
+.sortButton svg {
+  flex-shrink: 0;
+}
+
 /* Candidates Section */
 .candidatesSection {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 20px;
 }
 
 .candidatesHeader {
@@ -154,21 +324,21 @@
 .emptyState {
   display: flex;
   flex-direction: column;
-  gap: 48px;
-  padding: 64px 0;
+  gap: 24px;
+  padding: 16px 0 48px;
   align-items: center;
 }
 
 .emptyIllustration {
   display: flex;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .valueSection {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   align-items: center;
   text-align: center;
   max-width: 600px;
@@ -192,13 +362,12 @@
 
 .previewHint {
   width: 100%;
-  max-width: 500px;
   padding: 16px;
   background: #ffffff;
   border: 2px dashed #cccccc;
   border-radius: 12px;
   opacity: 0.6;
-  margin-top: 8px;
+  margin-top: 24px;
 }
 
 .previewRow {

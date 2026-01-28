@@ -30,9 +30,6 @@ export function CandidatesScreen({
           <div className={styles.logo}>mellow</div>
           
           <div className={styles.headerRight}>
-            <Button variant="secondary">
-              + New request
-            </Button>
             <button className={styles.userButton}>
               <span>AI Scout</span>
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -47,29 +44,97 @@ export function CandidatesScreen({
       {/* Content */}
       <div className={styles.content}>
         <div className={styles.container}>
-          {/* Request Title & Back */}
-          <div className={styles.requestHeader}>
-            {onGoBack && (
-              <button className={styles.backButton} onClick={onGoBack}>
-                ←
-              </button>
-            )}
-            
-            {requestTitle && (
-              <h1 className={styles.requestTitle}>{requestTitle}</h1>
-            )}
+          {/* Back to Dashboard */}
+          {onGoBack && (
+            <button className={styles.backLink} onClick={onGoBack}>
+              <span className={styles.backArrow}>←</span>
+              <span className={styles.backText}>Dashboard</span>
+            </button>
+          )}
+
+          {/* Progress Stepper */}
+          <div className={styles.progressStepper}>
+            <div className={styles.step}>
+              <div className={styles.stepIconCompleted}>✓</div>
+              <span className={styles.stepLabel}>Your request</span>
+            </div>
+            <div className={styles.stepLine}></div>
+            <div className={styles.step}>
+              <div className={styles.stepIconCompleted}>✓</div>
+              <span className={styles.stepLabel}>Promote</span>
+            </div>
+            <div className={styles.stepLine}></div>
+            <div className={styles.step}>
+              <div className={styles.stepIconCompleted}>✓</div>
+              <span className={styles.stepLabel}>Ultra</span>
+            </div>
+            <div className={styles.stepLineActive}></div>
+            <div className={styles.step}>
+              <div className={styles.stepIconActive}>✓</div>
+              <span className={styles.stepLabelActive}>Candidates</span>
+            </div>
           </div>
+
+          {/* Request Title */}
+          {requestTitle && (
+            <div className={styles.requestHeader}>
+              <h1 className={styles.requestTitle}>{requestTitle}</h1>
+            </div>
+          )}
 
           {/* Candidates Section */}
           <div className={styles.candidatesSection}>
             <div className={styles.candidatesHeader}>
               <div>
                 <h2 className={styles.candidatesTitle}>Candidates</h2>
-                <p className={styles.candidatesSubtitle}>
-                  All candidates who applied to your request will appear here.
-                </p>
               </div>
             </div>
+
+            {/* Status Tabs and Sort */}
+            <div className={styles.filterRow}>
+              <div className={styles.statusTabs}>
+                <button className={`${styles.statusTab} ${styles.statusTabActive}`}>
+                  All
+                </button>
+                <button className={styles.statusTab}>
+                  New
+                  <span className={styles.statusBadge}>3</span>
+                </button>
+                <button className={styles.statusTab}>
+                  Shortlisted
+                  <span className={styles.statusBadge}>2</span>
+                </button>
+                <button className={styles.statusTab}>
+                  Invited
+                  <span className={styles.statusBadge}>0</span>
+                </button>
+                <button className={styles.statusTab}>
+                  Assigned
+                  <span className={styles.statusBadge}>0</span>
+                </button>
+              </div>
+
+              <button className={styles.sortButton}>
+                Sort by date
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Preview hint - shows how candidates will look */}
+            {candidates.length === 0 && (
+              <div className={styles.previewHint}>
+                <div className={styles.previewRow}>
+                  <div className={styles.previewAvatar}></div>
+                  <div className={styles.previewInfo}>
+                    <div className={styles.previewName}></div>
+                    <div className={styles.previewTitle}></div>
+                  </div>
+                  <div className={styles.previewBadge}>95% match</div>
+                </div>
+              </div>
+            )}
 
             {candidates.length > 0 ? (
               <div className={styles.candidatesList}>
@@ -96,7 +161,7 @@ export function CandidatesScreen({
               <div className={styles.emptyState}>
                 {/* Illustration */}
                 <div className={styles.emptyIllustration}>
-                  <svg width="200" height="140" viewBox="0 0 200 140" fill="none" aria-hidden="true">
+                  <svg width="120" height="84" viewBox="0 0 200 140" fill="none" aria-hidden="true">
                     {/* People waiting illustration (monochrome) */}
                     <g transform="translate(50, 20)">
                       {/* Person 1 */}
@@ -123,21 +188,9 @@ export function CandidatesScreen({
                 <div className={styles.valueSection}>
                   <h3 className={styles.valueTitle}>Candidates will appear here</h3>
                   <p className={styles.valueText}>
-                    When freelancers apply to your request, you'll see them on this page with AI-powered match scores. 
+                    When contractors apply to your request, you'll see them on this page with AI-powered match scores. 
                     This helps you quickly identify the best candidates without manually reviewing every application.
                   </p>
-                  
-                  {/* Preview hint */}
-                  <div className={styles.previewHint}>
-                    <div className={styles.previewRow}>
-                      <div className={styles.previewAvatar}></div>
-                      <div className={styles.previewInfo}>
-                        <div className={styles.previewName}></div>
-                        <div className={styles.previewTitle}></div>
-                      </div>
-                      <div className={styles.previewBadge}>95% match</div>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Action Section */}
@@ -145,14 +198,25 @@ export function CandidatesScreen({
                   <div className={styles.actionCard}>
                     <h4 className={styles.actionTitle}>Want candidates faster?</h4>
                     <p className={styles.actionText}>
-                      Schedule a call with the Orchestrator to speed up the process and get your first candidates within 24 hours.
+                      Book a demo and we'll help you find candidates faster (it's free).
                     </p>
                     <Button variant="secondary" onClick={handleScheduleCall}>
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ marginRight: "8px" }} aria-hidden="true">
-                        <path d="M5 8h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                        <path d="M8 5v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      </svg>
-                      Schedule a call with Orchestrator
+                      Meet your Ultra Manager
+                    </Button>
+                  </div>
+
+                  <div className={styles.actionCard}>
+                    <h4 className={styles.actionTitle}>We've launched the search</h4>
+                    <p className={styles.actionText}>
+                      Meanwhile, you can promote your request yourself to get more visibility.
+                    </p>
+                    <Button variant="secondary" onClick={() => {
+                      // Copy link to clipboard
+                      navigator.clipboard.writeText(window.location.href);
+                      // Navigate to promote section
+                      alert("Link copied! Opening Promote section...");
+                    }}>
+                      Promote
                     </Button>
                   </div>
                 </div>
