@@ -439,13 +439,62 @@
   margin-top: 48px;
 }
 
+.ultraProgressHeader {
+  margin-bottom: 24px;
+}
+
 .ultraProgressTitle {
   font-family: var(--ds-font-family-body);
   font-size: 20px;
   line-height: 28px;
   font-weight: 700;
   color: #000000;
-  margin: 0 0 24px 0;
+  margin: 0 0 12px 0;
+}
+
+.callScheduleInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  gap: 16px;
+}
+
+.callDateTime {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.callDate {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.callTime {
+  font-size: 13px;
+  color: #666666;
+}
+
+.rescheduleButton {
+  padding: 6px 12px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #000000;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.rescheduleButton:hover {
+  background: #f5f5f5;
 }
 
 .ultraSteps {
@@ -486,6 +535,12 @@
   position: relative;
 }
 
+.ultraStepScheduled .ultraStepIcon {
+  background: #ffffff;
+  border-color: #000000;
+  color: #000000;
+}
+
 .ultraStepPending .ultraStepIcon {
   background: #ffffff;
   border-color: #cccccc;
@@ -510,6 +565,10 @@
   background: #000000;
   margin: 24px 8px 0;
   flex: 1;
+}
+
+.ultraStepConnectorPending {
+  background: #cccccc;
 }
 
 .ultraStepContent {
@@ -538,6 +597,18 @@
 
 .ultraStepPending .ultraStepDescription {
   color: #999999;
+}
+
+.ultraProgressNote {
+  margin-top: 24px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #666666;
+  text-align: center;
 }
 
 .actionSection {

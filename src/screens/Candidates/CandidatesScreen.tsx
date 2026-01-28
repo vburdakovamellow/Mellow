@@ -17,32 +17,7 @@ export function CandidatesScreen({
     match?: number;
     status?: "new" | "contacted" | "interview" | "rejected";
     ultraSource?: boolean;
-  }>>([
-    {
-      id: "1",
-      name: "Sarah Johnson",
-      title: "Senior Graphic Designer",
-      match: 95,
-      status: "new",
-      ultraSource: true
-    },
-    {
-      id: "2",
-      name: "Michael Chen",
-      title: "Brand Designer",
-      match: 88,
-      status: "new",
-      ultraSource: true
-    },
-    {
-      id: "3",
-      name: "Emma Williams",
-      title: "Visual Designer",
-      match: 82,
-      status: "new",
-      ultraSource: true
-    }
-  ]);
+  }>>([]);
 
   const handleScheduleCall = () => {
     alert("Schedule a call with Orchestrator (stub)");
@@ -236,32 +211,39 @@ export function CandidatesScreen({
                   </p>
                 </div>
 
-                {/* Ultra Progress Section */}
+                {/* Ultra Progress Section - Waiting for Call */}
                 <div className={styles.ultraProgressSection}>
-                  <h3 className={styles.ultraProgressTitle}>Your Ultra Manager Progress</h3>
+                  <div className={styles.ultraProgressHeader}>
+                    <h3 className={styles.ultraProgressTitle}>Your Ultra Manager is scheduled</h3>
+                    <div className={styles.callScheduleInfo}>
+                      <div className={styles.callDateTime}>
+                        <span className={styles.callDate}>Today</span>
+                        <span className={styles.callTime}>2:00 PM - 2:30 PM</span>
+                      </div>
+                      <button className={styles.rescheduleButton}>Reschedule</button>
+                    </div>
+                  </div>
                   
                   <div className={styles.ultraSteps}>
-                    <div className={`${styles.ultraStep} ${styles.ultraStepCompleted}`}>
-                      <div className={styles.ultraStepIcon}>✓</div>
+                    <div className={`${styles.ultraStep} ${styles.ultraStepScheduled}`}>
+                      <div className={styles.ultraStepIcon}>1</div>
                       <div className={styles.ultraStepContent}>
                         <div className={styles.ultraStepLabel}>Briefing</div>
-                        <div className={styles.ultraStepDescription}>Ultra contacted and briefed</div>
+                        <div className={styles.ultraStepDescription}>Call scheduled - we'll brief Ultra</div>
                       </div>
                     </div>
 
-                    <div className={styles.ultraStepConnector}></div>
+                    <div className={`${styles.ultraStepConnector} ${styles.ultraStepConnectorPending}`}></div>
 
-                    <div className={`${styles.ultraStep} ${styles.ultraStepActive}`}>
-                      <div className={styles.ultraStepIcon}>
-                        <div className={styles.ultraStepSpinner}></div>
-                      </div>
+                    <div className={`${styles.ultraStep} ${styles.ultraStepPending}`}>
+                      <div className={styles.ultraStepIcon}>2</div>
                       <div className={styles.ultraStepContent}>
                         <div className={styles.ultraStepLabel}>Sourcing</div>
-                        <div className={styles.ultraStepDescription}>Finding best candidates for you</div>
+                        <div className={styles.ultraStepDescription}>Will start after briefing</div>
                       </div>
                     </div>
 
-                    <div className={styles.ultraStepConnector}></div>
+                    <div className={`${styles.ultraStepConnector} ${styles.ultraStepConnectorPending}`}></div>
 
                     <div className={`${styles.ultraStep} ${styles.ultraStepPending}`}>
                       <div className={styles.ultraStepIcon}>3</div>
@@ -270,6 +252,10 @@ export function CandidatesScreen({
                         <div className={styles.ultraStepDescription}>3+ candidates with 80%+ match</div>
                       </div>
                     </div>
+                  </div>
+
+                  <div className={styles.ultraProgressNote}>
+                    After the call, we'll start sourcing candidates for you. You'll see progress updates here.
                   </div>
                 </div>
               </div>
