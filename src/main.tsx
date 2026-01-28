@@ -4,7 +4,14 @@ import { App } from "./App";
 
 import "./styles/global.css";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  throw new Error("Root element not found");
+}
+
+console.log("🚀 Mellow app starting...", { rootElement });
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>

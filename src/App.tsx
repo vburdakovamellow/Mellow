@@ -4,13 +4,16 @@ import { SharePackScreen, type SharePackRequest } from "./screens/SharePack/Shar
 import { ServiceRequestViewScreen } from "./screens/ServiceRequestView/ServiceRequestViewScreen";
 import { AuthScreen } from "./screens/Auth/AuthScreen";
 import { RequestManagementScreen } from "./screens/RequestManagement/RequestManagementScreen";
+import { CandidatesScreen } from "./screens/Candidates/CandidatesScreen";
 
-type ScreenId = "edit" | "share" | "view" | "auth" | "management";
+type ScreenId = "edit" | "share" | "view" | "auth" | "management" | "candidates";
 
 export function App() {
-  const [currentScreen, setCurrentScreen] = useState<ScreenId>("management");
+  const [currentScreen, setCurrentScreen] = useState<ScreenId>("candidates");
   const [savedRequest, setSavedRequest] = useState<SharePackRequest | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  console.log("📱 App rendering", { currentScreen, isAuthenticated });
 
   const nav = useMemo(() => {
     return {
@@ -25,14 +28,24 @@ export function App() {
           setCurrentScreen("share");
         }
       },
+      onRequestPublished: () => {
+        // After publishing, go to candidates
+        setCurrentScreen("candidates");
+      },
       toAuth: () => setCurrentScreen("auth"),
-      toManagement: () => setCurrentScreen("management")
+      toManagement: () => setCurrentScreen("management"),
+      toCandidates: () => setCurrentScreen("candidates")
     };
   }, [savedRequest, isAuthenticated]);
 
   const handleAuthComplete = () => {
     setIsAuthenticated(true);
-    setCurrentScreen("management");
+    // After auth, if there's a saved request, go to candidates
+    if (savedRequest) {
+      setCurrentScreen("candidates");
+    } else {
+      setCurrentScreen("management");
+    }
   };
 
   if (currentScreen === "auth") {
@@ -41,6 +54,15 @@ export function App() {
 
   if (currentScreen === "management") {
     return <RequestManagementScreen />;
+  }
+
+  if (currentScreen === "candidates") {
+    return (
+      <CandidatesScreen
+        requestTitle={savedRequest?.title}
+        onGoBack={nav.toManagement}
+      />
+    );
   }
 
   if (currentScreen === "view") {
