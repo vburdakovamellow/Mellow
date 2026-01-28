@@ -16,7 +16,33 @@ export function CandidatesScreen({
     title?: string;
     match?: number;
     status?: "new" | "contacted" | "interview" | "rejected";
-  }>>([]);
+    ultraSource?: boolean;
+  }>>([
+    {
+      id: "1",
+      name: "Sarah Johnson",
+      title: "Senior Graphic Designer",
+      match: 95,
+      status: "new",
+      ultraSource: true
+    },
+    {
+      id: "2",
+      name: "Michael Chen",
+      title: "Brand Designer",
+      match: 88,
+      status: "new",
+      ultraSource: true
+    },
+    {
+      id: "3",
+      name: "Emma Williams",
+      title: "Visual Designer",
+      match: 82,
+      status: "new",
+      ultraSource: true
+    }
+  ]);
 
   const handleScheduleCall = () => {
     alert("Schedule a call with Orchestrator (stub)");
@@ -147,6 +173,9 @@ export function CandidatesScreen({
                       )}
                     </div>
                     <div className={styles.candidateRight}>
+                      {candidate.ultraSource && (
+                        <div className={styles.ultraBadge}>Ultra</div>
+                      )}
                       {typeof candidate.match === "number" && (
                         <div className={styles.candidateBadge}>{candidate.match}% match</div>
                       )}
@@ -207,16 +236,40 @@ export function CandidatesScreen({
                   </p>
                 </div>
 
-                {/* Action Section */}
-                <div className={styles.actionSection}>
-                  <div className={styles.actionCard}>
-                    <h4 className={styles.actionTitle}>Want candidates faster?</h4>
-                    <p className={styles.actionText}>
-                      Book a demo and we'll help you find candidates faster (it's free).
-                    </p>
-                    <Button variant="secondary" onClick={handleScheduleCall}>
-                      Meet your Ultra Manager
-                    </Button>
+                {/* Ultra Progress Section */}
+                <div className={styles.ultraProgressSection}>
+                  <h3 className={styles.ultraProgressTitle}>Your Ultra Manager Progress</h3>
+                  
+                  <div className={styles.ultraSteps}>
+                    <div className={`${styles.ultraStep} ${styles.ultraStepCompleted}`}>
+                      <div className={styles.ultraStepIcon}>✓</div>
+                      <div className={styles.ultraStepContent}>
+                        <div className={styles.ultraStepLabel}>Briefing</div>
+                        <div className={styles.ultraStepDescription}>Ultra contacted and briefed</div>
+                      </div>
+                    </div>
+
+                    <div className={styles.ultraStepConnector}></div>
+
+                    <div className={`${styles.ultraStep} ${styles.ultraStepActive}`}>
+                      <div className={styles.ultraStepIcon}>
+                        <div className={styles.ultraStepSpinner}></div>
+                      </div>
+                      <div className={styles.ultraStepContent}>
+                        <div className={styles.ultraStepLabel}>Sourcing</div>
+                        <div className={styles.ultraStepDescription}>Finding best candidates for you</div>
+                      </div>
+                    </div>
+
+                    <div className={styles.ultraStepConnector}></div>
+
+                    <div className={`${styles.ultraStep} ${styles.ultraStepPending}`}>
+                      <div className={styles.ultraStepIcon}>3</div>
+                      <div className={styles.ultraStepContent}>
+                        <div className={styles.ultraStepLabel}>Ready for your review</div>
+                        <div className={styles.ultraStepDescription}>3+ candidates with 80%+ match</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
