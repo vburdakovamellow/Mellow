@@ -3,6 +3,7 @@ import { Button } from "../../design-system/primitives/Button/Button";
 import "../../design-system/typography.css";
 import styles from "./CandidatesScreen.module.css";
 
+// Version 1: Empty State (no Ultra step)
 export function CandidatesScreen({
   requestTitle,
   onGoBack
@@ -45,34 +46,25 @@ export function CandidatesScreen({
       {/* Content */}
       <div className={styles.content}>
         <div className={styles.container}>
-          {/* Back to Dashboard */}
-          {onGoBack && (
-            <button className={styles.backLink} onClick={onGoBack}>
-              <span className={styles.backArrow}>←</span>
-              <span className={styles.backText}>Dashboard</span>
-            </button>
-          )}
+          {/* Navigation Row */}
+          <div className={styles.navigationRow}>
+            {onGoBack && (
+              <button className={styles.backLink} onClick={onGoBack}>
+                <span className={styles.backArrow}>←</span>
+                <span className={styles.backText}>Dashboard</span>
+              </button>
+            )}
 
-          {/* Progress Stepper */}
-          <div className={styles.progressStepper}>
-            <div className={styles.step}>
-              <div className={styles.stepIconCompleted}>✓</div>
-              <span className={styles.stepLabel}>Your request</span>
-            </div>
-            <div className={styles.stepLine}></div>
-            <div className={styles.step}>
-              <div className={styles.stepIconCompleted}>✓</div>
-              <span className={styles.stepLabel}>Promote</span>
-            </div>
-            <div className={styles.stepLine}></div>
-            <div className={styles.step}>
-              <div className={styles.stepIconCompleted}>✓</div>
-              <span className={styles.stepLabel}>Ultra</span>
-            </div>
-            <div className={styles.stepLineActive}></div>
-            <div className={styles.step}>
-              <div className={styles.stepIconActive}>✓</div>
-              <span className={styles.stepLabelActive}>Candidates</span>
+            <div className={styles.navigationTabs}>
+              <button className={styles.navTab}>
+                Your request
+              </button>
+              <button className={`${styles.navTab} ${styles.navTabActive}`}>
+                Candidates
+              </button>
+              <button className={styles.navTab}>
+                Promote
+              </button>
             </div>
           </div>
 
@@ -85,12 +77,6 @@ export function CandidatesScreen({
 
           {/* Candidates Section */}
           <div className={styles.candidatesSection}>
-            <div className={styles.candidatesHeader}>
-              <div>
-                <h2 className={styles.candidatesTitle}>Candidates</h2>
-              </div>
-            </div>
-
             {/* Status Tabs and Sort */}
             <div className={styles.filterRow}>
               <div className={styles.statusTabs}>
@@ -123,139 +109,126 @@ export function CandidatesScreen({
               </button>
             </div>
 
-            {/* Preview hint - shows how candidates will look */}
-            {candidates.length === 0 && (
-              <div className={styles.previewHint}>
-                <div className={styles.previewRow}>
-                  <div className={styles.previewAvatar}></div>
-                  <div className={styles.previewInfo}>
-                    <div className={styles.previewName}></div>
-                    <div className={styles.previewTitle}></div>
-                  </div>
-                  <div className={styles.previewBadge}>95% match</div>
-                </div>
-              </div>
-            )}
-
             {candidates.length > 0 ? (
-              <div className={styles.candidatesList}>
-                {candidates.map((candidate) => (
-                  <div key={candidate.id} className={styles.candidateRow}>
-                    <div className={styles.candidateMain}>
-                      <div className={styles.candidateName}>{candidate.name}</div>
-                      {candidate.title && (
-                        <div className={styles.candidateMeta}>{candidate.title}</div>
-                      )}
+              <>
+                {/* Preview hint - shows how candidates will look */}
+                <div className={styles.previewHint}>
+                  <div className={styles.previewRow}>
+                    <div className={styles.previewAvatar}></div>
+                    <div className={styles.previewInfo}>
+                      <div className={styles.previewName}></div>
+                      <div className={styles.previewTitle}></div>
                     </div>
-                    <div className={styles.candidateRight}>
-                      {candidate.ultraSource && (
-                        <div className={styles.ultraBadge}>Ultra</div>
-                      )}
-                      {typeof candidate.match === "number" && (
-                        <div className={styles.candidateBadge}>{candidate.match}% match</div>
-                      )}
-                      {candidate.status && (
-                        <div className={styles.candidateBadge}>{candidate.status}</div>
-                      )}
-                    </div>
+                    <div className={styles.previewBadge}>95% match</div>
                   </div>
-                ))}
-              </div>
+                </div>
+
+                <div className={styles.candidatesList}>
+                  {candidates.map((candidate) => (
+                    <div key={candidate.id} className={styles.candidateRow}>
+                      <div className={styles.candidateMain}>
+                        <div className={styles.candidateName}>{candidate.name}</div>
+                        {candidate.title && (
+                          <div className={styles.candidateMeta}>{candidate.title}</div>
+                        )}
+                      </div>
+                      <div className={styles.candidateRight}>
+                        {candidate.ultraSource && (
+                          <div className={styles.ultraBadge}>Ultra</div>
+                        )}
+                        {typeof candidate.match === "number" && (
+                          <div className={styles.candidateBadge}>{candidate.match}% match</div>
+                        )}
+                        {candidate.status && (
+                          <div className={styles.candidateBadge}>{candidate.status}</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className={styles.emptyState}>
-                {/* Illustration */}
-                <div className={styles.emptyIllustration}>
-                  <svg width="120" height="84" viewBox="0 0 200 140" fill="none" aria-hidden="true">
-                    {/* People waiting illustration (monochrome) */}
-                    <g transform="translate(50, 20)">
-                      {/* Person 1 */}
-                      <circle cx="25" cy="30" r="15" fill="#E5E5E5" stroke="#000000" strokeWidth="2" />
-                      <rect x="10" y="50" width="30" height="40" fill="#E5E5E5" stroke="#000000" strokeWidth="2" rx="4" />
-                      
-                      {/* Person 2 */}
-                      <circle cx="75" cy="30" r="15" fill="#E5E5E5" stroke="#000000" strokeWidth="2" />
-                      <rect x="60" y="50" width="30" height="40" fill="#E5E5E5" stroke="#000000" strokeWidth="2" rx="4" />
-                      
-                      {/* Person 3 */}
-                      <circle cx="50" cy="60" r="12" fill="#E5E5E5" stroke="#000000" strokeWidth="2" />
-                      <rect x="38" y="75" width="24" height="35" fill="#E5E5E5" stroke="#000000" strokeWidth="2" rx="4" />
-                      
-                      {/* Stars/sparkles */}
-                      <path d="M 15 15 L 17 17 L 15 19 L 13 17 Z" fill="#000000" />
-                      <path d="M 85 18 L 87 20 L 85 22 L 83 20 Z" fill="#000000" />
-                      <path d="M 50 10 L 52 12 L 50 14 L 48 12 Z" fill="#000000" />
-                    </g>
-                  </svg>
-                </div>
-
-                {/* Value Proposition Section */}
-                <div className={styles.valueSection}>
-                  <h3 className={styles.valueTitle}>Candidates will appear here</h3>
-                  <p className={styles.valueText}>
-                    When contractors apply to your request, you'll see them on this page with AI-powered match scores.
-                  </p>
-                  <p className={styles.valueText}>
-                    Meanwhile, you can{" "}
-                    <a 
-                      href="#promote" 
-                      className={styles.promoteLink}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigator.clipboard.writeText(window.location.href);
-                        alert("Link copied! Opening Promote section...");
-                      }}
-                    >
-                      Promote
-                    </a>
-                    {" "}your request yourself to get more visibility.
-                  </p>
-                </div>
-
-                {/* Ultra Progress Section - Waiting for Call */}
-                <div className={styles.ultraProgressSection}>
-                  <div className={styles.ultraProgressHeader}>
-                    <h3 className={styles.ultraProgressTitle}>Your Ultra Manager is scheduled</h3>
-                    <div className={styles.callScheduleInfo}>
-                      <div className={styles.callDateTime}>
-                        <span className={styles.callDate}>Today</span>
-                        <span className={styles.callTime}>2:00 PM - 2:30 PM</span>
-                      </div>
-                      <button className={styles.rescheduleButton}>Reschedule</button>
-                    </div>
-                  </div>
-                  
-                  <div className={styles.ultraSteps}>
-                    <div className={`${styles.ultraStep} ${styles.ultraStepScheduled}`}>
-                      <div className={styles.ultraStepIcon}>1</div>
-                      <div className={styles.ultraStepContent}>
-                        <div className={styles.ultraStepLabel}>Briefing</div>
-                        <div className={styles.ultraStepDescription}>Call scheduled - we'll brief Ultra</div>
+                {/* Preview hint - shows how candidates will look */}
+                <div className={styles.emptyStateWithPreview}>
+                  <div className={styles.previewHintList}>
+                    <div className={styles.previewHint}>
+                      <div className={styles.previewRow}>
+                        <div className={styles.previewAvatar}></div>
+                        <div className={styles.previewInfo}>
+                          <div className={styles.previewName}></div>
+                          <div className={styles.previewTitle}></div>
+                        </div>
+                        <div className={styles.previewBadge}>95% match</div>
                       </div>
                     </div>
 
-                    <div className={`${styles.ultraStepConnector} ${styles.ultraStepConnectorPending}`}></div>
-
-                    <div className={`${styles.ultraStep} ${styles.ultraStepPending}`}>
-                      <div className={styles.ultraStepIcon}>2</div>
-                      <div className={styles.ultraStepContent}>
-                        <div className={styles.ultraStepLabel}>Sourcing</div>
-                        <div className={styles.ultraStepDescription}>Will start after briefing</div>
-                      </div>
-                    </div>
-
-                    <div className={`${styles.ultraStepConnector} ${styles.ultraStepConnectorPending}`}></div>
-
-                    <div className={`${styles.ultraStep} ${styles.ultraStepPending}`}>
-                      <div className={styles.ultraStepIcon}>3</div>
-                      <div className={styles.ultraStepContent}>
-                        <div className={styles.ultraStepLabel}>Ready for your review</div>
-                        <div className={styles.ultraStepDescription}>3+ candidates with 80%+ match</div>
+                    <div className={styles.previewHint}>
+                      <div className={styles.previewRow}>
+                        <div className={styles.previewAvatar}></div>
+                        <div className={styles.previewInfo}>
+                          <div className={styles.previewName}></div>
+                          <div className={styles.previewTitle}></div>
+                        </div>
+                        <div className={styles.previewBadge}>92% match</div>
                       </div>
                     </div>
                   </div>
 
-                  <div className={styles.ultraProgressNote}>
-                    After the call, we'll start sourcing candidates for you. You'll see progress updates here.
+                  {/* Sidebar - Action Section */}
+                  <div className={styles.emptySidebar}>
+                    <div className={styles.actionCard}>
+                      <h3 className={styles.actionTitle}>Want a more personalized shortlist?</h3>
+                      <p className={styles.actionText}>
+                        Book a slot and we'll help you find the best match.
+                      </p>
+                      <Button variant="secondary" onClick={handleScheduleCall}>
+                        Meet your Ultra Manager
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.emptyStateContent}>
+                  {/* Illustration */}
+                  <div className={styles.emptyIllustration}>
+                    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+                      {/* Timer/Clock icon */}
+                      <circle cx="60" cy="60" r="45" stroke="#000000" strokeWidth="3" fill="#ffffff"/>
+                      <circle cx="60" cy="60" r="3" fill="#000000"/>
+                      {/* Hour hand */}
+                      <line x1="60" y1="60" x2="60" y2="35" stroke="#000000" strokeWidth="3" strokeLinecap="round"/>
+                      {/* Minute hand */}
+                      <line x1="60" y1="60" x2="80" y2="60" stroke="#000000" strokeWidth="2" strokeLinecap="round"/>
+                      {/* Clock marks */}
+                      <line x1="60" y1="20" x2="60" y2="25" stroke="#000000" strokeWidth="2"/>
+                      <line x1="95" y1="60" x2="100" y2="60" stroke="#000000" strokeWidth="2"/>
+                      <line x1="60" y1="95" x2="60" y2="100" stroke="#000000" strokeWidth="2"/>
+                      <line x1="20" y1="60" x2="25" y2="60" stroke="#000000" strokeWidth="2"/>
+                    </svg>
+                  </div>
+
+                  {/* Value Proposition Section */}
+                  <div className={styles.valueSection}>
+                    <h3 className={styles.valueTitle}>You will see candidates here</h3>
+                    <p className={styles.valueText}>
+                      We've launched a search in our internal Mellow database. You'll see the results within 48 hours.
+                    </p>
+                    <p className={styles.valueText}>
+                      Meanwhile, you can{" "}
+                      <a 
+                        href="#promote" 
+                        className={styles.promoteLink}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigator.clipboard.writeText(window.location.href);
+                          alert("Link copied! Opening Promote section...");
+                        }}
+                      >
+                        Promote
+                      </a>
+                      {" "}your request yourself to get more visibility.
+                    </p>
                   </div>
                 </div>
               </div>
