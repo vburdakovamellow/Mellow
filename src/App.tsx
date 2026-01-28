@@ -9,7 +9,7 @@ import { CandidatesScreen } from "./screens/Candidates/CandidatesScreen";
 type ScreenId = "edit" | "share" | "view" | "auth" | "management" | "candidates";
 
 export function App() {
-  const [currentScreen, setCurrentScreen] = useState<ScreenId>("candidates");
+  const [currentScreen, setCurrentScreen] = useState<ScreenId>("view");
   const [savedRequest, setSavedRequest] = useState<SharePackRequest | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
