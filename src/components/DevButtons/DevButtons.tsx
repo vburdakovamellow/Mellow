@@ -8,33 +8,34 @@ export function DevButtons() {
   const normalizedPath = path.endsWith('/') && path !== '/' ? path.slice(0, -1) : path;
   const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
   
-  // Check if path ends with /edit
+  // Check if path ends with /edit or /request-v2
   const isEditPage = normalizedPath.endsWith('/edit') || normalizedPath === '/edit';
-  
+  const isRequestV2Page = normalizedPath.endsWith('/request-v2') || normalizedPath === '/request-v2';
+
   // Build paths with base path
   const homePath = normalizedBase || '/';
-  const editPath = normalizedBase ? `${normalizedBase}/edit` : '/edit';
+  const requestV2Path = normalizedBase ? `${normalizedBase}/request-v2` : '/request-v2';
 
   return (
     <div className={styles.devButtonsContainer}>
-      {isEditPage && (
+      {(isEditPage || isRequestV2Page) && (
         <button 
           className={styles.devButton}
           onClick={() => {
             window.location.href = homePath;
           }}
         >
-          Start over
+          [Dev] V1
         </button>
       )}
-      {!isEditPage && (
+      {!isEditPage && !isRequestV2Page && (
         <button 
           className={styles.devButton}
           onClick={() => {
-            window.location.href = editPath;
+            window.location.href = requestV2Path;
           }}
         >
-          [Dev] Edit
+          [Dev] V2
         </button>
       )}
     </div>
