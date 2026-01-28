@@ -188,8 +188,22 @@ export function CandidatesScreen({
                 <div className={styles.valueSection}>
                   <h3 className={styles.valueTitle}>Candidates will appear here</h3>
                   <p className={styles.valueText}>
-                    When contractors apply to your request, you'll see them on this page with AI-powered match scores. 
-                    This helps you quickly identify the best candidates without manually reviewing every application.
+                    When contractors apply to your request, you'll see them on this page with AI-powered match scores.
+                  </p>
+                  <p className={styles.valueText}>
+                    Meanwhile, you can{" "}
+                    <a 
+                      href="#promote" 
+                      className={styles.promoteLink}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigator.clipboard.writeText(window.location.href);
+                        alert("Link copied! Opening Promote section...");
+                      }}
+                    >
+                      Promote
+                    </a>
+                    {" "}your request yourself to get more visibility.
                   </p>
                 </div>
 
@@ -202,21 +216,6 @@ export function CandidatesScreen({
                     </p>
                     <Button variant="secondary" onClick={handleScheduleCall}>
                       Meet your Ultra Manager
-                    </Button>
-                  </div>
-
-                  <div className={styles.actionCard}>
-                    <h4 className={styles.actionTitle}>We've launched the search</h4>
-                    <p className={styles.actionText}>
-                      Meanwhile, you can promote your request yourself to get more visibility.
-                    </p>
-                    <Button variant="secondary" onClick={() => {
-                      // Copy link to clipboard
-                      navigator.clipboard.writeText(window.location.href);
-                      // Navigate to promote section
-                      alert("Link copied! Opening Promote section...");
-                    }}>
-                      Promote
                     </Button>
                   </div>
                 </div>
