@@ -1,7 +1,8 @@
 /* Screen */
 .screen {
   min-height: 100vh;
-  background: #F5F5F0;
+  background: #ffffff;
+  font-family: var(--ds-font-family-body);
 }
 
 /* Fixed Header */
@@ -71,7 +72,7 @@
 /* Request Header */
 .requestHeader {
   background: #ffffff;
-  border-bottom: 1px solid #E5E5E5;
+  border-bottom: 1px solid #000000;
   padding: 24px 0;
 }
 
@@ -231,7 +232,8 @@
 
 .shareOption {
   padding: 20px;
-  background: #F9F9F9;
+  background: #ffffff;
+  border: 1px solid #000000;
   border-radius: 12px;
   position: relative;
 }
@@ -279,7 +281,7 @@
 
 .progressFill {
   height: 100%;
-  background: #10B981;
+  background: #000000;
   transition: width 0.3s;
 }
 
@@ -312,7 +314,7 @@
 
 .previewCard {
   background: #ffffff;
-  border: 1px solid #E5E5E5;
+  border: 1px solid #000000;
   border-radius: 12px;
   padding: 24px;
 }
@@ -371,12 +373,13 @@
 }
 
 .previewHashtag {
-  color: #0073B1;
+  color: #000000;
+  text-decoration: underline;
 }
 
 .previewLink {
   display: flex;
-  border: 1px solid #E5E5E5;
+  border: 1px solid #000000;
   border-radius: 8px;
   overflow: hidden;
 }
@@ -384,11 +387,94 @@
 .previewLinkImage {
   width: 120px;
   height: 120px;
-  background: #FFF5E6;
+  background: #ffffff;
+  border-right: 1px solid #000000;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+/* Candidates */
+.candidatesHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.candidatesTitle {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  color: #000000;
+  margin: 0 0 6px 0;
+}
+
+.candidatesSubtitle {
+  font-size: 14px;
+  line-height: 20px;
+  color: #666666;
+  margin: 0;
+  max-width: 720px;
+}
+
+.candidatesList {
+  border: 1px solid #000000;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.candidateRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #000000;
+  background: #ffffff;
+}
+
+.candidateRow:last-child {
+  border-bottom: none;
+}
+
+.candidateMain {
+  min-width: 0;
+}
+
+.candidateName {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.candidateMeta {
+  font-size: 13px;
+  line-height: 18px;
+  color: #666666;
+  margin-top: 2px;
+}
+
+.candidateRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.candidateBadge {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #ffffff;
+  text-transform: capitalize;
 }
 
 .previewLinkImageContent {

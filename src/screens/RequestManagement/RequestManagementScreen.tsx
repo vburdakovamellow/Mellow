@@ -3,10 +3,10 @@ import { Button } from "../../design-system/primitives/Button/Button";
 import "../../design-system/typography.css";
 import styles from "./RequestManagementScreen.module.css";
 
-type TabId = "applications" | "share" | "edit";
+type TabId = "candidates" | "share" | "edit";
 
 export function RequestManagementScreen() {
-  const [activeTab, setActiveTab] = useState<TabId>("applications");
+  const [activeTab, setActiveTab] = useState<TabId>("candidates");
 
   return (
     <div className={styles.screen}>
@@ -16,7 +16,7 @@ export function RequestManagementScreen() {
           <div className={styles.logo}>mellow</div>
           
           <div className={styles.headerRight}>
-            <Button variant="brand">
+            <Button variant="secondary">
               + New request
             </Button>
             <button className={styles.userButton}>
@@ -40,10 +40,10 @@ export function RequestManagementScreen() {
             
             <div className={styles.tabs}>
               <button
-                className={[styles.tab, activeTab === "applications" ? styles.tabActive : ""].filter(Boolean).join(" ")}
-                onClick={() => setActiveTab("applications")}
+                className={[styles.tab, activeTab === "candidates" ? styles.tabActive : ""].filter(Boolean).join(" ")}
+                onClick={() => setActiveTab("candidates")}
               >
-                Applications
+                Candidates
               </button>
               <button
                 className={[styles.tab, activeTab === "share" ? styles.tabActive : ""].filter(Boolean).join(" ")}
@@ -101,7 +101,7 @@ export function RequestManagementScreen() {
       {/* Content */}
       <div className={styles.content}>
         {activeTab === "share" && <ShareTab />}
-        {activeTab === "applications" && <ApplicationsTab />}
+        {activeTab === "candidates" && <CandidatesTab />}
         {activeTab === "edit" && <EditTab />}
       </div>
     </div>
@@ -199,50 +199,93 @@ function ShareTab() {
   );
 }
 
-function ApplicationsTab() {
+function CandidatesTab() {
+  // Placeholder for future list rendering
+  const candidates: Array<{
+    id: string;
+    name: string;
+    title?: string;
+    match?: number;
+    status?: "new" | "contacted" | "interview" | "rejected";
+  }> = [];
+
+  const handleScheduleCall = () => {
+    alert("Schedule a call with Orchestrator (stub)");
+  };
+
+  if (candidates.length > 0) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.candidatesHeader}>
+          <div>
+            <h2 className={styles.candidatesTitle}>Candidates</h2>
+            <p className={styles.candidatesSubtitle}>All candidates who applied to your request will appear here.</p>
+          </div>
+          <Button variant="secondary" onClick={handleScheduleCall}>
+            Schedule a call with Orchestrator
+          </Button>
+        </div>
+
+        <div className={styles.candidatesList}>
+          {candidates.map((c) => (
+            <div key={c.id} className={styles.candidateRow}>
+              <div className={styles.candidateMain}>
+                <div className={styles.candidateName}>{c.name}</div>
+                {c.title && <div className={styles.candidateMeta}>{c.title}</div>}
+              </div>
+              <div className={styles.candidateRight}>
+                {typeof c.match === "number" && <div className={styles.candidateBadge}>{c.match}% match</div>}
+                {c.status && <div className={styles.candidateBadge}>{c.status}</div>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.applicationsEmpty}>
       <div className={styles.emptyIllustration}>
-        <svg width="200" height="140" viewBox="0 0 200 140" fill="none">
-          {/* Binoculars illustration */}
+        <svg width="200" height="140" viewBox="0 0 200 140" fill="none" aria-hidden="true">
+          {/* Binoculars illustration (monochrome) */}
           <g transform="translate(50, 30)">
             {/* Left lens */}
-            <ellipse cx="25" cy="40" rx="18" ry="22" fill="#E5E5E5" stroke="#000000" strokeWidth="2"/>
-            <ellipse cx="25" cy="40" rx="12" ry="16" fill="#ffffff" opacity="0.5"/>
+            <ellipse cx="25" cy="40" rx="18" ry="22" fill="#E5E5E5" stroke="#000000" strokeWidth="2" />
+            <ellipse cx="25" cy="40" rx="12" ry="16" fill="#ffffff" opacity="0.5" />
             
             {/* Right lens */}
-            <ellipse cx="75" cy="40" rx="18" ry="22" fill="#E5E5E5" stroke="#000000" strokeWidth="2"/>
-            <ellipse cx="75" cy="40" rx="12" ry="16" fill="#ffffff" opacity="0.5"/>
+            <ellipse cx="75" cy="40" rx="18" ry="22" fill="#E5E5E5" stroke="#000000" strokeWidth="2" />
+            <ellipse cx="75" cy="40" rx="12" ry="16" fill="#ffffff" opacity="0.5" />
             
             {/* Black/gray accent parts */}
-            <rect x="40" y="30" width="20" height="20" fill="#000000" rx="4"/>
-            <circle cx="20" cy="15" r="8" fill="#666666"/>
-            <circle cx="80" cy="15" r="8" fill="#666666"/>
+            <rect x="40" y="30" width="20" height="20" fill="#000000" rx="4" />
+            <circle cx="20" cy="15" r="8" fill="#666666" />
+            <circle cx="80" cy="15" r="8" fill="#666666" />
             
             {/* Hand holding */}
-            <path d="M 10 50 Q 5 60, 15 65 L 85 65 Q 95 60, 90 50" stroke="#000000" strokeWidth="2" fill="none"/>
+            <path d="M 10 50 Q 5 60, 15 65 L 85 65 Q 95 60, 90 50" stroke="#000000" strokeWidth="2" fill="none" />
           </g>
           
           {/* Stars */}
-          <path d="M 80 20 L 82 22 L 80 24 L 78 22 Z" fill="#000000"/>
-          <path d="M 70 15 L 71 16 L 70 17 L 69 16 Z" fill="#000000"/>
-          <path d="M 130 25 L 132 27 L 130 29 L 128 27 Z" fill="#000000"/>
-          <path d="M 120 18 L 121 19 L 120 20 L 119 19 Z" fill="#000000"/>
+          <path d="M 80 20 L 82 22 L 80 24 L 78 22 Z" fill="#000000" />
+          <path d="M 70 15 L 71 16 L 70 17 L 69 16 Z" fill="#000000" />
+          <path d="M 130 25 L 132 27 L 130 29 L 128 27 Z" fill="#000000" />
+          <path d="M 120 18 L 121 19 L 120 20 L 119 19 Z" fill="#000000" />
         </svg>
       </div>
       
-      <h2 className={styles.emptyTitle}>Time to Share Your Request</h2>
+      <h2 className={styles.emptyTitle}>No candidates yet</h2>
       <p className={styles.emptyText}>
-        Post your link on LinkedIn, Facebook, Discord, Slack, and any freelancer communities or chats to start receiving applications.
+        When your request starts getting responses, they’ll appear here. While you wait, schedule a call with the Orchestrator to set up the process and get the first candidates faster.
       </p>
       
-      <Button variant="brand">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ marginRight: '8px' }}>
-          <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-          <path d="M6 10H10C11.1046 10 12 10.8954 12 12V12C12 13.1046 12 13 12 13H10" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-          <path d="M10 6V6C10 4.89543 10.8954 4 12 4H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <Button variant="secondary" onClick={handleScheduleCall}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ marginRight: "8px" }} aria-hidden="true">
+          <path d="M5 8h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M8 5v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
-        Copy link
+        Schedule a call
       </Button>
     </div>
   );

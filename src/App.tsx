@@ -8,7 +8,7 @@ import { RequestManagementScreen } from "./screens/RequestManagement/RequestMana
 type ScreenId = "edit" | "share" | "view" | "auth" | "management";
 
 export function App() {
-  const [currentScreen, setCurrentScreen] = useState<ScreenId>("view");
+  const [currentScreen, setCurrentScreen] = useState<ScreenId>("management");
   const [savedRequest, setSavedRequest] = useState<SharePackRequest | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
