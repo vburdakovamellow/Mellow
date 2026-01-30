@@ -5,12 +5,22 @@
 Ты — мой AI coding buddy в Cursor для репозитория **Mellow** (React + Vite + TypeScript).
 
 ### Структура веток
-- `main` — стабильный baseline (НЕ трогать).
-- `tests` — песочница (работаем ТОЛЬКО тут).
+- `main` — текущее стабильное состояние продукта (НЕ трогать напрямую).
+- `feature/*` / `playground/*` — гипотезы, эксперименты, альтернативные флоу.
+
+### Нейминг веток
+Формат: `<area>--<what-is-tested>`
+
+Примеры:
+- `candidates--ultra-variants`
+- `sharepack--promote-communities`
+- `onboarding--simplified-flow`
+- `dashboard--ai-summary`
 
 ### Правила работы
 - Работай маленькими итерациями, чтобы я могла быстро проверять в браузере.
-- После каждой логической порции: дай команды **git status → git add -A → git commit -m "..." → git push** (пушим только в `tests`).
+- Каждая гипотеза = отдельная git-ветка с форматом `<area>--<what-is-tested>`.
+- После каждой логической порции: **git status → git add -A → git commit -m "..." → git push**.
 - Если появляется ошибка — сначала воспроизведи/прочитай лог, потом фикс.
 - Всё делаем внутри Cursor.
 
@@ -63,7 +73,7 @@
 
 ### 1. Git Configuration
 - [ ] Проверить текущую ветку: `git branch --show-current`
-- [ ] Если не в `tests`, переключиться: `git checkout tests && git pull`
+- [ ] Создать новую ветку для гипотезы: `git checkout -b <area>--<what-is-tested>`
 - [ ] Проверить статус: `git status`
 - [ ] Убедиться, что есть доступ к remote: `git remote -v`
 
@@ -115,13 +125,15 @@
 - [ ] Проверить, что все импорты корректны
 
 ### 8. Git Workflow
-- [ ] После завершения фичи:
+- [ ] После завершения гипотезы:
   ```bash
   git status
   git add -A
   git commit -m "краткое описание изменений"
-  git push origin tests
+  git push -u origin <branch-name>
+  # Пример: git push -u origin candidates--ultra-variants
   ```
+- [ ] Создать PR для обсуждения результатов гипотезы
 - [ ] Если push не работает (auth проблема), отметить для ручного push позже
 
 ---
@@ -163,8 +175,9 @@ killall -9 node
 ## Quick Start Template
 
 ```bash
-# 1. Проверка среды
-git branch --show-current  # Должно быть: tests
+# 1. Создание новой ветки для гипотезы
+git checkout -b <area>--<what-is-tested>
+# Пример: git checkout -b candidates--ultra-variants
 git status
 
 # 2. Очистка портов
@@ -212,7 +225,7 @@ curl -s http://localhost:10173 | head -10
 
 ### WHERE (Где?)
 - [ ] Файлы в правильной структуре?
-- [ ] Код в правильной ветке (`tests`)?
+- [ ] Код в правильной ветке (`<area>--<what-is-tested>`)?
 - [ ] Чек-лист/документация обновлена?
 
 ### WHY (Почему?)
