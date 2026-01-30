@@ -7,18 +7,18 @@ import { chromium } from 'playwright';
   const page = await browser.newPage();
   
   // Переходим на локальный dev server
-  await page.goto('http://localhost:5173/');
+  await page.goto('http://localhost:10174/');
   
   // Ждем загрузки контента
   await page.waitForLoadState('networkidle');
   
   // Делаем скриншот всей страницы
   await page.screenshot({ 
-    path: 'screenshot-full-page.png', 
+    path: 'sharepack-communities-complete.png', 
     fullPage: true 
   });
   
-  console.log('✅ Screenshot saved to screenshot-full-page.png');
+  console.log('✅ Screenshot saved to sharepack-communities-complete.png');
   
   await browser.close();
 })();

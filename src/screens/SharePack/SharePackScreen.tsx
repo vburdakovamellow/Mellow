@@ -25,11 +25,13 @@ export type SharePackRequest = {
 export function SharePackScreen({
   request,
   onGoToEdit,
-  onGoToView
+  onGoToView,
+  variant = 'communities'
 }: {
   request: SharePackRequest;
   onGoToEdit?: () => void;
   onGoToView?: () => void;
+  variant?: 'linkedin' | 'communities';
 }) {
   return (
     <div className={styles.screen}>
@@ -59,26 +61,22 @@ export function SharePackScreen({
             <span className={styles.backText}>Dashboard</span>
           </button>
 
-          {/* Progress Stepper */}
-          <div className={styles.progressStepper}>
-            <div className={styles.step}>
-              <div className={styles.stepIconCompleted}>✓</div>
-              <span className={styles.stepLabel}>Your request</span>
+          {/* Progress Bar */}
+          <div className={styles.horizontalProgressBar}>
+            <div className={styles.progressStep}>
+              <div className={styles.stepContent}>Your request</div>
             </div>
-            <div className={styles.stepLineActive}></div>
-            <div className={styles.step}>
-              <div className={styles.stepIconActive}>✓</div>
-              <span className={styles.stepLabelActive}>Promote</span>
+            <div className={styles.progressArrow}></div>
+            <div className={styles.progressStep}>
+              <div className={styles.stepContent}>Ultra</div>
             </div>
-            <div className={styles.stepLine}></div>
-            <div className={styles.step}>
-              <div className={styles.stepIconCompleted}>✓</div>
-              <span className={styles.stepLabel}>Ultra</span>
+            <div className={styles.progressArrow}></div>
+            <div className={`${styles.progressStep} ${styles.progressStepActive}`}>
+              <div className={styles.stepContent}>Promote</div>
             </div>
-            <div className={styles.stepLine}></div>
-            <div className={styles.step}>
-              <div className={styles.stepIconCompleted}>✓</div>
-              <span className={styles.stepLabel}>Candidates</span>
+            <div className={styles.progressArrow}></div>
+            <div className={styles.progressStep}>
+              <div className={styles.stepContent}>Candidates</div>
             </div>
           </div>
 
@@ -145,55 +143,149 @@ export function SharePackScreen({
               </div>
             </div>
 
-            {/* Right Column - LinkedIn Preview */}
+            {/* Right Column - Preview */}
             <div className={styles.rightColumn}>
-              <div className={styles.previewCard}>
-                <div className={styles.previewHeader}>
-                  <div className={styles.previewAvatar}>VB</div>
-                  <div className={styles.previewAuthor}>
-                    <div className={styles.previewName}>Valeriia Burdakova</div>
-                    <div className={styles.previewTime}>Just now • 🌍</div>
+              {variant === 'linkedin' ? (
+                <div className={styles.previewCard}>
+                  <div className={styles.previewHeader}>
+                    <div className={styles.previewAvatar}>VB</div>
+                    <div className={styles.previewAuthor}>
+                      <div className={styles.previewName}>Valeriia Burdakova</div>
+                      <div className={styles.previewTime}>Just now • 🌍</div>
+                    </div>
+                    <button className={styles.previewMore}>⋯</button>
                   </div>
-                  <button className={styles.previewMore}>⋯</button>
-                </div>
 
-                <div className={styles.previewBody}>
-                  <p className={styles.previewText}>
-                    🎯 <strong>Join Us</strong> <span className={styles.hashtag}>#hiring</span>
-                  </p>
-                  <p className={styles.previewText}>
-                    We are seeking a proactive Administrative Assistant based in Armenia to support a fast-growing furniture manufacturing company. 
-                    The role involves communication with local tax authorities and suppliers, handling diverse administrative tasks, and remote work 
-                    with long-term collaboration.
-                  </p>
-                  <p className={styles.previewText}>
-                    <span className={styles.hashtag}>#AdministrativeAssistant</span>{" "}
-                    <span className={styles.hashtag}>#remotework</span>{" "}
-                    <span className={styles.hashtag}>#jobopportunity</span>{" "}
-                    <span className={styles.hashtag}>#careers</span>{" "}
-                    <span className={styles.hashtag}>#businessgrowth</span>
-                  </p>
-                </div>
+                  <div className={styles.previewBody}>
+                    <p className={styles.previewText}>
+                      🎯 <strong>Join Us</strong> <span className={styles.hashtag}>#hiring</span>
+                    </p>
+                    <p className={styles.previewText}>
+                      We are seeking a talented Graphic Designer to revitalize our social media and marketing visuals. 
+                      Your mission: enhance our brand identity with stunning, engaging designs that tell our story. 
+                      Passionate about design? Let's talk!
+                    </p>
+                    <p className={styles.previewText}>
+                      <span className={styles.hashtag}>#GraphicDesigner</span>{" "}
+                      <span className={styles.hashtag}>#SocialMediaDesign</span>{" "}
+                      <span className={styles.hashtag}>#BrandIdentity</span>{" "}
+                      <span className={styles.hashtag}>#RemoteWork</span>{" "}
+                      <span className={styles.hashtag}>#DesignJobs</span>
+                    </p>
+                  </div>
 
-                <div className={styles.previewLink}>
+                  <div className={styles.previewLink}>
                   <div className={styles.linkPreview}>
-                    <div className={styles.linkImage}>
-                      <div className={styles.linkAvatars}>
-                        {/* Placeholder avatars */}
-                        <div className={styles.miniAvatar}></div>
-                        <div className={styles.miniAvatar}></div>
-                        <div className={styles.miniAvatar}></div>
-                        <div className={styles.miniAvatar}></div>
+                    <div className={styles.bentoGrid}>
+                      {/* Hero Block - Job Title */}
+                      <div className={styles.bentoHero}>
+                        <h3 className={styles.bentoTitle}>Graphic Designer</h3>
+                        <p className={styles.bentoSubtitle}>Junior</p>
+                        <span className={styles.remoteBadge}>REMOTE</span>
                       </div>
-                      <div className={styles.linkBadge}>We are looking for Talent!</div>
+                      
+                      {/* Value Block - Rate (Orange) */}
+                      <div className={styles.bentoValue}>
+                        <div className={styles.bentoRate}>$40/hr</div>
+                        <div className={styles.bentoRateLabel}>Hourly Rate</div>
+                      </div>
+                      
+                      {/* Info Block - Skills as Tags + Icons */}
+                      <div className={styles.bentoInfo}>
+                        <div className={styles.bentoSkillsColumn}>
+                          <div className={styles.bentoSkillTag}>Figma</div>
+                          <div className={styles.bentoSkillTag}>Canva</div>
+                        </div>
+                        <div className={styles.bentoInfoItem}>
+                          <div className={styles.bentoIcon}>⏱</div>
+                          <div className={styles.bentoInfoText}>Under 20hrs/week</div>
+                        </div>
+                      </div>
                     </div>
                     <div className={styles.linkInfo}>
-                      <div className={styles.linkTitle}>This Project Needs Your Skills – Apply N...</div>
+                      <div className={styles.linkTitle}>Graphic Designer — $40/hr</div>
                       <div className={styles.linkUrl}>aiscout.mellow.io</div>
                     </div>
                   </div>
                 </div>
               </div>
+              ) : (
+                /* Communities variant - only Bento Grid + Link */
+                <div className={styles.communitiesPreview}>
+                  <div className={styles.communityTitle}>Graphic Designer — $40/hr</div>
+                  <div className={styles.communityDescription}>Figma, Canva, Adobe • Part-time (Under 20hrs/week) • Remote</div>
+                  <div className={styles.linkPreview}>
+                    <div className={styles.bentoGrid}>
+                      {/* Hero Block - Job Title */}
+                      <div className={styles.bentoHero}>
+                        <h3 className={styles.bentoTitle}>Graphic Designer</h3>
+                        <p className={styles.bentoSubtitle}>Junior</p>
+                        <span className={styles.remoteBadge}>REMOTE</span>
+                      </div>
+                      
+                      {/* Value Block - Rate */}
+                      <div className={styles.bentoValue}>
+                        <div className={styles.bentoRate}>$40/hr</div>
+                        <div className={styles.bentoRateLabel}>Hourly Rate</div>
+                      </div>
+                      
+                      {/* Info Block - Skills as Tags + Icons */}
+                      <div className={styles.bentoInfo}>
+                        <div className={styles.bentoSkillsColumn}>
+                          <div className={styles.bentoSkillTag}>Figma</div>
+                          <div className={styles.bentoSkillTag}>Canva</div>
+                        </div>
+                        <div className={styles.bentoInfoItem}>
+                          <div className={styles.bentoIcon}>⏱</div>
+                          <div className={styles.bentoInfoText}>Under 20hrs/week</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.copyLinkSection}>
+                    <input 
+                      type="text" 
+                      value="https://aiscout.mellow.io/?id=gAXdlVXr" 
+                      readOnly 
+                      className={styles.linkInput}
+                    />
+                    <button className={styles.copyButton}>
+                      Copy link
+                    </button>
+                  </div>
+
+                  <div className={styles.recommendedSection}>
+                    <h3 className={styles.recommendedTitle}>Recommended communities</h3>
+                    <div className={styles.communityList}>
+                      <div className={styles.communityItem}>
+                        <div className={styles.communityInfo}>
+                          <div className={styles.communityName}>Design Jobs & Freelance</div>
+                          <div className={styles.communityMeta}>Discord • 8.2K members</div>
+                        </div>
+                      </div>
+                      <div className={styles.communityItem}>
+                        <div className={styles.communityInfo}>
+                          <div className={styles.communityName}>Remote Design Work</div>
+                          <div className={styles.communityMeta}>Slack • 15K members</div>
+                        </div>
+                      </div>
+                      <div className={styles.communityItem}>
+                        <div className={styles.communityInfo}>
+                          <div className={styles.communityName}>Freelance Designers Network</div>
+                          <div className={styles.communityMeta}>Facebook Group • 22K members</div>
+                        </div>
+                      </div>
+                      <div className={styles.communityItem}>
+                        <div className={styles.communityInfo}>
+                          <div className={styles.communityName}>Creative Freelancers</div>
+                          <div className={styles.communityMeta}>Telegram • 9.8K members</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
