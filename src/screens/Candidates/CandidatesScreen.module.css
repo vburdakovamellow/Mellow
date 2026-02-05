@@ -13,7 +13,6 @@
   right: 0;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid #000000;
   z-index: 100;
   padding: 16px 0;
 }
@@ -32,6 +31,24 @@
   font-size: 24px;
   font-weight: 500;
   color: #000000;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.primaryButton:hover {
+  opacity: 0.9;
 }
 
 .headerRight {
@@ -80,7 +97,7 @@
 }
 
 .content {
-  padding-top: 24px;
+  padding-top: 0;
 }
 
 /* Request Header */
@@ -94,24 +111,26 @@
 }
 
 .backLink {
-  position: absolute;
-  left: 0;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: transparent;
-  border: none;
+  justify-content: center;
+  width: 37px;
+  height: 37px;
+  background: #e5e5e5;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
   padding: 0;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .backLink:hover {
-  opacity: 0.7;
+  background: #d5d5d5;
+  border-color: #000000;
 }
 
 .backArrow {
-  font-size: 20px;
+  font-size: 18px;
   color: #000000;
   line-height: 1;
 }
@@ -122,55 +141,107 @@
   color: #000000;
 }
 
-/* Navigation Row */
+/* Navigation Row — back + tabs + stats */
 .navigationRow {
-  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 16px 0;
-  margin-bottom: 16px;
+  justify-content: space-between;
+  padding: 12px 0 16px;
+  margin-bottom: 12px;
   border-bottom: 1px solid #e5e5e5;
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.viewedStats {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #666666;
+}
+
+.viewedIcon {
+  font-size: 16px;
+  color: #000000;
+}
+
+/* Group by match plaque */
+.groupByMatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.groupByMatchLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.groupByMatchCheck {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000000;
 }
 
 .requestTitle {
   font-family: var(--ds-font-family-body);
-  font-size: 32px;
-  line-height: 40px;
+  font-size: 22px;
+  line-height: 28px;
   font-weight: 600;
   color: #000000;
-  margin: 0;
+  margin: 0 0 8px 0;
 }
 
-/* Navigation Tabs */
+/* Navigation Tabs — pill / segmented: слипшиеся, один контейнер */
 .navigationTabs {
-  display: flex;
-  gap: 8px;
+  display: inline-flex;
+  background: #e5e5e5;
+  border-radius: 999px;
+  padding: 2px;
+  overflow: hidden;
 }
 
 .navTab {
   display: inline-flex;
   align-items: center;
-  padding: 8px 16px;
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  justify-content: center;
+  padding: 0 20px;
+  height: 33px;
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
+  border-radius: 999px;
   font-size: 14px;
   font-weight: 500;
   color: #666666;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .navTab:hover {
-  border-color: #000000;
+  background: #d5d5d5;
   color: #000000;
 }
 
 .navTabActive {
   background: #000000;
   color: #ffffff;
-  border-color: #000000;
+}
+
+.navTabActive:hover {
+  background: #000000;
+  color: #ffffff;
 }
 
 /* Progress Stepper */
@@ -385,7 +456,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 20px 0;
+  padding: 8px 0 20px;
 }
 
 .emptyStateWithPreview {
@@ -715,18 +786,62 @@
   padding: 0;
 }
 
+.ultraBanner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 32px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 12px;
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.ultraBannerTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ultraBannerTitleRow .actionTitle {
+  flex: 1;
+  margin: 0;
+}
+
+/* Шаг ultra_ordered: блок «scheduled» в этом шаге */
+.ultraBannerScheduled .actionTitle {
+  margin-bottom: 4px;
+}
+
 .actionCard {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px;
+  gap: 16px;
+  padding: 24px;
   background: #ffffff;
   border: 1px solid #000000;
   border-radius: 12px;
   height: fit-content;
   position: sticky;
   top: 100px;
-  text-align: center;
+  text-align: left;
+}
+
+.freeBadgeAbove {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #000000;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  width: fit-content;
 }
 
 .actionTitle {
@@ -743,6 +858,339 @@
   line-height: 22px;
   color: #000000;
   margin: 0;
+}
+
+/* Ultra Manager 3 statuses */
+.ultraStatuses {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ultraStatus {
+  flex: 1;
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ultraStatusHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ultraStatusNum {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #000000;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ultraStatusName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.ultraStatusLines {
+  height: 24px;
+  background: #e5e5e5;
+  border-radius: 4px;
+}
+
+.ultraStatusText {
+  font-size: 14px;
+  line-height: 20px;
+  color: #000000;
+  margin: 0;
+}
+
+.ultraStatusArrow {
+  align-self: center;
+  padding-top: 24px;
+  font-size: 18px;
+  color: #000000;
+}
+
+/* Scheduled state: дата/время CET, Reschedule (светлая) + Join (тёмная) */
+.ultraScheduledBlock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 20px;
+  background: #f5f5f5;
+  border: 1px solid #000000;
+  border-radius: 8px;
+}
+
+.ultraScheduledTime {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ultraScheduledIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: #000000;
+}
+
+.ultraScheduledIcon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.ultraScheduledDay {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.ultraScheduledSlot {
+  font-size: 14px;
+  color: #000000;
+  margin-top: 2px;
+}
+
+.ultraScheduledActions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Неактивные шаги 2 и 3 — серые */
+.ultraStatusInactive .ultraStatusNum {
+  background: #999999;
+  color: #ffffff;
+}
+
+.ultraStatusInactive .ultraStatusName,
+.ultraStatusInactive .ultraStatusText {
+  color: #666666;
+}
+
+.bookButton {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #000000 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  font-weight: 600;
+}
+
+/* ready_for_review: всё серое, те же описания шагов */
+.ultraBannerReady .ultraStatusNum {
+  background: #999999;
+  color: #ffffff;
+}
+
+.ultraBannerReady .ultraStatusName,
+.ultraBannerReady .ultraStatusText {
+  color: #666666;
+}
+
+.ultraBannerReady .ultraStatusArrow {
+  color: #999999;
+}
+
+.ultraBannerReady .ultraReadyRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.ultraReadyRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.ultraBannerReady .ultraStatuses {
+  margin-bottom: 0;
+}
+
+.restartButton {
+  flex-shrink: 0;
+}
+
+/* Карточки кандидатов (ready_for_review) — как на референсе, ч/б */
+.matchSectionCards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.matchCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 12px;
+}
+
+.matchCardIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.matchCardIconPct {
+  background: #e0e0e0;
+  color: #000000;
+}
+
+.matchCardStars {
+  display: inline-flex;
+  color: #000000;
+}
+
+.matchCardStars svg {
+  width: 24px;
+  height: 24px;
+}
+
+.matchCardPct {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.matchCardMain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.matchCardName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 24px;
+}
+
+.matchCardRole {
+  font-size: 14px;
+  color: #000000;
+  line-height: 20px;
+}
+
+.matchCardMeta {
+  font-size: 14px;
+  color: #000000;
+  line-height: 20px;
+}
+
+.matchCardApplied {
+  font-size: 13px;
+  color: #666666;
+  line-height: 18px;
+}
+
+.matchCardRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.matchCardUltraLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 4px 10px;
+  background: #666666;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.matchCardPill {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.matchCardPillNew {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+}
+
+.matchCardPillShortlisted {
+  background: #e5e5e5;
+  color: #000000;
+  border: 1px solid #000000;
+}
+
+.matchCardPillViewed {
+  background: #f0f0f0;
+  color: #333333;
+  border: 1px solid #cccccc;
+}
+
+/* Top match / Moderate match sections */
+.matchSections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.matchSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.matchSectionTitle {
+  font-family: var(--ds-font-family-body);
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+}
+
+.matchSectionEmpty {
+  min-height: 80px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.matchSectionEmpty .valueSection {
+  align-items: flex-start;
+  text-align: left;
+  max-width: none;
 }
 
 /* Candidates List */
