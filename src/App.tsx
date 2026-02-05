@@ -8,6 +8,7 @@ export function App() {
     const p = new URLSearchParams(window.location.search);
     const s = p.get("step");
     if (s === "ultra_ordered") return "ultra_ordered";
+    if (s === "sourcing") return "sourcing";
     if (s === "ready_for_review") return "ready_for_review";
     return "just_created";
   });

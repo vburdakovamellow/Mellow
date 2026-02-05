@@ -3,8 +3,8 @@ import { Button } from "../../design-system/primitives/Button/Button";
 import "../../design-system/typography.css";
 import styles from "./CandidatesScreen.module.css";
 
-/** just_created → ultra_ordered (запланировал) → ready_for_review (встречу провели, Ultra нашёл кандидатов). */
-export type CandidatesStep = "just_created" | "ultra_ordered" | "ready_for_review";
+/** just_created → ultra_ordered (запланировал) → sourcing → ready_for_review (встречу провели, Ultra нашёл кандидатов). */
+export type CandidatesStep = "just_created" | "ultra_ordered" | "sourcing" | "ready_for_review";
 
 /** Кандидаты для шага ready_for_review (как на референсе). */
 const READY_FOR_REVIEW_CANDIDATES = {
@@ -330,6 +330,75 @@ export function CandidatesScreen({
                         </div>
                         <div className={styles.ultraStatusArrow}>→</div>
                         <div className={`${styles.ultraStatus} ${styles.ultraStatusInactive}`}>
+                          <div className={styles.ultraStatusHeader}>
+                            <span className={styles.ultraStatusNum}>2</span>
+                            <span className={styles.ultraStatusName}>Sourcing</span>
+                          </div>
+                          <p className={styles.ultraStatusText}>Starts after your briefing call</p>
+                        </div>
+                        <div className={styles.ultraStatusArrow}>→</div>
+                        <div className={`${styles.ultraStatus} ${styles.ultraStatusInactive}`}>
+                          <div className={styles.ultraStatusHeader}>
+                            <span className={styles.ultraStatusNum}>3</span>
+                            <span className={styles.ultraStatusName}>Ready for review</span>
+                          </div>
+                          <p className={styles.ultraStatusText}>You'll review 3+ candidates with 80%+ match</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Top match: contains value copy */}
+                    <div className={styles.matchSections}>
+                      <section className={styles.matchSection}>
+                        <h4 className={styles.matchSectionTitle}>Top match</h4>
+                        <div className={styles.matchSectionEmpty}>
+                          <div className={styles.valueSection}>
+                            <h3 className={styles.valueTitle}>Candidates will appear here</h3>
+                            <p className={styles.valueText}>
+                              We're searching Mellow's contractor pool for matches to your request. You'll see results within 48 hours.
+                            </p>
+                            <p className={styles.valueText}>
+                              Want more visibility?{" "}
+                              <a
+                                href="#share"
+                                className={styles.promoteLink}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  navigator.clipboard.writeText(window.location.href);
+                                  alert("Link copied! Opening Share section...");
+                                }}
+                              >
+                                Share
+                              </a>
+                              {" "}your request manually to reach more contractors.
+                            </p>
+                          </div>
+                        </div>
+                      </section>
+                      <section className={styles.matchSection}>
+                        <h4 className={styles.matchSectionTitle}>Moderate match</h4>
+                        <div className={styles.matchSectionEmpty} />
+                      </section>
+                    </div>
+                  </>
+                ) : version === 1 && step === "sourcing" ? (
+                  <>
+                    {/* Шаг sourcing: briefing done, sourcing active, copy of just_created layout. */}
+                    <div className={styles.ultraBanner} data-step="sourcing">
+                      <div className={styles.ultraBannerTitleRow}>
+                        <h3 className={styles.actionTitle}>No perfect candidate yet? Meet your Ultra manager!</h3>
+                        <span className={styles.freeBadgeAbove}>FREE</span>
+                      </div>
+                      <div className={styles.ultraStatuses}>
+                        <div className={`${styles.ultraStatus} ${styles.ultraStatusInactive}`}>
+                          <div className={styles.ultraStatusHeader}>
+                            <span className={styles.ultraStatusNum}>1</span>
+                            <span className={styles.ultraStatusName}>Briefing</span>
+                          </div>
+                          <p className={styles.ultraStatusText}>Schedule a call – the Ultra manager will gather project details</p>
+                        </div>
+                        <div className={styles.ultraStatusArrow}>→</div>
+                        <div className={styles.ultraStatus}>
                           <div className={styles.ultraStatusHeader}>
                             <span className={styles.ultraStatusNum}>2</span>
                             <span className={styles.ultraStatusName}>Sourcing</span>
