@@ -221,7 +221,7 @@ export function CandidatesScreen({
                   </>
                 ) : version === 1 && step === "ready_for_review" ? (
                   <>
-                    {/* Шаг ready_for_review: все 3 шага завершены, Re-Start!, карточки кандидатов. */}
+                    {/* Шаг ready_for_review: все 3 шага завершены, Start Over, карточки кандидатов. */}
                     <div className={`${styles.ultraBanner} ${styles.ultraBannerReady}`} data-step="ready_for_review">
                       <div className={styles.ultraReadyRow}>
                         <div className={styles.ultraStatuses}>
@@ -250,7 +250,7 @@ export function CandidatesScreen({
                           </div>
                         </div>
                         <Button variant="secondary" className={styles.restartButton} onClick={() => onRestart?.()}>
-                          Re-Start!
+                          Start Over
                         </Button>
                       </div>
                     </div>
@@ -272,7 +272,7 @@ export function CandidatesScreen({
                               <div className={styles.matchCardMain}>
                                 <div className={styles.matchCardName}>{c.name}</div>
                                 <div className={styles.matchCardRole}>{c.role}</div>
-                                <div className={styles.matchCardMeta}>• {c.experience} experience</div>
+                                <div className={styles.matchCardMeta}>• {c.experience} of experience</div>
                                 <div className={styles.matchCardApplied}>{c.applied}</div>
                               </div>
                               <div className={styles.matchCardRight}>
@@ -296,7 +296,7 @@ export function CandidatesScreen({
                               <div className={styles.matchCardMain}>
                                 <div className={styles.matchCardName}>{c.name}</div>
                                 <div className={styles.matchCardRole}>{c.role}</div>
-                                <div className={styles.matchCardMeta}>• {c.experience} experience</div>
+                                <div className={styles.matchCardMeta}>• {c.experience} of experience</div>
                                 <div className={styles.matchCardApplied}>{c.applied}</div>
                               </div>
                               <div className={styles.matchCardRight}>

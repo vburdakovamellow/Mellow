@@ -11,7 +11,7 @@ function getStepFromUrl(): CandidatesStep {
   return "just_created";
 }
 
-/** just_created → ultra_ordered (scheduled) → sourcing → ready_for_review (candidates ready, Re-Start!). */
+/** just_created → ultra_ordered (scheduled) → sourcing → ready_for_review (candidates ready, Start Over). */
 export function App() {
   const [step, setStep] = useState<CandidatesStep>(getStepFromUrl);
 
