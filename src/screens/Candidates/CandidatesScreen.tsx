@@ -141,9 +141,9 @@ export function CandidatesScreen({
               <div className={styles.emptyState} data-step={step}>
                 {version === 1 && step === "ultra_ordered" ? (
                   <>
-                    {/* Шаг ultra_ordered: в этом блоке изображаем «Your meet with Ultra is scheduled!» */}
+                    {/* Шаг ultra_ordered: в этом блоке изображаем «Your meet with Scout Ultra is scheduled!» */}
                     <div className={`${styles.ultraBanner} ${styles.ultraBannerScheduled}`} data-step="ultra_ordered">
-                      <h3 className={styles.actionTitle}>Your meet with Ultra is scheduled!</h3>
+                      <h3 className={styles.actionTitle}>Your meet with Scout Ultra is scheduled!</h3>
                       <div className={styles.ultraScheduledBlock}>
                         <div className={styles.ultraScheduledTime}>
                           <span className={styles.ultraScheduledIcon} aria-hidden>
