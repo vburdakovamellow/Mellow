@@ -980,6 +980,18 @@
   color: #666666;
 }
 
+.ultraSourcingTimer {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000000;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
 .bookButton {
   background: #000000 !important;
   color: #ffffff !important;

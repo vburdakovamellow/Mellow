@@ -163,7 +163,7 @@ export function CandidatesScreen({
                           <Button variant="secondary" onClick={() => alert("Reschedule (stub)")}>
                             Reschedule
                           </Button>
-                          <Button variant="brand" onClick={() => alert("Join (stub)")}>
+                          <Button variant="brand" onClick={() => onJoin?.() ?? alert("Join (stub)")}>
                             Join
                           </Button>
                         </div>
@@ -404,6 +404,7 @@ export function CandidatesScreen({
                             <span className={styles.ultraStatusName}>Sourcing</span>
                           </div>
                           <p className={styles.ultraStatusText}>Starts after your briefing call</p>
+                          <div className={styles.ultraSourcingTimer}>49 h 58 min</div>
                         </div>
                         <div className={styles.ultraStatusArrow}>→</div>
                         <div className={`${styles.ultraStatus} ${styles.ultraStatusInactive}`}>
