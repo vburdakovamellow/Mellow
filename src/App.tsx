@@ -26,6 +26,7 @@ export function App() {
   return (
     <SharePackScreen
       request={mockRequest}
+      variant="linkedin"
       onGoToEdit={() => console.log("Go to edit")}
       onGoToView={() => console.log("Go to view")}
     />

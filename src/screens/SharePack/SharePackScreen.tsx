@@ -112,7 +112,7 @@ export function SharePackScreen({
                 <div className={styles.shareOptions}>
                   <div className={styles.shareOption}>
                     <div className={styles.optionIcon}>
-                      <input type="checkbox" className={styles.optionCheckbox} />
+                      <input type="checkbox" className={styles.optionCheckbox} checked readOnly />
                     </div>
                     <div className={styles.optionContent}>
                       <h3 className={styles.optionTitle}>Post on LinkedIn</h3>
@@ -136,7 +136,7 @@ export function SharePackScreen({
 
                   <div className={styles.shareOption}>
                     <div className={styles.optionIcon}>
-                      <input type="checkbox" className={styles.optionCheckbox} checked readOnly />
+                      <input type="checkbox" className={styles.optionCheckbox} />
                     </div>
                     <div className={styles.optionContent}>
                       <h3 className={styles.optionTitle}>Share in Communities & Chats</h3>
@@ -152,35 +152,35 @@ export function SharePackScreen({
             {/* Right Column - Preview */}
             <div className={styles.rightColumn}>
               {variant === 'linkedin' ? (
-                <div className={styles.previewCard}>
-                  <div className={styles.previewHeader}>
-                    <div className={styles.previewAvatar}>VB</div>
-                    <div className={styles.previewAuthor}>
-                      <div className={styles.previewName}>Valeriia Burdakova</div>
-                      <div className={styles.previewTime}>Just now • 🌍</div>
+                <div className={styles.linkedinPreviewSection}>
+                  <h3 className={styles.previewSectionTitle}>Check the preview</h3>
+                  
+                  <div className={styles.previewCard}>
+                    <div className={styles.previewHeader}>
+                      <div className={styles.previewAvatar}>VB</div>
+                      <div className={styles.previewAuthor}>
+                        <div className={styles.previewName}>Valeriia Burdakova</div>
+                        <div className={styles.previewTime}>Just now • 🌍</div>
+                      </div>
+                      <button className={styles.previewMore}>⋯</button>
                     </div>
-                    <button className={styles.previewMore}>⋯</button>
-                  </div>
 
-                  <div className={styles.previewBody}>
-                    <p className={styles.previewText}>
-                      🎯 <strong>Join Us</strong> <span className={styles.hashtag}>#hiring</span>
-                    </p>
-                    <p className={styles.previewText}>
+                    <div className={styles.previewBody}>
+                      <p className={styles.previewText}>
                       We are seeking a talented Graphic Designer to revitalize our social media and marketing visuals. 
                       Your mission: enhance our brand identity with stunning, engaging designs that tell our story. 
                       Passionate about design? Let's talk!
                     </p>
-                    <p className={styles.previewText}>
-                      <span className={styles.hashtag}>#GraphicDesigner</span>{" "}
-                      <span className={styles.hashtag}>#SocialMediaDesign</span>{" "}
-                      <span className={styles.hashtag}>#BrandIdentity</span>{" "}
-                      <span className={styles.hashtag}>#RemoteWork</span>{" "}
-                      <span className={styles.hashtag}>#DesignJobs</span>
-                    </p>
-                  </div>
+                      <p className={styles.previewText}>
+                        <span className={styles.hashtag}>#GraphicDesigner</span>{" "}
+                        <span className={styles.hashtag}>#SocialMediaDesign</span>{" "}
+                        <span className={styles.hashtag}>#BrandIdentity</span>{" "}
+                        <span className={styles.hashtag}>#RemoteWork</span>{" "}
+                        <span className={styles.hashtag}>#DesignJobs</span>
+                      </p>
+                    </div>
 
-                  <div className={styles.previewLink}>
+                    <div className={styles.previewLink}>
                   <div className={styles.linkPreview}>
                     <div className={styles.bentoGrid}>
                       {/* Hero Block - Job Title */}
@@ -196,13 +196,21 @@ export function SharePackScreen({
                         <div className={styles.bentoRateLabel}>Hourly Rate</div>
                       </div>
                     </div>
-                    <div className={styles.linkInfo}>
-                      <div className={styles.linkTitle}>Graphic Designer — $40/hr</div>
-                      <div className={styles.linkUrl}>aiscout.mellow.io</div>
+                      <div className={styles.linkInfo}>
+                        <div className={styles.linkTitle}>Graphic Designer — $40/hr</div>
+                        <div className={styles.linkUrl}>aiscout.mellow.io</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+
+                <button className={styles.shareOnLinkedinButton}>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className={styles.linkedinIcon}>
+                      <path d="M18.5 0h-17C0.675 0 0 0.675 0 1.5v17c0 0.825 0.675 1.5 1.5 1.5h17c0.825 0 1.5-0.675 1.5-1.5v-17c0-0.825-0.675-1.5-1.5-1.5zM6 16H3V7h3v9zM4.5 5.75c-0.825 0-1.5-0.675-1.5-1.5s0.675-1.5 1.5-1.5 1.5 0.675 1.5 1.5-0.675 1.5-1.5 1.5zM17 16h-3v-4.5c0-1.125-0.375-1.875-1.313-1.875-0.713 0-1.125 0.488-1.313 0.95-0.075 0.188-0.063 0.45-0.063 0.713V16h-3s0.038-7.125 0-7.875h3v1.125c0.375-0.6 1.05-1.463 2.55-1.463 1.863 0 3.263 1.238 3.263 3.9V16z" fill="currentColor"/>
+                    </svg>
+                    Share on LinkedIn
+                  </button>
+                </div>
               ) : (
                 /* Communities variant - Reordered layout */
                 <div className={styles.communitiesPreview}>
