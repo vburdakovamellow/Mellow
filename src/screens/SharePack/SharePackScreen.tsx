@@ -52,38 +52,48 @@ export function SharePackScreen({
         </div>
       </div>
 
+      {/* Request Header with Tabs */}
+      <div className={styles.requestHeaderSection}>
+        <div className={styles.container}>
+          <button className={styles.backButton} onClick={onGoToView}>←</button>
+          
+          <div className={styles.requestInfo}>
+            <h1 className={styles.requestTitle}>{request.title}</h1>
+            
+            <div className={styles.tabs}>
+              <button className={styles.tab}>
+                Candidates
+              </button>
+              <button className={[styles.tab, styles.tabActive].join(" ")}>
+                Share
+              </button>
+              <button className={styles.tab} onClick={onGoToEdit}>
+                Edit
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.requestActions}>
+            <div className={styles.stats}>
+              <div className={styles.stat}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 3C4.5 3 2 8 2 8s2.5 5 6 5 6-5 6-5-2.5-5-6-5z" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                </svg>
+                <span>42 viewed</span>
+              </div>
+              <span className={styles.statSeparator}>•</span>
+              <div className={styles.stat}>
+                <span>0 applied</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Content */}
       <div className={styles.content}>
         <div className={styles.container}>
-          {/* Back to Dashboard */}
-          <button className={styles.backLink} onClick={onGoToView}>
-            <span className={styles.backArrow}>←</span>
-            <span className={styles.backText}>Dashboard</span>
-          </button>
-
-          {/* Progress Bar */}
-          <div className={styles.horizontalProgressBar}>
-            <div className={styles.progressStep}>
-              <div className={styles.stepContent}>Your request</div>
-            </div>
-            <div className={styles.progressArrow}></div>
-            <div className={styles.progressStep}>
-              <div className={styles.stepContent}>Ultra</div>
-            </div>
-            <div className={styles.progressArrow}></div>
-            <div className={`${styles.progressStep} ${styles.progressStepActive}`}>
-              <div className={styles.stepContent}>Promote</div>
-            </div>
-            <div className={styles.progressArrow}></div>
-            <div className={styles.progressStep}>
-              <div className={styles.stepContent}>Candidates</div>
-            </div>
-          </div>
-
-          {/* Request Title */}
-          <div className={styles.requestHeader}>
-            <h1 className={styles.requestTitle}>{request.title}</h1>
-          </div>
 
           {/* Two Column Layout */}
           <div className={styles.twoColumnLayout}>
@@ -91,16 +101,12 @@ export function SharePackScreen({
             <div className={styles.leftColumn}>
               <div className={styles.shareSection}>
                 <h2 className={styles.shareTitle}>Share to Get Applications</h2>
-                <p className={styles.shareSubtitle}>Get your project in front of the right freelancers.</p>
+                <p className={styles.shareSubtitle}>
+                  Choose a channel to get more visibility to your request. You can always come back and share on other platforms later.
+                </p>
 
-                {/* Progress */}
-                <div className={styles.progressBar}>
-                  <div className={styles.progressLabel}>Post on LinkedIn for maximum professional visibility</div>
-                  <div className={styles.progressTrack}>
-                    <div className={styles.progressFill} style={{ width: "33%" }}></div>
-                  </div>
-                  <div className={styles.progressCounter}>1/3</div>
-                </div>
+                {/* Select Channel Label */}
+                <h3 className={styles.selectChannelLabel}>Select a channel</h3>
 
                 {/* Share Options */}
                 <div className={styles.shareOptions}>
@@ -189,18 +195,6 @@ export function SharePackScreen({
                         <div className={styles.bentoRate}>$40/hr</div>
                         <div className={styles.bentoRateLabel}>Hourly Rate</div>
                       </div>
-                      
-                      {/* Info Block - Skills as Tags + Icons */}
-                      <div className={styles.bentoInfo}>
-                        <div className={styles.bentoSkillsColumn}>
-                          <div className={styles.bentoSkillTag}>Figma</div>
-                          <div className={styles.bentoSkillTag}>Canva</div>
-                        </div>
-                        <div className={styles.bentoInfoItem}>
-                          <div className={styles.bentoIcon}>⏱</div>
-                          <div className={styles.bentoInfoText}>Under 20hrs/week</div>
-                        </div>
-                      </div>
                     </div>
                     <div className={styles.linkInfo}>
                       <div className={styles.linkTitle}>Graphic Designer — $40/hr</div>
@@ -210,8 +204,60 @@ export function SharePackScreen({
                 </div>
               </div>
               ) : (
-                /* Communities variant - only Bento Grid + Link */
+                /* Communities variant - Reordered layout */
                 <div className={styles.communitiesPreview}>
+                  {/* Recommended Communities - Now at top */}
+                  <div className={styles.recommendedSection}>
+                    <h3 className={styles.recommendedTitle}>Share in recommended communities</h3>
+                    <div className={styles.communityList}>
+                      <div className={styles.communityItem}>
+                        <div className={styles.communityInfo}>
+                          <div className={styles.communityName}>Design Jobs & Freelance</div>
+                          <div className={styles.communityMeta}>Discord</div>
+                        </div>
+                        <button className={styles.postButton}>Post</button>
+                      </div>
+                      <div className={styles.communityItem}>
+                        <div className={styles.communityInfo}>
+                          <div className={styles.communityName}>Remote Design Work</div>
+                          <div className={styles.communityMeta}>Slack</div>
+                        </div>
+                        <button className={styles.postButton}>Post</button>
+                      </div>
+                      <div className={styles.communityItem}>
+                        <div className={styles.communityInfo}>
+                          <div className={styles.communityName}>Freelance Designers Network</div>
+                          <div className={styles.communityMeta}>Facebook Group</div>
+                        </div>
+                        <button className={styles.postButton}>Post</button>
+                      </div>
+                      <div className={styles.communityItem}>
+                        <div className={styles.communityInfo}>
+                          <div className={styles.communityName}>Creative Freelancers</div>
+                          <div className={styles.communityMeta}>Telegram</div>
+                        </div>
+                        <button className={styles.postButton}>Post</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Copy Link Section */}
+                  <div className={styles.copyLinkSection}>
+                    <input 
+                      type="text" 
+                      value="https://aiscout.mellow.io/?id=gAXdlVXr" 
+                      readOnly 
+                      className={styles.linkInput}
+                    />
+                    <button className={styles.copyButton}>
+                      Copy link
+                    </button>
+                  </div>
+
+                  {/* Preview Label */}
+                  <h4 className={styles.previewLabel}>How the link will look like</h4>
+
+                  {/* Link Preview */}
                   <div className={styles.communityTitle}>Graphic Designer — $40/hr</div>
                   <div className={styles.communityDescription}>Figma, Canva, Adobe • Part-time (Under 20hrs/week) • Remote</div>
                   <div className={styles.linkPreview}>
@@ -227,60 +273,6 @@ export function SharePackScreen({
                       <div className={styles.bentoValue}>
                         <div className={styles.bentoRate}>$40/hr</div>
                         <div className={styles.bentoRateLabel}>Hourly Rate</div>
-                      </div>
-                      
-                      {/* Info Block - Skills as Tags + Icons */}
-                      <div className={styles.bentoInfo}>
-                        <div className={styles.bentoSkillsColumn}>
-                          <div className={styles.bentoSkillTag}>Figma</div>
-                          <div className={styles.bentoSkillTag}>Canva</div>
-                        </div>
-                        <div className={styles.bentoInfoItem}>
-                          <div className={styles.bentoIcon}>⏱</div>
-                          <div className={styles.bentoInfoText}>Under 20hrs/week</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className={styles.copyLinkSection}>
-                    <input 
-                      type="text" 
-                      value="https://aiscout.mellow.io/?id=gAXdlVXr" 
-                      readOnly 
-                      className={styles.linkInput}
-                    />
-                    <button className={styles.copyButton}>
-                      Copy link
-                    </button>
-                  </div>
-
-                  <div className={styles.recommendedSection}>
-                    <h3 className={styles.recommendedTitle}>Recommended communities</h3>
-                    <div className={styles.communityList}>
-                      <div className={styles.communityItem}>
-                        <div className={styles.communityInfo}>
-                          <div className={styles.communityName}>Design Jobs & Freelance</div>
-                          <div className={styles.communityMeta}>Discord • 8.2K members</div>
-                        </div>
-                      </div>
-                      <div className={styles.communityItem}>
-                        <div className={styles.communityInfo}>
-                          <div className={styles.communityName}>Remote Design Work</div>
-                          <div className={styles.communityMeta}>Slack • 15K members</div>
-                        </div>
-                      </div>
-                      <div className={styles.communityItem}>
-                        <div className={styles.communityInfo}>
-                          <div className={styles.communityName}>Freelance Designers Network</div>
-                          <div className={styles.communityMeta}>Facebook Group • 22K members</div>
-                        </div>
-                      </div>
-                      <div className={styles.communityItem}>
-                        <div className={styles.communityInfo}>
-                          <div className={styles.communityName}>Creative Freelancers</div>
-                          <div className={styles.communityMeta}>Telegram • 9.8K members</div>
-                        </div>
                       </div>
                     </div>
                   </div>
