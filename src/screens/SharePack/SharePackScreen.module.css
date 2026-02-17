@@ -494,10 +494,10 @@
 }
 
 .shareTitle {
-  font-family: var(--ds-font-family-accent);
-  font-size: 32px;
-  line-height: 40px;
-  font-weight: 500;
+  font-family: var(--ds-font-family-body);
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 700;
   color: #000000;
   margin: 0 0 8px 0;
 }
@@ -604,7 +604,11 @@
   border-radius: 16px;
   padding: 32px;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 100px;
+  align-self: flex-start;
 }
 
 /* Communities Preview */
@@ -635,33 +639,33 @@
 
 .copyLinkSection {
   display: flex;
-  gap: 12px;
-  margin-top: 0;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .linkInput {
   flex: 1;
-  padding: 12px 16px;
+  padding: 8px 12px;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 6px;
+  font-size: 12px;
   color: #666666;
   background: #f9f9f9;
   outline: none;
 }
 
 .copyButton {
-  padding: 12px 24px;
+  padding: 8px 16px;
   background: #000000;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   transition: background 0.2s ease;
   white-space: nowrap;
 }
@@ -697,10 +701,10 @@
 .communityList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
   max-height: 280px;
   overflow-y: auto;
-  padding-right: 8px;
+  padding-right: 4px;
 }
 
 .communityList::-webkit-scrollbar {
@@ -725,11 +729,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 12px 16px;
+  gap: 10px;
+  padding: 8px 12px;
   background: #f9f9f9;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: background 0.2s ease;
 }
 
@@ -757,24 +761,24 @@
 }
 
 .communityName {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #000000;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .communityMeta {
-  font-size: 12px;
+  font-size: 11px;
   color: #666666;
 }
 
 .postButton {
-  padding: 8px 20px;
+  padding: 6px 14px;
   background: #000000;
   color: #ffffff;
   border: 1px solid #000000;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1176,6 +1180,489 @@
 .linkUrl {
   font-size: 13px;
   color: #666666;
+}
+
+/* ==================== */
+/* Accordion Blocks     */
+/* ==================== */
+
+.accordionBlock {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  transition: border-color 0.2s ease;
+}
+
+.accordionBlock:last-child {
+  margin-bottom: 0;
+}
+
+.accordionBlockActive {
+  border-color: #000000;
+}
+
+.accordionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: left;
+  font-family: var(--ds-font-family-body);
+}
+
+.accordionHeader:hover {
+  background: #f9f9f9;
+}
+
+.accordionNumber {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  border: 2px solid #e0e0e0;
+  color: #999999;
+  background: #ffffff;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.accordionNumberActive {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.accordionHeaderText {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.accordionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.accordionBadge {
+  padding: 2px 8px;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.accordionChevron {
+  flex-shrink: 0;
+  color: #666666;
+  transition: transform 0.2s ease;
+}
+
+.accordionContent {
+  padding: 0 20px 20px;
+  background: #ffffff;
+}
+
+.accordionDesc {
+  font-size: 14px;
+  line-height: 20px;
+  color: #666666;
+  margin: 0 0 16px 0;
+}
+
+/* ==================== */
+/* Action Buttons       */
+/* ==================== */
+
+.primaryButton {
+  width: 100%;
+  padding: 14px 24px;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.2s ease;
+  margin-bottom: 10px;
+  font-family: var(--ds-font-family-body);
+  letter-spacing: 0.5px;
+}
+
+.primaryButton:hover {
+  background: #333333;
+}
+
+.secondaryButton {
+  width: 100%;
+  padding: 14px 24px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  font-family: var(--ds-font-family-body);
+}
+
+.secondaryButton:hover {
+  background: #f5f5f5;
+}
+
+/* ==================== */
+/* Invite Pack (Block 4)*/
+/* ==================== */
+
+.inviteTabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 16px;
+}
+
+.inviteTab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--ds-font-family-body);
+}
+
+.inviteTab:hover {
+  color: #000000;
+}
+
+.inviteTabActive {
+  color: #000000;
+  font-weight: 600;
+  border-bottom-color: #000000;
+}
+
+.inviteMessageBox {
+  padding: 16px;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.inviteMessage {
+  font-size: 14px;
+  line-height: 22px;
+  color: #000000;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.inviteActions {
+  display: flex;
+  gap: 12px;
+}
+
+.inviteActions .primaryButton {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.inviteActions .secondaryButton {
+  flex: 0 0 auto;
+}
+
+/* ======================== */
+/* Right Column - Previews  */
+/* ======================== */
+
+.livePreviewLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #999999;
+}
+
+.previewAvatarMs {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #666666;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.previewActions {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0 0;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 12px;
+}
+
+.previewAction {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #666666;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.previewAction:hover {
+  color: #000000;
+}
+
+/* Bento Grid - enhanced for reference preview */
+.bentoSmallLabel {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999999;
+  margin-bottom: 6px;
+}
+
+.bentoSkillsList {
+  font-size: 13px;
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.4;
+}
+
+.bentoRateBlock {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.bentoTypeBlock {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.bentoTypeValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+}
+
+/* Dark Bento Grid (Mellow Scout preview - Image 1 style) */
+.bentoGridDark {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-rows: auto auto;
+  gap: 4px;
+  background: #1a1a1a;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.bentoDarkHero {
+  background: #2a2a2a;
+  padding: 16px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.bentoDarkHero .bentoSmallLabel {
+  color: #888888;
+}
+
+.bentoDarkTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.bentoDarkStack {
+  background: #2a2a2a;
+  padding: 14px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.bentoDarkStack .bentoSmallLabel {
+  color: #888888;
+}
+
+.bentoDarkSkills {
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 1.4;
+}
+
+.bentoDarkRate {
+  background: #2a2a2a;
+  padding: 14px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.bentoDarkRateValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.bentoDarkType {
+  background: #2a2a2a;
+  padding: 14px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.bentoDarkType .bentoSmallLabel {
+  color: #888888;
+}
+
+.bentoDarkTypeValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Community preview in right column */
+.communityPreviewRight {
+  width: 100%;
+}
+
+.communityPreviewLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+  margin: 0 0 16px 0;
+}
+
+/* ======================== */
+/* Messenger Preview        */
+/* ======================== */
+
+.messengerPreview {
+  width: 100%;
+}
+
+.messengerHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.messengerIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #666666;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.messengerTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.messengerBubble {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px 12px 12px 0;
+  padding: 16px;
+  max-width: 340px;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.messengerText {
+  font-size: 14px;
+  line-height: 22px;
+  color: #000000;
+  margin: 0 0 8px 0;
+  white-space: pre-line;
+}
+
+.messengerTime {
+  font-size: 11px;
+  color: #999999;
+  display: block;
+  text-align: right;
+}
+
+/* Preview empty state */
+.previewEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #999999;
+  font-size: 14px;
+}
+
+.previewEmpty p {
+  margin: 0;
 }
 
 /* Responsive */
