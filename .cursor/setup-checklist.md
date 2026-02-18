@@ -9,62 +9,24 @@
 - `fm/*` / `pl/*` — гипотезы, эксперименты, альтернативные флоу.
 
 ### Нейминг веток
-Формат: `<type>/<area>--<what-is-tested>`
+Формат: `<type>/<area>-<what-is-tested>`
 
 Типы:
 - `fm/` — Functional mockup (функциональные мокапы)
 - `pl/` — Product-like (продуктоподобные)
 
 Примеры:
-- `fm/candidates--ultra` — Ultra-флоу на экране Candidates
-- `fm/sharepack--promote` — Promote-варианты на экране SharePack
-- `pl/onboarding--simplified-flow`
-- `pl/dashboard--ai-summary`
-
-### Принцип «одна ветка = один раздел»
-
-**Критически важно**: каждая ветка содержит ТОЛЬКО свой раздел.
-
-| Ветка | Что рендерит App.tsx | Что НЕ должно быть |
-|-------|---------------------|---------------------|
-| `fm/candidates--ultra` | CandidatesScreen | Никакого SharePack/Promote |
-| `fm/sharepack--promote` | SharePackScreen | Никакого Candidates/Ultra |
-
-- Открыл ветку → видишь ТОЛЬКО то, что тестируется в этой гипотезе.
-- Не мешать экраны из разных гипотез в одну ветку.
-- Если нужен новый эксперимент — создавай новую ветку от `main`.
-
-### Варианты внутри ветки
-
-Каждая ветка может содержать **несколько вариантов** одного раздела:
-- Варианты переключаются через URL-параметр `?variant=A`, `?variant=B` и т.д.
-- Внизу экрана — панель переключения вариантов (monospace, тёмная).
-- Каждый вариант документирован в JSDoc-комментарии в `App.tsx`.
-
-Пример:
-```
-fm/candidates--ultra
-  Вариант A: Ultra Step-by-Step (?variant=A + ?step=...)
-  Вариант B: Preview Candidates (?variant=B)
-  Вариант C: Zero-Results Compact (?variant=C)
-```
-
-### Файлы, которые НЕ пушатся в GitHub
-
-В `.gitignore` добавлены:
-- `AJBTD/` — кастдевы, транскрипты, CSV-данные (локальные исследования)
-- `SCREENSHOT_INSTRUCTIONS.md` — локальный хелпер для скриншотов
-- `src/config` — локальные конфиги для экспериментов
-
-**Правило**: любые личные данные, исследования, CSV с кастдевами — только локально, никогда в репозиторий.
+- `fm/candidates-ultra-variants`
+- `fm/sharepack-promote-communities`
+- `pl/onboarding-simplified-flow`
+- `pl/dashboard-ai-summary`
 
 ### Правила работы
 - Работай маленькими итерациями, чтобы я могла быстро проверять в браузере.
-- Каждая гипотеза = отдельная git-ветка с форматом `<type>/<area>--<what-is-tested>`.
+- Каждая гипотеза = отдельная git-ветка с форматом `<type>/<area>-<what-is-tested>`.
 - После каждой логической порции: **git status → git add -A → git commit -m "..." → git push**.
 - Если появляется ошибка — сначала воспроизведи/прочитай лог, потом фикс.
 - Всё делаем внутри Cursor.
-- Перед коммитом — проверь `git status`, убедись, что не попадают лишние файлы.
 
 ### Стиль мокапов
 - Всё ч/б (только black/white/grey), без брендов/градиентов/цветных акцентов.
@@ -167,14 +129,13 @@ fm/candidates--ultra
 - [ ] Проверить, что все импорты корректны
 
 ### 8. Git Workflow
-- [ ] Перед коммитом проверить `git status` — убедиться, что AJBTD/, src/config и прочие локальные файлы не попадают
 - [ ] После завершения гипотезы:
   ```bash
   git status
   git add -A
   git commit -m "краткое описание изменений"
   git push -u origin <branch-name>
-  # Пример: git push -u origin fm/candidates--ultra
+  # Пример: git push -u origin fm/candidates-ultra-variants
   ```
 - [ ] Создать PR для обсуждения результатов гипотезы
 - [ ] Если push не работает (auth проблема), отметить для ручного push позже
@@ -219,8 +180,8 @@ killall -9 node
 
 ```bash
 # 1. Создание новой ветки для гипотезы
-git checkout -b <type>/<area>--<what-is-tested>
-# Пример: git checkout -b fm/candidates--ultra
+git checkout -b <type>/<area>-<what-is-tested>
+# Пример: git checkout -b fm/candidates-ultra-variants
 git status
 
 # 2. Очистка портов

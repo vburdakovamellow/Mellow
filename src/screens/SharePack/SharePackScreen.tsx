@@ -103,9 +103,9 @@ export function SharePackScreen({
 
             {/* Left Column */}
             <div className={styles.leftColumn}>
-              <h2 className={styles.shareTitle}>Your request is live</h2>
+              <h2 className={styles.shareTitle}>Your Request is Live</h2>
               <p className={styles.shareSubtitle}>
-                Here are the next steps you can do to get more visibility for your request
+                Here's how to get more visibility and attract qualified candidates.
               </p>
 
               {/* Block 1: Social Boost by Mellow */}
@@ -136,12 +136,12 @@ export function SharePackScreen({
                 )}
               </div>
 
-              {/* Block 2: Share with your Network */}
+              {/* Block 2: Share with your network */}
               <div className={[styles.accordionBlock, activeBlock === 2 ? styles.accordionBlockActive : ""].join(" ")}>
                 <button className={styles.accordionHeader} onClick={() => toggleBlock(2)}>
                   <span className={[styles.accordionNumber, activeBlock === 2 ? styles.accordionNumberActive : ""].join(" ")}>2</span>
                   <span className={styles.accordionHeaderText}>
-                    <span className={styles.accordionTitle}>Share with your Network</span>
+                    <span className={styles.accordionTitle}>Share with your network</span>
                   </span>
                   <svg className={styles.accordionChevron} width="20" height="20" viewBox="0 0 20 20" fill="none"
                     style={{ transform: activeBlock === 2 ? "rotate(180deg)" : "rotate(0deg)" }}>
@@ -169,12 +169,12 @@ export function SharePackScreen({
                 )}
               </div>
 
-              {/* Block 3: Explore Communities */}
+              {/* Block 3: Explore communities */}
               <div className={[styles.accordionBlock, activeBlock === 3 ? styles.accordionBlockActive : ""].join(" ")}>
                 <button className={styles.accordionHeader} onClick={() => toggleBlock(3)}>
                   <span className={[styles.accordionNumber, activeBlock === 3 ? styles.accordionNumberActive : ""].join(" ")}>3</span>
                   <span className={styles.accordionHeaderText}>
-                    <span className={styles.accordionTitle}>Explore Communities</span>
+                    <span className={styles.accordionTitle}>Explore communities</span>
                   </span>
                   <svg className={styles.accordionChevron} width="20" height="20" viewBox="0 0 20 20" fill="none"
                     style={{ transform: activeBlock === 3 ? "rotate(180deg)" : "rotate(0deg)" }}>
@@ -234,7 +234,7 @@ export function SharePackScreen({
                 <button className={styles.accordionHeader} onClick={() => toggleBlock(4)}>
                   <span className={[styles.accordionNumber, activeBlock === 4 ? styles.accordionNumberActive : ""].join(" ")}>4</span>
                   <span className={styles.accordionHeaderText}>
-                    <span className={styles.accordionTitle}>Send invite directly</span>
+                    <span className={styles.accordionTitle}>Send direct invites</span>
                   </span>
                   <svg className={styles.accordionChevron} width="20" height="20" viewBox="0 0 20 20" fill="none"
                     style={{ transform: activeBlock === 4 ? "rotate(180deg)" : "rotate(0deg)" }}>
@@ -244,7 +244,7 @@ export function SharePackScreen({
                 {activeBlock === 4 && (
                   <div className={styles.accordionContent}>
                     <p className={styles.accordionDesc}>
-                      Send directly to peers. Scout pre-wrote the perfect offer for you.
+                      Reach out to specific people. We've drafted the message for you.
                     </p>
                     <div className={styles.inviteMessageBox}>
                       <p className={styles.inviteMessage}>
@@ -258,7 +258,7 @@ export function SharePackScreen({
                         Best regards
                       </p>
                     </div>
-                    <button className={styles.primaryButton}>Copy link &amp; text</button>
+                    <button className={styles.primaryButton}>Copy link &amp; message</button>
                   </div>
                 )}
               </div>
@@ -334,7 +334,7 @@ export function SharePackScreen({
                   </div>
                   <div className={styles.previewBody}>
                     <p className={styles.previewText}>
-                      We are seeking a talented {roleName} to join our team.{" "}
+                      We're seeking a talented {roleName} to join our team.{" "}
                       {rateDisplay}. {request.location}. <span className={styles.hashtag}>#hiring</span>
                     </p>
                   </div>
