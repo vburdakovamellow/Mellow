@@ -394,28 +394,7 @@ export function SharePackScreen({
                 </div>
               )}
 
-              {/* Block 4: Telegram / Slack message preview */}
-              {activeBlock === 4 && (
-                <div className={styles.messengerPreview}>
-                  <div className={styles.messengerHeader}>
-                    <div className={styles.messengerIcon}>TG</div>
-                    <span className={styles.messengerTitle}>Telegram / Slack</span>
-                  </div>
-                  <div className={styles.messengerBubble}>
-                    <p className={styles.messengerText}>
-                      Hi,{"\n\n"}
-                      We have an open position for a {roleName}.{"\n\n"}
-                      Details:{"\n"}
-                      - Rate: {rateDisplay}{"\n"}
-                      - Location: {request.location}{"\n"}
-                      - Stack: {request.skills.join(", ")}{"\n\n"}
-                      Interested? Apply here: mellow.com/req/{request.id}{"\n\n"}
-                      Best regards
-                    </p>
-                    <span className={styles.messengerTime}>10:42 AM</span>
-                  </div>
-                </div>
-              )}
+              {/* Block 4: no preview needed */}
 
               {/* Nothing selected */}
               {activeBlock === 0 && (
