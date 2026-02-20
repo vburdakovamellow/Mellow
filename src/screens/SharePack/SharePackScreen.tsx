@@ -26,10 +26,12 @@ export function SharePackScreen({
   request,
   onGoToEdit,
   onGoToView,
+  moderationPending = false,
 }: {
   request: SharePackRequest;
   onGoToEdit?: () => void;
   onGoToView?: () => void;
+  moderationPending?: boolean;
 }) {
   const [activeBlock, setActiveBlock] = useState<number>(1);
 
@@ -123,15 +125,36 @@ export function SharePackScreen({
                 </button>
                 {activeBlock === 1 && (
                   <div className={styles.accordionContent}>
-                    <p className={styles.accordionDesc}>
-                      We've posted the request at AI Scout's LinkedIn. You may repost to boost it.
-                    </p>
-                    <button className={styles.primaryButton}>
-                      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-                        <path d="M18.5 0h-17C.675 0 0 .675 0 1.5v17c0 .825.675 1.5 1.5 1.5h17c.825 0 1.5-.675 1.5-1.5v-17C20 .675 19.325 0 18.5 0zM6 16H3V7h3v9zM4.5 5.75c-.825 0-1.5-.675-1.5-1.5s.675-1.5 1.5-1.5 1.5.675 1.5 1.5-.675 1.5-1.5 1.5zM17 16h-3v-4.5c0-1.125-.375-1.875-1.313-1.875-.713 0-1.125.488-1.313.95-.075.188-.063.45-.063.713V16h-3s.038-7.125 0-7.875h3v1.125c.375-.6 1.05-1.463 2.55-1.463 1.863 0 3.263 1.238 3.263 3.9V16z" fill="currentColor"/>
-                      </svg>
-                      REPOST ON LINKEDIN
-                    </button>
+                    {moderationPending ? (
+                      <>
+                        <div className={styles.moderationStatus}>
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="10" cy="10" r="9" stroke="#999" strokeWidth="1.5" fill="none" />
+                            <path d="M10 5v6" stroke="#999" strokeWidth="1.5" strokeLinecap="round" />
+                            <path d="M10 10l3 2" stroke="#999" strokeWidth="1.5" strokeLinecap="round" />
+                          </svg>
+                          <span className={styles.moderationBadgeText}>Under review</span>
+                        </div>
+                        <p className={styles.accordionDesc}>
+                          Your request is being reviewed. Once we confirm it meets our guidelines, we'll publish it on Mellow Scout's LinkedIn page.
+                        </p>
+                        <p className={styles.moderationNote}>
+                          This usually takes less than 24 hours.
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className={styles.accordionDesc}>
+                          We've posted the request at AI Scout's LinkedIn. You may repost to boost it.
+                        </p>
+                        <button className={styles.primaryButton}>
+                          <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                            <path d="M18.5 0h-17C.675 0 0 .675 0 1.5v17c0 .825.675 1.5 1.5 1.5h17c.825 0 1.5-.675 1.5-1.5v-17C20 .675 19.325 0 18.5 0zM6 16H3V7h3v9zM4.5 5.75c-.825 0-1.5-.675-1.5-1.5s.675-1.5 1.5-1.5 1.5.675 1.5 1.5-.675 1.5-1.5 1.5zM17 16h-3v-4.5c0-1.125-.375-1.875-1.313-1.875-.713 0-1.125.488-1.313.95-.075.188-.063.45-.063.713V16h-3s.038-7.125 0-7.875h3v1.125c.375-.6 1.05-1.463 2.55-1.463 1.863 0 3.263 1.238 3.263 3.9V16z" fill="currentColor"/>
+                          </svg>
+                          REPOST ON LINKEDIN
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
@@ -269,7 +292,7 @@ export function SharePackScreen({
               <div className={styles.livePreviewLabel}>LIVE PREVIEW</div>
 
               {/* Block 1: Mellow Scout LinkedIn Post */}
-              {activeBlock === 1 && (
+              {activeBlock === 1 && !moderationPending && (
                 <div className={styles.previewCard}>
                   <div className={styles.previewHeader}>
                     <div className={styles.previewAvatarMs}>MS</div>
@@ -318,6 +341,54 @@ export function SharePackScreen({
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 12l8-8M12 4v5M12 4H7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
                       Share
                     </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Block 1: Moderation pending preview */}
+              {activeBlock === 1 && moderationPending && (
+                <div className={styles.previewCard}>
+                  <div className={styles.previewHeader}>
+                    <div className={styles.previewAvatarMs}>MS</div>
+                    <div className={styles.previewAuthor}>
+                      <div className={styles.previewName}>Mellow Scout</div>
+                      <div className={styles.previewTime}>Pending</div>
+                    </div>
+                  </div>
+                  <div className={styles.previewBody} style={{ opacity: 0.45 }}>
+                    <p className={styles.previewText}>
+                      Our client is looking for a {roleName}.
+                      Rate: {rateDisplay}. {request.location}. <span className={styles.hashtag}>#hiring</span>
+                    </p>
+                  </div>
+                  <div className={styles.previewLink} style={{ opacity: 0.45 }}>
+                    <div className={styles.linkPreview}>
+                      <div className={styles.bentoGridDark}>
+                        <div className={styles.bentoDarkHero}>
+                          <div className={styles.bentoSmallLabel}>ROLE</div>
+                          <h3 className={styles.bentoDarkTitle}>{roleName.toUpperCase()}</h3>
+                        </div>
+                        <div className={styles.bentoDarkStack}>
+                          <div className={styles.bentoSmallLabel}>STACK</div>
+                          <div className={styles.bentoDarkSkills}>{request.skills.join(", ")}</div>
+                        </div>
+                        <div className={styles.bentoDarkRate}>
+                          <div className={styles.bentoDarkRateValue}>{rateDisplay}</div>
+                        </div>
+                        <div className={styles.bentoDarkType}>
+                          <div className={styles.bentoSmallLabel}>TYPE</div>
+                          <div className={styles.bentoDarkTypeValue}>{request.location}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.moderationOverlay}>
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                      <circle cx="10" cy="10" r="9" stroke="#999" strokeWidth="1.5" fill="none" />
+                      <path d="M10 5v6" stroke="#999" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M10 10l3 2" stroke="#999" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    This post will appear here once approved
                   </div>
                 </div>
               )}

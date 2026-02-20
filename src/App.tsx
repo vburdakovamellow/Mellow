@@ -22,11 +22,12 @@ import { SharePackStepperScreen } from "./screens/SharePack/SharePackStepperScre
  *   Справа — live preview для каждого блока.
  */
 
-type Variant = "A" | "B";
+type Variant = "A" | "B" | "C";
 
 const VARIANT_META: Record<Variant, { label: string; hint: string }> = {
   A: { label: "A: Stepper + Checklist", hint: "Визард с прогресс-баром и чеклистом каналов" },
   B: { label: "B: Accordion + Live Preview", hint: "4 аккордеон-блока с live preview справа" },
+  C: { label: "C: On moderation", hint: "Реквест на модерации, ещё не опубликован Scout'ом" },
 };
 
 const MOCK_REQUEST = {
@@ -40,10 +41,12 @@ const MOCK_REQUEST = {
   budget: { paymentType: "hourly" as const, from: "30", to: "50", currency: "USD" },
 };
 
+const VALID_VARIANTS: Variant[] = ["A", "B", "C"];
+
 function readVariant(): Variant {
   if (typeof window === "undefined") return "B";
   const v = new URLSearchParams(window.location.search).get("variant");
-  return v === "A" ? "A" : "B";
+  return VALID_VARIANTS.includes(v as Variant) ? (v as Variant) : "B";
 }
 
 function writeVariant(v: Variant) {
@@ -80,6 +83,7 @@ export function App() {
           request={MOCK_REQUEST}
           onGoToEdit={() => console.log("Go to edit")}
           onGoToView={() => console.log("Go to view")}
+          moderationPending={variant === "C"}
         />
       )}
 
