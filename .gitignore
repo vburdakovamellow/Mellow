@@ -4,12 +4,5 @@ dist
 .vite
 screenshot-full-page.png
 
-# Локальные данные (кастдевы, транскрипты, CSV) — не пушить
-AJBTD/
-
-# Скриншот-инструкции (локальный хелпер)
-SCREENSHOT_INSTRUCTIONS.md
-
 # Локальные конфиги для экспериментов
 src/config
-
