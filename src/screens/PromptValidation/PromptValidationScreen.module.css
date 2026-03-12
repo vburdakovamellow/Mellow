@@ -1,0 +1,936 @@
+/* ===== Layout ===== */
+.screen {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.fixedHeader {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.headerInner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: var(--ds-font-family-accent);
+  font-size: 24px;
+  font-weight: 400;
+  font-style: italic;
+  color: #000;
+  letter-spacing: -0.5px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  background: #fff;
+  color: #000;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ===== Dashboard Step ===== */
+.dashboardBody {
+  max-width: 720px;
+  margin: 80px auto 0;
+  padding: 0 24px;
+}
+
+.dashboardTitle {
+  font-family: var(--ds-font-family-accent);
+  font-size: 32px;
+  font-weight: 400;
+  color: #000;
+  margin: 0 0 24px;
+}
+
+.promptArea {
+  position: relative;
+}
+
+.promptTextarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 16px 140px 16px 16px;
+  border: 1px solid #000;
+  border-radius: 12px;
+  background: #fff;
+  font-family: var(--ds-font-family-body);
+  font-size: 16px;
+  line-height: 22px;
+  color: #000;
+  resize: vertical;
+  outline: none;
+}
+
+.promptTextarea::placeholder {
+  color: #999;
+}
+
+.promptTextarea:focus {
+  border-color: #000;
+  box-shadow: 0 0 0 1px #000;
+}
+
+.generateBtn {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.generateBtn:hover {
+  background: #333;
+}
+
+.exampleText {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #999;
+}
+
+/* ===== Chips (password-strength style) ===== */
+.chipsSection {
+  margin-top: 20px;
+}
+
+.chipsLabel {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #666;
+  margin: 0 0 8px;
+}
+
+.chipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detectionChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 400;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.chipRequired {
+  border-color: #ccc;
+  background: #e5e5e5;
+  color: #999;
+}
+
+.chipOptional {
+  border-color: #e5e5e5;
+  background: #fff;
+  color: #666;
+}
+
+.chipDetected {
+  border-color: #000;
+  background: #000;
+  color: #fff;
+}
+
+.chipIcon {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.chipDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+.chipDotRequired {
+  background: #999;
+}
+
+.requiredTag {
+  font-size: 10px;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* ===== Quiz Step ===== */
+.quizScreen {
+  display: flex;
+  min-height: calc(100vh - 57px);
+}
+
+.quizLeft {
+  flex: 1;
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: #fff;
+}
+
+.quizRight {
+  width: 400px;
+  background: #e5e5e5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.quizTitle {
+  font-family: var(--ds-font-family-accent);
+  font-size: 28px;
+  font-weight: 400;
+  color: #000;
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.quizSubtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 32px;
+  text-align: center;
+}
+
+.quizOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.quizOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.quizOption:hover {
+  border-color: #ccc;
+}
+
+.quizRadio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.quizOptionText h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+}
+
+.quizOptionText p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.quizHide {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  font-size: 13px;
+  color: #999;
+}
+
+.quizHideCheckbox {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+}
+
+/* ===== Loader ===== */
+.loaderSpinner {
+  width: 80px;
+  height: 80px;
+  border: 3px solid #ccc;
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loaderTitle {
+  font-family: var(--ds-font-family-accent);
+  font-size: 22px;
+  font-weight: 400;
+  color: #000;
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.loaderSubtitle {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  margin: 0;
+}
+
+/* ===== Status label (top-left during quiz) ===== */
+.statusLabel {
+  position: absolute;
+  top: 16px;
+  left: 24px;
+  font-size: 13px;
+  color: #999;
+  font-style: italic;
+}
+
+/* ===== Interruption overlay ===== */
+.interruptOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.96);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  animation: fadeIn 0.3s ease;
+  z-index: 10;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.interruptIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.iconWarning {
+  background: #e5e5e5;
+  border: 2px solid #999;
+}
+
+.iconRedirect {
+  background: #e5e5e5;
+  border: 2px solid #999;
+}
+
+.iconBlock {
+  background: #e5e5e5;
+  border: 2px solid #000;
+}
+
+.interruptTitle {
+  font-family: var(--ds-font-family-accent);
+  font-size: 24px;
+  font-weight: 400;
+  color: #000;
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+.interruptText {
+  font-size: 15px;
+  color: #666;
+  margin: 0 0 20px;
+  text-align: center;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.interruptMissing {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 0 24px;
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  border: 1px solid #e5e5e5;
+}
+
+.interruptMissing h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.interruptMissing ul {
+  margin: 0;
+  padding: 0 0 0 20px;
+  list-style: disc;
+}
+
+.interruptMissing li {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.interruptActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #000;
+  color: #fff;
+  border: 1px solid #000;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btnPrimary:hover {
+  background: #333;
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btnSecondary:hover {
+  background: #f5f5f5;
+}
+
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  background: transparent;
+  color: #666;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ===== Edit Page Step ===== */
+.editScreen {
+  padding-bottom: 60px;
+}
+
+.editBanner {
+  max-width: 1120px;
+  margin: 16px auto 0;
+  padding: 14px 20px;
+  background: #e5e5e5;
+  border: 1px dashed #999;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.editBannerIcon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.editContent {
+  max-width: 1120px;
+  margin: 24px auto 0;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 32px;
+}
+
+.editMain {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 32px;
+}
+
+.editSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.editSectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 12px;
+}
+
+.editBlock {
+  margin-bottom: 24px;
+}
+
+.editBlock:last-child {
+  margin-bottom: 0;
+}
+
+.editBlockTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 8px;
+}
+
+.editBlockText {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.editList {
+  margin: 0;
+  padding: 0 0 0 20px;
+}
+
+.editList li {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.7;
+}
+
+.editSidebarCard {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.editSidebarCardTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin: 0 0 12px;
+}
+
+.editChipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.editChip {
+  display: inline-flex;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  background: #f5f5f5;
+  border: 1px solid #e5e5e5;
+  color: #333;
+}
+
+.editFieldRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 14px;
+}
+
+.editFieldRow:last-child {
+  border-bottom: none;
+}
+
+.editFieldLabel {
+  color: #666;
+}
+
+.editFieldValue {
+  color: #000;
+  font-weight: 500;
+}
+
+.highlightField {
+  background: #f5f5f5;
+  border: 1px dashed #999;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: -8px -12px;
+  position: relative;
+}
+
+.highlightBadge {
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #666;
+  background: #f5f5f5;
+  padding: 0 6px;
+}
+
+/* Save bar */
+.editSaveBar {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editRequestTitle {
+  font-family: var(--ds-font-family-accent);
+  font-size: 22px;
+  font-weight: 400;
+  color: #000;
+  margin: 0;
+}
+
+/* ===== Chat UI Step ===== */
+.chatScreen {
+  display: flex;
+  min-height: calc(100vh - 57px);
+}
+
+.chatLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.chatRight {
+  width: 400px;
+  background: #e5e5e5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.chatAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.chatHeaderText h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
+}
+
+.chatHeaderText p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #999;
+}
+
+.chatMessages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 16px;
+}
+
+.chatBubbleAI {
+  max-width: 85%;
+  padding: 14px 18px;
+  background: #f5f5f5;
+  border-radius: 16px 16px 16px 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #000;
+}
+
+.chatBubbleUser {
+  max-width: 85%;
+  padding: 14px 18px;
+  background: #000;
+  color: #fff;
+  border-radius: 16px 16px 4px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  align-self: flex-end;
+}
+
+.chatImprovedPrompt {
+  margin-top: 4px;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+}
+
+.chatImprovedPrompt h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.chatImprovedPrompt p {
+  margin: 0;
+  font-size: 14px;
+  color: #000;
+  line-height: 1.5;
+}
+
+.chatImprovedActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chatInputArea {
+  display: flex;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.chatInput {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+}
+
+.chatInput:focus {
+  border-color: #000;
+}
+
+.chatSendBtn {
+  padding: 10px 20px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ===== Dashboard Retry (with hints) ===== */
+.retryHint {
+  margin-top: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #999;
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.retryHintIcon {
+  flex-shrink: 0;
+  font-size: 16px;
+  margin-top: 1px;
+}
+
+.retryHintText {
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.chipMissing {
+  border-color: #999;
+  background: #fff;
+  color: #666;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { border-color: #999; }
+  50% { border-color: #000; }
+}
+
+/* ===== Dimmed quiz ===== */
+.quizDimmed {
+  opacity: 0.15;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* ===== Redirect specific ===== */
+.redirectProductCard {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 0 24px;
+  padding: 16px 20px;
+  background: #f5f5f5;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.redirectProductIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #000;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ds-font-family-accent);
+  font-size: 14px;
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+.redirectProductText h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+}
+
+.redirectProductText p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #666;
+}

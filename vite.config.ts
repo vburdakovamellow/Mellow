@@ -6,7 +6,8 @@ export default defineConfig({
   server: {
     port: 10173,
     host: "localhost",
-    strictPort: false
+    strictPort: false,
+    allowedHosts: [".trycloudflare.com"]
   }
 });
 
