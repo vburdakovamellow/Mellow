@@ -19,16 +19,6 @@ interface Contractor {
   status: CardStatus;
 }
 
-interface Application {
-  id: string;
-  name: string;
-  initials: string;
-  role: string;
-  matchScore: number;
-  tag?: "mellow_pool" | "ultra";
-  date: string;
-}
-
 const POOL_CONTRACTORS: Contractor[] = [
   {
     id: "c1",
@@ -97,88 +87,6 @@ const POOL_CONTRACTORS: Contractor[] = [
   },
 ];
 
-const MOCK_APPLICATIONS: Application[] = [
-  {
-    id: "a1",
-    name: "David Kim",
-    initials: "DK",
-    role: "React Developer",
-    matchScore: 89,
-    date: "2 hours ago",
-  },
-  {
-    id: "a2",
-    name: "Sara Weber",
-    initials: "SW",
-    role: "Frontend Engineer",
-    matchScore: 84,
-    tag: "ultra",
-    date: "5 hours ago",
-  },
-  {
-    id: "a3",
-    name: "Pavel Sokolov",
-    initials: "PS",
-    role: "Full-Stack Developer",
-    matchScore: 81,
-    tag: "mellow_pool",
-    date: "1 day ago",
-  },
-];
-
-type PipelineStep = "request" | "pool" | "promote" | "ultra" | "candidates";
-
-const PIPELINE_STEPS: { key: PipelineStep; label: string }[] = [
-  { key: "request", label: "Your request" },
-  { key: "pool", label: "Mellow Pool" },
-  { key: "promote", label: "Promote" },
-  { key: "ultra", label: "Ultra" },
-  { key: "candidates", label: "Candidates" },
-];
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
-}
-
-function Pipeline({
-  activeStep,
-  onStepClick,
-  completedSteps,
-}: {
-  activeStep: PipelineStep;
-  onStepClick: (step: PipelineStep) => void;
-  completedSteps: PipelineStep[];
-}) {
-  return (
-    <div className={styles.pipeline}>
-      {PIPELINE_STEPS.map((step, i) => {
-        const isActive = step.key === activeStep;
-        const isCompleted = completedSteps.includes(step.key);
-        return (
-          <div key={step.key} style={{ display: "flex", alignItems: "center", flex: i < PIPELINE_STEPS.length - 1 ? 1 : undefined }}>
-            <button
-              className={`${styles.pipelineStep} ${isActive ? styles.pipelineStepActive : ""} ${isCompleted ? styles.pipelineStepCompleted : ""}`}
-              onClick={() => onStepClick(step.key)}
-            >
-              {isCompleted && !isActive && (
-                <span className={styles.pipelineCheck}>✓</span>
-              )}
-              {step.label}
-            </button>
-            {i < PIPELINE_STEPS.length - 1 && (
-              <div className={styles.pipelineConnector} />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 function Header() {
   return (
     <div className={styles.fixedHeader}>
@@ -202,13 +110,11 @@ function ContractorDetailPanel({
   contractor,
   onInvite,
   onShortlist,
-  onReject,
   onSkip,
 }: {
   contractor: Contractor;
   onInvite: () => void;
   onShortlist: () => void;
-  onReject: () => void;
   onSkip: () => void;
 }) {
   const isInvited = contractor.status === "invited";
@@ -264,9 +170,6 @@ function ContractorDetailPanel({
           <button className={styles.btnSecondary} onClick={onShortlist}>
             Add to shortlist
           </button>
-          <button className={styles.btnSecondary} onClick={onReject}>
-            Reject
-          </button>
           <button className={styles.btnSecondary} onClick={onSkip}>
             Skip
           </button>
@@ -277,17 +180,140 @@ function ContractorDetailPanel({
 }
 
 /* ============================================================
-   VARIANT A — Separate pipeline step
+   Shared: Pool contractors list + detail panel
    ============================================================ */
 
-function VariantA() {
-  const [activeStep, setActiveStep] = useState<PipelineStep>("pool");
+function PoolContractorsView({
+  contractors,
+  selectedId,
+  onSelect,
+  onInvite,
+  onShortlist,
+  onSkip,
+}: {
+  contractors: Contractor[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+  onInvite: () => void;
+  onShortlist: () => void;
+  onSkip: () => void;
+}) {
+  const selected = contractors.find((c) => c.id === selectedId) ?? contractors[0];
+
+  if (contractors.length === 0 || !selected) {
+    return (
+      <div className={styles.emptyCandidates}>
+        <p className={styles.emptyTitle}>No more contractors in Pool</p>
+        <p className={styles.emptyText}>Check the Candidates tab or activate Ultra</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.mainLayout}>
+      <div className={styles.contractorList}>
+        {contractors.map((c) => (
+          <div
+            key={c.id}
+            className={`${styles.contractorCard} ${c.id === selectedId ? styles.contractorCardSelected : ""}`}
+            onClick={() => onSelect(c.id)}
+          >
+            <div className={styles.contractorAvatar}>{c.initials}</div>
+            <div className={styles.contractorInfo}>
+              <p className={styles.contractorName}>{c.name}</p>
+              <p className={styles.contractorRole}>{c.role}</p>
+            </div>
+            <div className={styles.contractorRight}>
+              <span className={styles.matchScore}>{c.matchScore}%</span>
+              <span className={`${styles.cardBadge} ${c.status === "new" ? styles.badgeNew : c.status === "viewed" ? styles.badgeViewed : styles.badgeInvited}`}>
+                {c.status}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <ContractorDetailPanel
+        contractor={selected}
+        onInvite={onInvite}
+        onShortlist={onShortlist}
+        onSkip={onSkip}
+      />
+    </div>
+  );
+}
+
+/* ============================================================
+   Shared: Ultra CTA Banner (B&W)
+   ============================================================ */
+
+function UltraBanner({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div className={styles.ultraBanner}>
+      <div className={styles.ultraBannerContent}>
+        <h3 className={styles.ultraBannerTitle}>Need a Pro to Step In?</h3>
+        <ul className={styles.ultraBannerList}>
+          <li>
+            <span className={styles.ultraCheck}>✓</span>
+            Your request is reviewed and refined by a real person
+          </li>
+          <li>
+            <span className={styles.ultraCheck}>✓</span>
+            3+ carefully selected candidates within 48 hours
+          </li>
+          <li>
+            <span className={styles.ultraCheck}>✓</span>
+            You'll be notified as soon as your shortlist is ready
+          </li>
+        </ul>
+        <button className={styles.btnPrimary} style={{ width: "auto" }}>
+          Try Ultra for free
+        </button>
+      </div>
+      <button className={styles.ultraBannerClose} onClick={onDismiss}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
+/* ============================================================
+   Shared: Candidates empty state
+   ============================================================ */
+
+function CandidatesEmptyState() {
+  return (
+    <div className={styles.candidatesEmpty}>
+      <div className={styles.candidatesEmptyIcon}>
+        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+          <rect x="20" y="15" width="60" height="70" rx="6" stroke="#cccccc" strokeWidth="2" fill="none" />
+          <circle cx="50" cy="38" r="12" stroke="#cccccc" strokeWidth="2" fill="none" />
+          <path d="M32 72 C32 58 68 58 68 72" stroke="#cccccc" strokeWidth="2" fill="none" strokeLinecap="round" />
+          <circle cx="68" cy="25" r="14" stroke="#000000" strokeWidth="2" fill="#ffffff" />
+          <line x1="68" y1="19" x2="68" y2="31" stroke="#000000" strokeWidth="2" strokeLinecap="round" />
+          <line x1="62" y1="25" x2="74" y2="25" stroke="#000000" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </div>
+      <h3 className={styles.candidatesEmptyTitle}>Candidates Will Appear Here</h3>
+      <p className={styles.candidatesEmptyText}>
+        Want to speed things up? Use our sharing kit to reach even more people.
+      </p>
+      <button className={styles.btnOutlined}>Share your request</button>
+    </div>
+  );
+}
+
+/* ============================================================
+   Hook: shared pool logic
+   ============================================================ */
+
+function usePoolLogic() {
   const [contractors, setContractors] = useState(POOL_CONTRACTORS);
   const [selectedId, setSelectedId] = useState(POOL_CONTRACTORS[0]?.id);
   const [inviteCount, setInviteCount] = useState(0);
   const [showRateLimit, setShowRateLimit] = useState(false);
-
-  const selected = contractors.find((c) => c.id === selectedId) ?? contractors[0];
 
   const handleSelect = (id: string) => {
     setSelectedId(id);
@@ -308,135 +334,46 @@ function VariantA() {
     setInviteCount((n) => n + 1);
   };
 
-  const handleReject = () => {
-    setContractors((prev) => prev.filter((c) => c.id !== selectedId));
-    const remaining = contractors.filter((c) => c.id !== selectedId);
-    if (remaining.length > 0) setSelectedId(remaining[0].id);
-  };
-
   const handleSkip = () => {
     const idx = contractors.findIndex((c) => c.id === selectedId);
     const next = contractors[(idx + 1) % contractors.length];
     if (next) handleSelect(next.id);
   };
 
+  return { contractors, selectedId, showRateLimit, handleSelect, handleInvite, handleSkip };
+}
+
+/* ============================================================
+   VARIANT A — Pool as the main view
+   ============================================================ */
+
+function VariantA() {
+  const { contractors, selectedId, showRateLimit, handleSelect, handleInvite, handleSkip } = usePoolLogic();
+
   return (
     <>
-      <Pipeline
-        activeStep={activeStep}
-        onStepClick={setActiveStep}
-        completedSteps={["request"]}
-      />
-
-      {activeStep === "pool" && (
-        <div className={styles.poolSection}>
-          <div className={styles.poolHeader}>
-            <div className={styles.poolHeaderLeft}>
-              <h2 className={styles.poolTitle}>
-                Recommended contractors
-                <span className={styles.poolCount}>{contractors.length}</span>
-              </h2>
-              <p className={styles.poolSubtitle}>
-                Here's a shortlist of contractors suggested by AI Scout based on your request
-              </p>
-            </div>
-          </div>
-
-          {contractors.length > 0 && selected ? (
-            <div className={styles.mainLayout}>
-              <div className={styles.contractorList}>
-                {contractors.map((c) => (
-                  <div
-                    key={c.id}
-                    className={`${styles.contractorCard} ${c.id === selectedId ? styles.contractorCardSelected : ""}`}
-                    onClick={() => handleSelect(c.id)}
-                  >
-                    <div className={styles.contractorAvatar}>{c.initials}</div>
-                    <div className={styles.contractorInfo}>
-                      <p className={styles.contractorName}>{c.name}</p>
-                      <p className={styles.contractorRole}>{c.role}</p>
-                    </div>
-                    <div className={styles.contractorRight}>
-                      <span className={styles.matchScore}>{c.matchScore}%</span>
-                      <span className={`${styles.cardBadge} ${c.status === "new" ? styles.badgeNew : c.status === "viewed" ? styles.badgeViewed : styles.badgeInvited}`}>
-                        {c.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <ContractorDetailPanel
-                contractor={selected}
-                onInvite={handleInvite}
-                onShortlist={() => alert("Added to shortlist (stub)")}
-                onReject={handleReject}
-                onSkip={handleSkip}
-              />
-            </div>
-          ) : (
-            <div className={styles.emptyCandidates}>
-              <p className={styles.emptyTitle}>No more contractors in Pool</p>
-              <p className={styles.emptyText}>Try activating Ultra to get more candidates</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {activeStep === "candidates" && (
-        <div className={styles.poolSection}>
-          <h2 className={styles.poolTitle}>Applications</h2>
-          {MOCK_APPLICATIONS.length > 0 ? (
-            <div className={styles.applicationsList}>
-              {MOCK_APPLICATIONS.map((app) => (
-                <div key={app.id} className={styles.applicationRow}>
-                  <div className={styles.applicationAvatar}>{app.initials}</div>
-                  <div className={styles.applicationInfo}>
-                    <div className={styles.applicationName}>{app.name}</div>
-                    <div className={styles.applicationRole}>{app.role}</div>
-                  </div>
-                  <div className={styles.applicationRight}>
-                    {app.tag && (
-                      <span className={`${styles.applicationTag} ${app.tag === "mellow_pool" ? styles.tagMellowPool : styles.tagUltra}`}>
-                        {app.tag === "mellow_pool" ? "Mellow pool" : "Ultra"}
-                      </span>
-                    )}
-                    <span className={styles.applicationMatch}>{app.matchScore}%</span>
-                    <span className={styles.applicationDate}>{app.date}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className={styles.emptyCandidates}>
-              <div className={styles.emptyIcon}>
-                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                  <circle cx="40" cy="40" r="30" stroke="#cccccc" strokeWidth="2" fill="none" />
-                  <line x1="40" y1="40" x2="40" y2="25" stroke="#cccccc" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="40" y1="40" x2="55" y2="40" stroke="#cccccc" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              </div>
-              <p className={styles.emptyTitle}>No applications yet</p>
-              <p className={styles.emptyText}>
-                Invite contractors from Mellow Pool or wait for organic applications
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {activeStep !== "pool" && activeStep !== "candidates" && (
-        <div className={styles.poolSection}>
-          <div className={styles.emptyCandidates}>
-            <p className={styles.emptyTitle}>
-              {activeStep === "request" && "Your request details"}
-              {activeStep === "promote" && "Promote your request"}
-              {activeStep === "ultra" && "Ultra — personal recruiter"}
+      <div className={styles.poolSection}>
+        <div className={styles.poolHeader}>
+          <div className={styles.poolHeaderLeft}>
+            <h2 className={styles.poolTitle}>
+              Recommended contractors
+              <span className={styles.poolCount}>{contractors.length}</span>
+            </h2>
+            <p className={styles.poolSubtitle}>
+              Here's a shortlist of contractors suggested by AI Scout based on your request
             </p>
-            <p className={styles.emptyText}>This section is outside the Mellow Pool prototype scope</p>
           </div>
         </div>
-      )}
+
+        <PoolContractorsView
+          contractors={contractors}
+          selectedId={selectedId}
+          onSelect={handleSelect}
+          onInvite={handleInvite}
+          onShortlist={() => alert("Added to shortlist (stub)")}
+          onSkip={handleSkip}
+        />
+      </div>
 
       {showRateLimit && (
         <div className={styles.rateLimitToast}>
@@ -452,7 +389,6 @@ function VariantA() {
    ============================================================ */
 
 function VariantB() {
-  const [activeStep, setActiveStep] = useState<PipelineStep>("candidates");
   const [contractors, setContractors] = useState(POOL_CONTRACTORS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [inviteCount, setInviteCount] = useState(0);
@@ -480,136 +416,71 @@ function VariantB() {
     setInviteCount((n) => n + 1);
   };
 
-  const handleReject = () => {
-    if (!selectedId) return;
-    setContractors((prev) => prev.filter((c) => c.id !== selectedId));
-    setSelectedId(null);
-  };
-
-  const handleSkip = () => {
-    setSelectedId(null);
-  };
-
   return (
     <>
-      <Pipeline
-        activeStep={activeStep}
-        onStepClick={setActiveStep}
-        completedSteps={["request", "pool"]}
-      />
-
-      {activeStep === "candidates" && (
-        <div className={styles.poolSection}>
-          {/* Inline Pool block */}
-          {contractors.length > 0 && (
-            <div className={styles.inlinePoolBlock}>
-              <div className={styles.inlinePoolHeader}>
-                <div>
-                  <h3 className={styles.inlinePoolTitle}>
-                    <span className={styles.inlinePoolBadge}>Recommended</span>
-                    Contractors from Mellow Pool
-                  </h3>
-                  <p className={styles.inlinePoolSubtitle}>
-                    Suggested by AI Scout based on your request. Invite them to apply.
-                  </p>
-                </div>
-                <span className={styles.poolCount}>{contractors.length}</span>
+      <div className={styles.poolSection}>
+        {contractors.length > 0 && (
+          <div className={styles.inlinePoolBlock}>
+            <div className={styles.inlinePoolHeader}>
+              <div>
+                <h3 className={styles.inlinePoolTitle}>
+                  <span className={styles.inlinePoolBadge}>Recommended</span>
+                  Contractors from Mellow Pool
+                </h3>
+                <p className={styles.inlinePoolSubtitle}>
+                  Suggested by AI Scout based on your request. Invite them to apply.
+                </p>
               </div>
-
-              <div className={styles.inlinePoolCards}>
-                {contractors.map((c) => (
-                  <div
-                    key={c.id}
-                    className={`${styles.inlineCard} ${c.id === selectedId ? styles.inlineCardSelected : ""}`}
-                    onClick={() => handleInlineSelect(c.id)}
-                  >
-                    <div className={styles.inlineCardTop}>
-                      <div className={styles.inlineCardAvatar}>{c.initials}</div>
-                      <div>
-                        <p className={styles.inlineCardName}>{c.name}</p>
-                        <p className={styles.inlineCardRole}>{c.role}</p>
-                      </div>
-                    </div>
-                    <div className={styles.inlineCardBottom}>
-                      <span className={styles.inlineCardMatch}>{c.matchScore}% match</span>
-                      <span
-                        className={`${styles.inlineCardBadge} ${
-                          c.status === "viewed" ? styles.inlineCardBadgeViewed : c.status === "invited" ? styles.inlineCardBadgeInvited : ""
-                        }`}
-                      >
-                        {c.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <span className={styles.poolCount}>{contractors.length}</span>
             </div>
-          )}
 
-          {/* Detail panel when a Pool card is selected */}
-          {selected && (
-            <ContractorDetailPanel
-              contractor={selected}
-              onInvite={handleInvite}
-              onShortlist={() => alert("Added to shortlist (stub)")}
-              onReject={handleReject}
-              onSkip={handleSkip}
-            />
-          )}
-
-          {/* Divider */}
-          <div className={styles.sectionDivider}>
-            <div className={styles.sectionDividerLine} />
-            <span className={styles.sectionDividerText}>Applications</span>
-            <div className={styles.sectionDividerLine} />
-          </div>
-
-          {/* Applications */}
-          {MOCK_APPLICATIONS.length > 0 ? (
-            <div className={styles.applicationsList}>
-              {MOCK_APPLICATIONS.map((app) => (
-                <div key={app.id} className={styles.applicationRow}>
-                  <div className={styles.applicationAvatar}>{app.initials}</div>
-                  <div className={styles.applicationInfo}>
-                    <div className={styles.applicationName}>{app.name}</div>
-                    <div className={styles.applicationRole}>{app.role}</div>
+            <div className={styles.inlinePoolCards}>
+              {contractors.map((c) => (
+                <div
+                  key={c.id}
+                  className={`${styles.inlineCard} ${c.id === selectedId ? styles.inlineCardSelected : ""}`}
+                  onClick={() => handleInlineSelect(c.id)}
+                >
+                  <div className={styles.inlineCardTop}>
+                    <div className={styles.inlineCardAvatar}>{c.initials}</div>
+                    <div>
+                      <p className={styles.inlineCardName}>{c.name}</p>
+                      <p className={styles.inlineCardRole}>{c.role}</p>
+                    </div>
                   </div>
-                  <div className={styles.applicationRight}>
-                    {app.tag && (
-                      <span className={`${styles.applicationTag} ${app.tag === "mellow_pool" ? styles.tagMellowPool : styles.tagUltra}`}>
-                        {app.tag === "mellow_pool" ? "Mellow pool" : "Ultra"}
-                      </span>
-                    )}
-                    <span className={styles.applicationMatch}>{app.matchScore}%</span>
-                    <span className={styles.applicationDate}>{app.date}</span>
+                  <div className={styles.inlineCardBottom}>
+                    <span className={styles.inlineCardMatch}>{c.matchScore}% match</span>
+                    <span
+                      className={`${styles.inlineCardBadge} ${
+                        c.status === "viewed" ? styles.inlineCardBadgeViewed : c.status === "invited" ? styles.inlineCardBadgeInvited : ""
+                      }`}
+                    >
+                      {c.status}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
-          ) : (
-            <div className={styles.emptyCandidates}>
-              <p className={styles.emptyTitle}>No applications yet</p>
-              <p className={styles.emptyText}>
-                Invite contractors from Mellow Pool above or wait for organic applications
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {activeStep !== "candidates" && (
-        <div className={styles.poolSection}>
-          <div className={styles.emptyCandidates}>
-            <p className={styles.emptyTitle}>
-              {activeStep === "request" && "Your request details"}
-              {activeStep === "pool" && "Mellow Pool"}
-              {activeStep === "promote" && "Promote your request"}
-              {activeStep === "ultra" && "Ultra — personal recruiter"}
-            </p>
-            <p className={styles.emptyText}>This section is outside the Mellow Pool prototype scope</p>
           </div>
+        )}
+
+        {selected && (
+          <ContractorDetailPanel
+            contractor={selected}
+            onInvite={handleInvite}
+            onShortlist={() => alert("Added to shortlist (stub)")}
+            onSkip={() => setSelectedId(null)}
+          />
+        )}
+
+        <div className={styles.sectionDivider}>
+          <div className={styles.sectionDividerLine} />
+          <span className={styles.sectionDividerText}>Applications</span>
+          <div className={styles.sectionDividerLine} />
         </div>
-      )}
+
+        <CandidatesEmptyState />
+      </div>
 
       {showRateLimit && (
         <div className={styles.rateLimitToast}>
@@ -621,183 +492,77 @@ function VariantB() {
 }
 
 /* ============================================================
-   VARIANT C — Tabs inside Candidates
+   VARIANT C — Tabs: Candidates (default) + Recommended by Mellow
+   Сценарий: пользователь только создал реквест.
    ============================================================ */
 
 function VariantC() {
-  const [activeStep, setActiveStep] = useState<PipelineStep>("candidates");
-  const [activeTab, setActiveTab] = useState<"recommended" | "applications">("recommended");
-  const [contractors, setContractors] = useState(POOL_CONTRACTORS);
-  const [selectedId, setSelectedId] = useState(POOL_CONTRACTORS[0]?.id);
-  const [inviteCount, setInviteCount] = useState(0);
-  const [showRateLimit, setShowRateLimit] = useState(false);
-
-  const selected = contractors.find((c) => c.id === selectedId) ?? contractors[0];
-
-  const handleSelect = (id: string) => {
-    setSelectedId(id);
-    setContractors((prev) =>
-      prev.map((c) => (c.id === id && c.status === "new" ? { ...c, status: "viewed" as const } : c))
-    );
-  };
-
-  const handleInvite = () => {
-    if (inviteCount >= 10) {
-      setShowRateLimit(true);
-      setTimeout(() => setShowRateLimit(false), 3000);
-      return;
-    }
-    setContractors((prev) =>
-      prev.map((c) => (c.id === selectedId ? { ...c, status: "invited" as const } : c))
-    );
-    setInviteCount((n) => n + 1);
-  };
-
-  const handleReject = () => {
-    setContractors((prev) => prev.filter((c) => c.id !== selectedId));
-    const remaining = contractors.filter((c) => c.id !== selectedId);
-    if (remaining.length > 0) setSelectedId(remaining[0].id);
-  };
-
-  const handleSkip = () => {
-    const idx = contractors.findIndex((c) => c.id === selectedId);
-    const next = contractors[(idx + 1) % contractors.length];
-    if (next) handleSelect(next.id);
-  };
+  const [activeTab, setActiveTab] = useState<"candidates" | "recommended">("candidates");
+  const [showUltra, setShowUltra] = useState(true);
+  const { contractors, selectedId, showRateLimit, handleSelect, handleInvite, handleSkip } = usePoolLogic();
 
   return (
     <>
-      <Pipeline
-        activeStep={activeStep}
-        onStepClick={setActiveStep}
-        completedSteps={["request"]}
-      />
-
-      {activeStep === "candidates" && (
-        <div className={styles.poolSection}>
-          {/* Sub-tabs */}
-          <div className={styles.candidatesTabs}>
-            <button
-              className={`${styles.candidatesTab} ${activeTab === "recommended" ? styles.candidatesTabActive : ""}`}
-              onClick={() => setActiveTab("recommended")}
-            >
-              Recommended by Mellow
-              <span className={styles.tabBadge}>{contractors.length}</span>
-            </button>
-            <button
-              className={`${styles.candidatesTab} ${activeTab === "applications" ? styles.candidatesTabActive : ""}`}
-              onClick={() => setActiveTab("applications")}
-            >
-              Applications
-              <span className={styles.tabBadge}>{MOCK_APPLICATIONS.length}</span>
-            </button>
-          </div>
-
-          {/* Tab: Recommended */}
-          {activeTab === "recommended" && (
-            <>
-              <p className={styles.poolSubtitle} style={{ marginBottom: 20 }}>
-                Here's a shortlist of contractors suggested by AI Scout based on your request
-              </p>
-
-              {contractors.length > 0 && selected ? (
-                <div className={styles.mainLayout}>
-                  <div className={styles.contractorList}>
-                    {contractors.map((c) => (
-                      <div
-                        key={c.id}
-                        className={`${styles.contractorCard} ${c.id === selectedId ? styles.contractorCardSelected : ""}`}
-                        onClick={() => handleSelect(c.id)}
-                      >
-                        <div className={styles.contractorAvatar}>{c.initials}</div>
-                        <div className={styles.contractorInfo}>
-                          <p className={styles.contractorName}>{c.name}</p>
-                          <p className={styles.contractorRole}>{c.role}</p>
-                        </div>
-                        <div className={styles.contractorRight}>
-                          <span className={styles.matchScore}>{c.matchScore}%</span>
-                          <span className={`${styles.cardBadge} ${c.status === "new" ? styles.badgeNew : c.status === "viewed" ? styles.badgeViewed : styles.badgeInvited}`}>
-                            {c.status}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <ContractorDetailPanel
-                    contractor={selected}
-                    onInvite={handleInvite}
-                    onShortlist={() => alert("Added to shortlist (stub)")}
-                    onReject={handleReject}
-                    onSkip={handleSkip}
-                  />
-                </div>
-              ) : (
-                <div className={styles.emptyCandidates}>
-                  <p className={styles.emptyTitle}>No more contractors in Pool</p>
-                  <p className={styles.emptyText}>Check the Applications tab or activate Ultra</p>
-                </div>
-              )}
-            </>
-          )}
-
-          {/* Tab: Applications */}
-          {activeTab === "applications" && (
-            <>
-              {MOCK_APPLICATIONS.length > 0 ? (
-                <div className={styles.applicationsList}>
-                  {MOCK_APPLICATIONS.map((app) => (
-                    <div key={app.id} className={styles.applicationRow}>
-                      <div className={styles.applicationAvatar}>{app.initials}</div>
-                      <div className={styles.applicationInfo}>
-                        <div className={styles.applicationName}>{app.name}</div>
-                        <div className={styles.applicationRole}>{app.role}</div>
-                      </div>
-                      <div className={styles.applicationRight}>
-                        {app.tag && (
-                          <span className={`${styles.applicationTag} ${app.tag === "mellow_pool" ? styles.tagMellowPool : styles.tagUltra}`}>
-                            {app.tag === "mellow_pool" ? "Mellow pool" : "Ultra"}
-                          </span>
-                        )}
-                        <span className={styles.applicationMatch}>{app.matchScore}%</span>
-                        <span className={styles.applicationDate}>{app.date}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className={styles.emptyCandidates}>
-                  <div className={styles.emptyIcon}>
-                    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                      <circle cx="40" cy="40" r="30" stroke="#cccccc" strokeWidth="2" fill="none" />
-                      <line x1="40" y1="40" x2="40" y2="25" stroke="#cccccc" strokeWidth="2" strokeLinecap="round" />
-                      <line x1="40" y1="40" x2="55" y2="40" stroke="#cccccc" strokeWidth="1.5" strokeLinecap="round" />
-                    </svg>
-                  </div>
-                  <p className={styles.emptyTitle}>No applications yet</p>
-                  <p className={styles.emptyText}>
-                    Invite contractors from the Recommended tab or wait for organic applications
-                  </p>
-                </div>
-              )}
-            </>
-          )}
+      <div className={styles.poolSection}>
+        {/* Top-level tabs */}
+        <div className={styles.candidatesTabs}>
+          <button
+            className={`${styles.candidatesTab} ${activeTab === "candidates" ? styles.candidatesTabActive : ""}`}
+            onClick={() => setActiveTab("candidates")}
+          >
+            Candidates
+          </button>
+          <button
+            className={`${styles.candidatesTab} ${activeTab === "recommended" ? styles.candidatesTabActive : ""}`}
+            onClick={() => setActiveTab("recommended")}
+          >
+            Recommended by Mellow
+            <span className={styles.tabBadge}>{contractors.length}</span>
+          </button>
         </div>
-      )}
 
-      {activeStep !== "candidates" && (
-        <div className={styles.poolSection}>
-          <div className={styles.emptyCandidates}>
-            <p className={styles.emptyTitle}>
-              {activeStep === "request" && "Your request details"}
-              {activeStep === "pool" && "Mellow Pool"}
-              {activeStep === "promote" && "Promote your request"}
-              {activeStep === "ultra" && "Ultra — personal recruiter"}
+        {/* ===== Tab: Candidates ===== */}
+        {activeTab === "candidates" && (
+          <div className={styles.candidatesTabContent}>
+            {/* Sort / Stats row */}
+            <div className={styles.filterRow}>
+              <button className={styles.sortButton}>
+                Best match first
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M4 5.5L7 8.5L10 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <span className={styles.statsText}>0 viewed · 0 applied</span>
+            </div>
+
+            {/* Ultra CTA Banner */}
+            {showUltra && (
+              <UltraBanner onDismiss={() => setShowUltra(false)} />
+            )}
+
+            {/* Empty state */}
+            <CandidatesEmptyState />
+          </div>
+        )}
+
+        {/* ===== Tab: Recommended by Mellow ===== */}
+        {activeTab === "recommended" && (
+          <div className={styles.recommendedTabContent}>
+            <p className={styles.poolSubtitle}>
+              Here's a shortlist of contractors suggested by AI Scout based on your request
             </p>
-            <p className={styles.emptyText}>This section is outside the Mellow Pool prototype scope</p>
+
+            <PoolContractorsView
+              contractors={contractors}
+              selectedId={selectedId}
+              onSelect={handleSelect}
+              onInvite={handleInvite}
+              onShortlist={() => alert("Added to shortlist (stub)")}
+              onSkip={handleSkip}
+            />
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {showRateLimit && (
         <div className={styles.rateLimitToast}>
@@ -820,7 +585,6 @@ export function MellowPoolScreen({ variant }: { variant: PoolVariant }) {
         <div className={styles.container}>
           <div className={styles.requestHeader}>
             <h1 className={styles.requestTitle}>Senior React Developer</h1>
-            <span className={styles.requestMeta}>Full-time · Remote · $50–80/hr · Posted 2 days ago</span>
           </div>
 
           {variant === "A" && <VariantA />}

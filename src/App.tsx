@@ -30,14 +30,14 @@ const VARIANT_META: Record<PoolVariant, { label: string; hint: string }> = {
 const VALID_VARIANTS: PoolVariant[] = ["A", "B", "C"];
 
 function readVariant(): PoolVariant {
-  if (typeof window === "undefined") return "A";
+  if (typeof window === "undefined") return "C";
   const v = new URLSearchParams(window.location.search).get("variant");
-  return VALID_VARIANTS.includes(v as PoolVariant) ? (v as PoolVariant) : "A";
+  return VALID_VARIANTS.includes(v as PoolVariant) ? (v as PoolVariant) : "C";
 }
 
 function writeVariant(v: PoolVariant) {
   const params = new URLSearchParams();
-  if (v !== "A") params.set("variant", v);
+  if (v !== "C") params.set("variant", v);
   const q = params.toString();
   window.history.replaceState({}, "", q ? `${window.location.pathname}?${q}` : window.location.pathname);
 }

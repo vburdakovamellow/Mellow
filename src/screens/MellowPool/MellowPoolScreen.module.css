@@ -813,6 +813,180 @@
   line-height: 20px;
 }
 
+/* ========================================
+   Ultra CTA Banner (B&W)
+   ======================================== */
+
+.ultraBanner {
+  position: relative;
+  padding: 24px 28px;
+  background: #f7f7f7;
+  border: 2px solid #000000;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.ultraBannerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 32px;
+}
+
+.ultraBannerTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+}
+
+.ultraBannerList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ultraBannerList li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #000000;
+  line-height: 20px;
+}
+
+.ultraCheck {
+  font-weight: 700;
+  font-size: 14px;
+  color: #000000;
+  flex-shrink: 0;
+}
+
+.ultraBannerClose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  color: #666666;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ultraBannerClose:hover {
+  border-color: #000000;
+  color: #000000;
+}
+
+/* ========================================
+   Filter / Stats row
+   ======================================== */
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.sortButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.sortButton:hover {
+  border-color: #000000;
+}
+
+.statsText {
+  font-size: 14px;
+  color: #999999;
+  font-weight: 500;
+}
+
+/* ========================================
+   Candidates empty state
+   ======================================== */
+
+.candidatesEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 0 64px;
+}
+
+.candidatesEmptyIcon {
+  margin-bottom: 20px;
+}
+
+.candidatesEmptyTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 8px;
+}
+
+.candidatesEmptyText {
+  font-size: 15px;
+  color: #666666;
+  margin: 0 0 24px;
+  max-width: 360px;
+  line-height: 22px;
+}
+
+.btnOutlined {
+  padding: 10px 24px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btnOutlined:hover {
+  background: #f5f5f5;
+}
+
+/* ========================================
+   Tab content areas
+   ======================================== */
+
+.candidatesTabContent {
+  padding-top: 4px;
+}
+
+.recommendedTabContent {
+  padding-top: 4px;
+}
+
+.recommendedTabContent .poolSubtitle {
+  margin-bottom: 20px;
+}
+
 /* Rate limit toast */
 .rateLimitToast {
   position: fixed;
@@ -843,11 +1017,6 @@
     position: static;
   }
 
-  .pipeline {
-    overflow-x: auto;
-    padding-bottom: 12px;
-  }
-
   .container {
     padding: 0 16px;
   }
@@ -858,6 +1027,10 @@
 
   .inlineCard {
     min-width: auto;
+  }
+
+  .ultraBanner {
+    padding: 20px;
   }
 }
 
@@ -873,5 +1046,10 @@
 
   .btnSecondaryRow {
     flex-direction: column;
+  }
+
+  .filterRow {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
