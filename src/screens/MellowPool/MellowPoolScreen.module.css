@@ -987,6 +987,298 @@
   margin-bottom: 20px;
 }
 
+/* ========================================
+   First Visit — dedicated step
+   ======================================== */
+
+.firstVisitWrapper {
+  position: relative;
+}
+
+.stepHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.stepHeaderLeft {
+  flex: 1;
+}
+
+.stepTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 6px;
+}
+
+.stepSubtitle {
+  font-size: 15px;
+  color: #666666;
+  margin: 0;
+  line-height: 22px;
+}
+
+.stepProgress {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.stepProgressText {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.stepProgressBar {
+  width: 120px;
+  height: 4px;
+  background: #e5e5e5;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.stepProgressFill {
+  height: 100%;
+  background: #000000;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.firstVisitLayout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Right panel (shared between first visit and returning) */
+.rightPanel {
+  position: sticky;
+  top: 90px;
+}
+
+/* Card states */
+.contractorCardInvited {
+  border-color: #cccccc;
+  opacity: 0.6;
+}
+
+.contractorCardSkipped {
+  border-color: #e5e5e5;
+  opacity: 0.5;
+}
+
+.badgeSkipped {
+  background: #f0f0f0;
+  color: #999999;
+}
+
+/* View Resume button (secondary style, distinct) */
+.btnViewResume {
+  width: 100%;
+  padding: 10px 16px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btnViewResume:hover {
+  background: #f5f5f5;
+}
+
+/* Back to profile */
+.backToProfile {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  margin-bottom: 16px;
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666666;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.backToProfile:hover {
+  color: #000000;
+}
+
+/* ========================================
+   Resume Panel
+   ======================================== */
+
+.resumePanel {
+  background: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 28px;
+}
+
+.resumeHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.resumeAvatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #e5e5e5;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #666666;
+}
+
+.resumeName {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 2px;
+}
+
+.resumeRole {
+  font-size: 14px;
+  color: #333333;
+  margin: 0 0 2px;
+}
+
+.resumeLocation {
+  font-size: 13px;
+  color: #999999;
+  margin: 0;
+}
+
+.resumeSection {
+  margin-bottom: 20px;
+}
+
+.resumeSection:last-child {
+  margin-bottom: 0;
+}
+
+.resumeSectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #999999;
+  margin: 0 0 10px;
+}
+
+.resumeText {
+  font-size: 14px;
+  color: #000000;
+  line-height: 21px;
+  margin: 0;
+}
+
+.resumeJob {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.resumeJob:last-child {
+  border-bottom: none;
+}
+
+.resumeJobTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.resumeJobCompany {
+  font-size: 13px;
+  color: #333333;
+  margin-top: 2px;
+}
+
+.resumeJobPeriod {
+  font-size: 12px;
+  color: #999999;
+  margin-top: 2px;
+}
+
+.resumeMeta {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+  color: #666666;
+}
+
+.resumeActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* ========================================
+   Completion Bar
+   ======================================== */
+
+.completionBar {
+  position: fixed;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 2px solid #000000;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  z-index: 200;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.completionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.completionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.completionStats {
+  font-size: 13px;
+  color: #666666;
+}
+
 /* Rate limit toast */
 .rateLimitToast {
   position: fixed;
@@ -1009,11 +1301,16 @@
 
 /* Responsive */
 @media (max-width: 900px) {
-  .mainLayout {
+  .mainLayout,
+  .firstVisitLayout {
     grid-template-columns: 1fr;
   }
 
   .detailPanel {
+    position: static;
+  }
+
+  .rightPanel {
     position: static;
   }
 
@@ -1032,6 +1329,20 @@
   .ultraBanner {
     padding: 20px;
   }
+
+  .stepHeader {
+    flex-direction: column;
+  }
+
+  .stepProgress {
+    align-items: flex-start;
+  }
+
+  .completionBar {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
 }
 
 @media (max-width: 600px) {
@@ -1041,6 +1352,10 @@
   }
 
   .detailPanel {
+    padding: 20px;
+  }
+
+  .resumePanel {
     padding: 20px;
   }
 

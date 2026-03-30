@@ -1,9 +1,7 @@
 import { useState } from "react";
 import styles from "./MellowPoolScreen.module.css";
 
-export type PoolVariant = "A" | "B" | "C";
-
-type CardStatus = "new" | "viewed" | "invited";
+type CardStatus = "new" | "viewed" | "invited" | "skipped";
 
 interface Contractor {
   id: string;
@@ -16,6 +14,8 @@ interface Contractor {
   location: string;
   skills: string[];
   education: string;
+  bio: string;
+  workHistory: { company: string; role: string; period: string }[];
   status: CardStatus;
 }
 
@@ -31,6 +31,12 @@ const POOL_CONTRACTORS: Contractor[] = [
     location: "Berlin, Germany",
     skills: ["React", "TypeScript", "Node.js", "GraphQL", "AWS"],
     education: "MSc Computer Science, TU Berlin",
+    bio: "Full-stack developer with deep expertise in React ecosystem. Built and scaled frontend architectures for fintech and SaaS products serving 500K+ users.",
+    workHistory: [
+      { company: "Fintech Startup (Berlin)", role: "Lead Frontend Engineer", period: "2022 – present" },
+      { company: "SAP", role: "Senior Developer", period: "2019 – 2022" },
+      { company: "Freelance", role: "React Consultant", period: "2017 – 2019" },
+    ],
     status: "new",
   },
   {
@@ -44,6 +50,11 @@ const POOL_CONTRACTORS: Contractor[] = [
     location: "Lisbon, Portugal",
     skills: ["React", "Python", "PostgreSQL", "Docker", "CI/CD"],
     education: "BSc Software Engineering, IST Lisbon",
+    bio: "Versatile full-stack engineer experienced in building end-to-end web applications. Strong background in both frontend and backend with focus on developer experience.",
+    workHistory: [
+      { company: "Outsystems", role: "Full-Stack Engineer", period: "2021 – present" },
+      { company: "Talkdesk", role: "Frontend Developer", period: "2019 – 2021" },
+    ],
     status: "new",
   },
   {
@@ -57,6 +68,12 @@ const POOL_CONTRACTORS: Contractor[] = [
     location: "Toronto, Canada",
     skills: ["React", "Vue.js", "TypeScript", "Design Systems", "Performance"],
     education: "BSc Computer Science, University of Toronto",
+    bio: "Frontend architect specializing in design systems and performance optimization. Led teams of 8+ engineers at scale. Speaker at ReactConf and JSNation.",
+    workHistory: [
+      { company: "Shopify", role: "Staff Frontend Engineer", period: "2020 – present" },
+      { company: "Wealthsimple", role: "Senior Frontend Developer", period: "2017 – 2020" },
+      { company: "Freelance", role: "UI Engineer", period: "2015 – 2017" },
+    ],
     status: "new",
   },
   {
@@ -70,6 +87,11 @@ const POOL_CONTRACTORS: Contractor[] = [
     location: "Warsaw, Poland",
     skills: ["React", "React Native", "TypeScript", "Redux", "Firebase"],
     education: "BSc Computer Engineering, KPI Kyiv",
+    bio: "Cross-platform developer building web and mobile apps with React and React Native. Delivered 10+ production apps for startups across Europe.",
+    workHistory: [
+      { company: "Freelance", role: "React / RN Developer", period: "2022 – present" },
+      { company: "Grammarly (Kyiv)", role: "Frontend Developer", period: "2020 – 2022" },
+    ],
     status: "new",
   },
   {
@@ -83,6 +105,11 @@ const POOL_CONTRACTORS: Contractor[] = [
     location: "Amsterdam, Netherlands",
     skills: ["React", "Next.js", "TypeScript", "Tailwind", "Testing"],
     education: "MSc Information Systems, VU Amsterdam",
+    bio: "Quality-focused frontend developer with strong testing culture. Experienced in building accessible, high-performance web applications with Next.js.",
+    workHistory: [
+      { company: "Booking.com", role: "Senior Frontend Engineer", period: "2021 – present" },
+      { company: "Adyen", role: "Frontend Developer", period: "2018 – 2021" },
+    ],
     status: "new",
   },
 ];
@@ -106,135 +133,65 @@ function Header() {
   );
 }
 
-function ContractorDetailPanel({
-  contractor,
-  onInvite,
-  onSkip,
-}: {
-  contractor: Contractor;
-  onInvite: () => void;
-  onSkip: () => void;
-}) {
-  const isInvited = contractor.status === "invited";
-
-  return (
-    <div className={styles.detailPanel}>
-      <div className={styles.detailTop}>
-        <div className={styles.detailAvatar}>{contractor.initials}</div>
-        <div className={styles.detailHeaderInfo}>
-          <h3 className={styles.detailName}>{contractor.name}</h3>
-          <p className={styles.detailRole}>{contractor.role}</p>
-          <div className={styles.detailMatchBadge}>{contractor.matchScore}% match</div>
-          <p className={styles.detailStatus}>Not applied yet</p>
-        </div>
-      </div>
-
-      <div className={styles.detailFields}>
-        <div className={styles.detailField}>
-          <span className={styles.detailFieldLabel}>Experience</span>
-          <span className={styles.detailFieldValue}>{contractor.experience}</span>
-        </div>
-        <div className={styles.detailField}>
-          <span className={styles.detailFieldLabel}>Rate</span>
-          <span className={styles.detailFieldValue}>{contractor.rate}</span>
-        </div>
-        <div className={styles.detailField}>
-          <span className={styles.detailFieldLabel}>Location</span>
-          <span className={styles.detailFieldValue}>{contractor.location}</span>
-        </div>
-        <div className={styles.detailField}>
-          <span className={styles.detailFieldLabel}>Education</span>
-          <span className={styles.detailFieldValue}>{contractor.education}</span>
-        </div>
-        <div className={styles.detailField}>
-          <span className={styles.detailFieldLabel}>Skills</span>
-          <div className={styles.skillsList}>
-            {contractor.skills.map((skill) => (
-              <span key={skill} className={styles.skillTag}>{skill}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.detailActions}>
-        <button
-          className={styles.btnPrimary}
-          onClick={onInvite}
-          disabled={isInvited}
-        >
-          {isInvited ? "✓ Invited" : "Send Invitation"}
-        </button>
-        <button className={styles.btnSecondary} onClick={onSkip}>
-          Skip
-        </button>
-      </div>
-    </div>
-  );
-}
-
 /* ============================================================
-   Shared: Pool contractors list + detail panel
+   Resume Viewer
    ============================================================ */
 
-function PoolContractorsView({
-  contractors,
-  selectedId,
-  onSelect,
-  onInvite,
-  onSkip,
-}: {
-  contractors: Contractor[];
-  selectedId: string;
-  onSelect: (id: string) => void;
-  onInvite: () => void;
-  onSkip: () => void;
-}) {
-  const selected = contractors.find((c) => c.id === selectedId) ?? contractors[0];
-
-  if (contractors.length === 0 || !selected) {
-    return (
-      <div className={styles.emptyCandidates}>
-        <p className={styles.emptyTitle}>No more contractors in Pool</p>
-        <p className={styles.emptyText}>Check the Candidates tab or activate Ultra</p>
-      </div>
-    );
-  }
-
+function ResumeView({ contractor }: { contractor: Contractor }) {
   return (
-    <div className={styles.mainLayout}>
-      <div className={styles.contractorList}>
-        {contractors.map((c) => (
-          <div
-            key={c.id}
-            className={`${styles.contractorCard} ${c.id === selectedId ? styles.contractorCardSelected : ""}`}
-            onClick={() => onSelect(c.id)}
-          >
-            <div className={styles.contractorAvatar}>{c.initials}</div>
-            <div className={styles.contractorInfo}>
-              <p className={styles.contractorName}>{c.name}</p>
-              <p className={styles.contractorRole}>{c.role}</p>
-            </div>
-            <div className={styles.contractorRight}>
-              <span className={styles.matchScore}>{c.matchScore}%</span>
-              <span className={`${styles.cardBadge} ${c.status === "new" ? styles.badgeNew : c.status === "viewed" ? styles.badgeViewed : styles.badgeInvited}`}>
-                {c.status}
-              </span>
-            </div>
+    <div className={styles.resumePanel}>
+      <div className={styles.resumeHeader}>
+        <div className={styles.resumeAvatar}>{contractor.initials}</div>
+        <div>
+          <h3 className={styles.resumeName}>{contractor.name}</h3>
+          <p className={styles.resumeRole}>{contractor.role}</p>
+          <p className={styles.resumeLocation}>{contractor.location}</p>
+        </div>
+      </div>
+
+      <div className={styles.resumeSection}>
+        <h4 className={styles.resumeSectionTitle}>About</h4>
+        <p className={styles.resumeText}>{contractor.bio}</p>
+      </div>
+
+      <div className={styles.resumeSection}>
+        <h4 className={styles.resumeSectionTitle}>Experience</h4>
+        {contractor.workHistory.map((job, i) => (
+          <div key={i} className={styles.resumeJob}>
+            <div className={styles.resumeJobTitle}>{job.role}</div>
+            <div className={styles.resumeJobCompany}>{job.company}</div>
+            <div className={styles.resumeJobPeriod}>{job.period}</div>
           </div>
         ))}
       </div>
 
-      <ContractorDetailPanel
-        contractor={selected}
-        onInvite={onInvite}
-        onSkip={onSkip}
-      />
+      <div className={styles.resumeSection}>
+        <h4 className={styles.resumeSectionTitle}>Education</h4>
+        <p className={styles.resumeText}>{contractor.education}</p>
+      </div>
+
+      <div className={styles.resumeSection}>
+        <h4 className={styles.resumeSectionTitle}>Skills</h4>
+        <div className={styles.skillsList}>
+          {contractor.skills.map((skill) => (
+            <span key={skill} className={styles.skillTag}>{skill}</span>
+          ))}
+        </div>
+      </div>
+
+      <div className={styles.resumeSection}>
+        <div className={styles.resumeMeta}>
+          <span>Rate: {contractor.rate}</span>
+          <span>·</span>
+          <span>Experience: {contractor.experience}</span>
+        </div>
+      </div>
     </div>
   );
 }
 
 /* ============================================================
-   Shared: Ultra CTA Banner (B&W)
+   Ultra CTA Banner
    ============================================================ */
 
 function UltraBanner({ onDismiss }: { onDismiss: () => void }) {
@@ -270,7 +227,7 @@ function UltraBanner({ onDismiss }: { onDismiss: () => void }) {
 }
 
 /* ============================================================
-   Shared: Candidates empty state
+   Candidates Empty State
    ============================================================ */
 
 function CandidatesEmptyState() {
@@ -296,19 +253,36 @@ function CandidatesEmptyState() {
 }
 
 /* ============================================================
-   Hook: shared pool logic
+   FIRST VISIT — Pool as a dedicated step
    ============================================================ */
 
-function usePoolLogic() {
+function FirstVisitPool({
+  onComplete,
+}: {
+  onComplete: () => void;
+}) {
   const [contractors, setContractors] = useState(POOL_CONTRACTORS);
-  const [selectedId, setSelectedId] = useState(POOL_CONTRACTORS[0]?.id);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [showResume, setShowResume] = useState(false);
   const [inviteCount, setInviteCount] = useState(0);
   const [showRateLimit, setShowRateLimit] = useState(false);
 
-  const handleSelect = (id: string) => {
-    setSelectedId(id);
+  const reviewed = contractors.filter((c) => c.status !== "new").length;
+  const total = contractors.length;
+  const current = contractors[currentIdx];
+  const allReviewed = reviewed === total;
+
+  const goNext = () => {
+    setShowResume(false);
+    if (currentIdx < total - 1) {
+      setCurrentIdx(currentIdx + 1);
+    }
+  };
+
+  const handleViewResume = () => {
+    setShowResume(true);
     setContractors((prev) =>
-      prev.map((c) => (c.id === id && c.status === "new" ? { ...c, status: "viewed" as const } : c))
+      prev.map((c, i) => (i === currentIdx && c.status === "new" ? { ...c, status: "viewed" as const } : c))
     );
   };
 
@@ -319,180 +293,233 @@ function usePoolLogic() {
       return;
     }
     setContractors((prev) =>
-      prev.map((c) => (c.id === selectedId ? { ...c, status: "invited" as const } : c))
+      prev.map((c, i) => (i === currentIdx ? { ...c, status: "invited" as const } : c))
+    );
+    setInviteCount((n) => n + 1);
+    if (currentIdx < total - 1) {
+      setTimeout(goNext, 400);
+    }
+  };
+
+  const handleSkip = () => {
+    setContractors((prev) =>
+      prev.map((c, i) => (i === currentIdx && (c.status === "new" || c.status === "viewed") ? { ...c, status: "skipped" as const } : c))
+    );
+    goNext();
+  };
+
+  const handleSelectCard = (idx: number) => {
+    setCurrentIdx(idx);
+    setShowResume(false);
+  };
+
+  if (!current) return null;
+
+  const hasViewedCurrent = current.status !== "new";
+  const isInvited = current.status === "invited";
+
+  return (
+    <div className={styles.firstVisitWrapper}>
+      {/* Step header */}
+      <div className={styles.stepHeader}>
+        <div className={styles.stepHeaderLeft}>
+          <h2 className={styles.stepTitle}>We found contractors for your request</h2>
+          <p className={styles.stepSubtitle}>
+            Review each contractor's profile and invite them to apply
+          </p>
+        </div>
+        <div className={styles.stepProgress}>
+          <span className={styles.stepProgressText}>{reviewed} of {total} reviewed</span>
+          <div className={styles.stepProgressBar}>
+            <div className={styles.stepProgressFill} style={{ width: `${(reviewed / total) * 100}%` }} />
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.firstVisitLayout}>
+        {/* Left: contractor list */}
+        <div className={styles.contractorList}>
+          {contractors.map((c, i) => (
+            <div
+              key={c.id}
+              className={`${styles.contractorCard} ${i === currentIdx ? styles.contractorCardSelected : ""} ${c.status === "invited" ? styles.contractorCardInvited : ""} ${c.status === "skipped" ? styles.contractorCardSkipped : ""}`}
+              onClick={() => handleSelectCard(i)}
+            >
+              <div className={styles.contractorAvatar}>{c.initials}</div>
+              <div className={styles.contractorInfo}>
+                <p className={styles.contractorName}>{c.name}</p>
+                <p className={styles.contractorRole}>{c.role}</p>
+              </div>
+              <div className={styles.contractorRight}>
+                <span className={styles.matchScore}>{c.matchScore}%</span>
+                <span className={`${styles.cardBadge} ${
+                  c.status === "new" ? styles.badgeNew :
+                  c.status === "viewed" ? styles.badgeViewed :
+                  c.status === "invited" ? styles.badgeInvited :
+                  styles.badgeSkipped
+                }`}>
+                  {c.status === "skipped" ? "skipped" : c.status}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Right: detail or resume */}
+        <div className={styles.rightPanel}>
+          {showResume ? (
+            <>
+              <button className={styles.backToProfile} onClick={() => setShowResume(false)}>
+                ← Back to profile
+              </button>
+              <ResumeView contractor={current} />
+              <div className={styles.resumeActions}>
+                <button
+                  className={styles.btnPrimary}
+                  onClick={handleInvite}
+                  disabled={isInvited}
+                >
+                  {isInvited ? "✓ Invited" : "Send Invitation"}
+                </button>
+                <button className={styles.btnSecondary} onClick={handleSkip}>
+                  Skip
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className={styles.detailPanel}>
+              <div className={styles.detailTop}>
+                <div className={styles.detailAvatar}>{current.initials}</div>
+                <div className={styles.detailHeaderInfo}>
+                  <h3 className={styles.detailName}>{current.name}</h3>
+                  <p className={styles.detailRole}>{current.role}</p>
+                  <div className={styles.detailMatchBadge}>{current.matchScore}% match</div>
+                  <p className={styles.detailStatus}>Not applied yet</p>
+                </div>
+              </div>
+
+              <div className={styles.detailFields}>
+                <div className={styles.detailField}>
+                  <span className={styles.detailFieldLabel}>Experience</span>
+                  <span className={styles.detailFieldValue}>{current.experience}</span>
+                </div>
+                <div className={styles.detailField}>
+                  <span className={styles.detailFieldLabel}>Rate</span>
+                  <span className={styles.detailFieldValue}>{current.rate}</span>
+                </div>
+                <div className={styles.detailField}>
+                  <span className={styles.detailFieldLabel}>Location</span>
+                  <span className={styles.detailFieldValue}>{current.location}</span>
+                </div>
+                <div className={styles.detailField}>
+                  <span className={styles.detailFieldLabel}>Skills</span>
+                  <div className={styles.skillsList}>
+                    {current.skills.map((skill) => (
+                      <span key={skill} className={styles.skillTag}>{skill}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.detailActions}>
+                {!hasViewedCurrent ? (
+                  <button className={styles.btnPrimary} onClick={handleViewResume}>
+                    View Resume
+                  </button>
+                ) : (
+                  <>
+                    <button className={styles.btnViewResume} onClick={handleViewResume}>
+                      View Resume
+                    </button>
+                    <button
+                      className={styles.btnPrimary}
+                      onClick={handleInvite}
+                      disabled={isInvited}
+                    >
+                      {isInvited ? "✓ Invited" : "Send Invitation"}
+                    </button>
+                  </>
+                )}
+                <button className={styles.btnSecondary} onClick={handleSkip}>
+                  Skip
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Completion bar */}
+      {allReviewed && (
+        <div className={styles.completionBar}>
+          <div className={styles.completionInfo}>
+            <span className={styles.completionTitle}>All contractors reviewed</span>
+            <span className={styles.completionStats}>
+              {contractors.filter((c) => c.status === "invited").length} invited · {contractors.filter((c) => c.status === "skipped").length} skipped
+            </span>
+          </div>
+          <button className={styles.btnPrimary} onClick={onComplete} style={{ width: "auto" }}>
+            Continue to Candidates →
+          </button>
+        </div>
+      )}
+
+      {showRateLimit && (
+        <div className={styles.rateLimitToast}>
+          You've reached the invitation limit. Please try again later.
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================================================
+   RETURNING VIEW — Tabs: Candidates + Recommended by Mellow
+   ============================================================ */
+
+function ReturningView() {
+  const [activeTab, setActiveTab] = useState<"candidates" | "recommended">("candidates");
+  const [showUltra, setShowUltra] = useState(true);
+  const [contractors, setContractors] = useState(POOL_CONTRACTORS);
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const [showResume, setShowResume] = useState(false);
+  const [inviteCount, setInviteCount] = useState(0);
+  const [showRateLimit, setShowRateLimit] = useState(false);
+
+  const selected = contractors[selectedIdx];
+
+  const handleSelect = (idx: number) => {
+    setSelectedIdx(idx);
+    setShowResume(false);
+    setContractors((prev) =>
+      prev.map((c, i) => (i === idx && c.status === "new" ? { ...c, status: "viewed" as const } : c))
+    );
+  };
+
+  const handleInvite = () => {
+    if (inviteCount >= 10) {
+      setShowRateLimit(true);
+      setTimeout(() => setShowRateLimit(false), 3000);
+      return;
+    }
+    setContractors((prev) =>
+      prev.map((c, i) => (i === selectedIdx ? { ...c, status: "invited" as const } : c))
     );
     setInviteCount((n) => n + 1);
   };
 
   const handleSkip = () => {
-    const idx = contractors.findIndex((c) => c.id === selectedId);
-    const next = contractors[(idx + 1) % contractors.length];
-    if (next) handleSelect(next.id);
-  };
-
-  return { contractors, selectedId, showRateLimit, handleSelect, handleInvite, handleSkip };
-}
-
-/* ============================================================
-   VARIANT A — Pool as the main view
-   ============================================================ */
-
-function VariantA() {
-  const { contractors, selectedId, showRateLimit, handleSelect, handleInvite, handleSkip } = usePoolLogic();
-
-  return (
-    <>
-      <div className={styles.poolSection}>
-        <div className={styles.poolHeader}>
-          <div className={styles.poolHeaderLeft}>
-            <h2 className={styles.poolTitle}>
-              Recommended contractors
-              <span className={styles.poolCount}>{contractors.length}</span>
-            </h2>
-            <p className={styles.poolSubtitle}>
-              Here's a shortlist of contractors suggested by AI Scout based on your request
-            </p>
-          </div>
-        </div>
-
-        <PoolContractorsView
-          contractors={contractors}
-          selectedId={selectedId}
-          onSelect={handleSelect}
-          onInvite={handleInvite}
-          onSkip={handleSkip}
-        />
-      </div>
-
-      {showRateLimit && (
-        <div className={styles.rateLimitToast}>
-          You've reached the invitation limit. Please try again later.
-        </div>
-      )}
-    </>
-  );
-}
-
-/* ============================================================
-   VARIANT B — Inline block inside Candidates
-   ============================================================ */
-
-function VariantB() {
-  const [contractors, setContractors] = useState(POOL_CONTRACTORS);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [inviteCount, setInviteCount] = useState(0);
-  const [showRateLimit, setShowRateLimit] = useState(false);
-
-  const selected = selectedId ? contractors.find((c) => c.id === selectedId) : null;
-
-  const handleInlineSelect = (id: string) => {
-    setSelectedId(id);
     setContractors((prev) =>
-      prev.map((c) => (c.id === id && c.status === "new" ? { ...c, status: "viewed" as const } : c))
+      prev.map((c, i) => (i === selectedIdx && (c.status === "new" || c.status === "viewed") ? { ...c, status: "skipped" as const } : c))
     );
-  };
-
-  const handleInvite = () => {
-    if (!selectedId) return;
-    if (inviteCount >= 10) {
-      setShowRateLimit(true);
-      setTimeout(() => setShowRateLimit(false), 3000);
-      return;
+    if (selectedIdx < contractors.length - 1) {
+      handleSelect(selectedIdx + 1);
     }
-    setContractors((prev) =>
-      prev.map((c) => (c.id === selectedId ? { ...c, status: "invited" as const } : c))
-    );
-    setInviteCount((n) => n + 1);
   };
 
   return (
     <>
       <div className={styles.poolSection}>
-        {contractors.length > 0 && (
-          <div className={styles.inlinePoolBlock}>
-            <div className={styles.inlinePoolHeader}>
-              <div>
-                <h3 className={styles.inlinePoolTitle}>
-                  <span className={styles.inlinePoolBadge}>Recommended</span>
-                  Contractors from Mellow Pool
-                </h3>
-                <p className={styles.inlinePoolSubtitle}>
-                  Suggested by AI Scout based on your request. Invite them to apply.
-                </p>
-              </div>
-              <span className={styles.poolCount}>{contractors.length}</span>
-            </div>
-
-            <div className={styles.inlinePoolCards}>
-              {contractors.map((c) => (
-                <div
-                  key={c.id}
-                  className={`${styles.inlineCard} ${c.id === selectedId ? styles.inlineCardSelected : ""}`}
-                  onClick={() => handleInlineSelect(c.id)}
-                >
-                  <div className={styles.inlineCardTop}>
-                    <div className={styles.inlineCardAvatar}>{c.initials}</div>
-                    <div>
-                      <p className={styles.inlineCardName}>{c.name}</p>
-                      <p className={styles.inlineCardRole}>{c.role}</p>
-                    </div>
-                  </div>
-                  <div className={styles.inlineCardBottom}>
-                    <span className={styles.inlineCardMatch}>{c.matchScore}% match</span>
-                    <span
-                      className={`${styles.inlineCardBadge} ${
-                        c.status === "viewed" ? styles.inlineCardBadgeViewed : c.status === "invited" ? styles.inlineCardBadgeInvited : ""
-                      }`}
-                    >
-                      {c.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {selected && (
-          <ContractorDetailPanel
-            contractor={selected}
-            onInvite={handleInvite}
-            onSkip={() => setSelectedId(null)}
-          />
-        )}
-
-        <div className={styles.sectionDivider}>
-          <div className={styles.sectionDividerLine} />
-          <span className={styles.sectionDividerText}>Applications</span>
-          <div className={styles.sectionDividerLine} />
-        </div>
-
-        <CandidatesEmptyState />
-      </div>
-
-      {showRateLimit && (
-        <div className={styles.rateLimitToast}>
-          You've reached the invitation limit. Please try again later.
-        </div>
-      )}
-    </>
-  );
-}
-
-/* ============================================================
-   VARIANT C — Tabs: Candidates (default) + Recommended by Mellow
-   Сценарий: пользователь только создал реквест.
-   ============================================================ */
-
-function VariantC() {
-  const [activeTab, setActiveTab] = useState<"candidates" | "recommended">("candidates");
-  const [showUltra, setShowUltra] = useState(true);
-  const { contractors, selectedId, showRateLimit, handleSelect, handleInvite, handleSkip } = usePoolLogic();
-
-  return (
-    <>
-      <div className={styles.poolSection}>
-        {/* Top-level tabs */}
         <div className={styles.candidatesTabs}>
           <button
             className={`${styles.candidatesTab} ${activeTab === "candidates" ? styles.candidatesTabActive : ""}`}
@@ -509,10 +536,9 @@ function VariantC() {
           </button>
         </div>
 
-        {/* ===== Tab: Candidates ===== */}
+        {/* Tab: Candidates */}
         {activeTab === "candidates" && (
           <div className={styles.candidatesTabContent}>
-            {/* Sort / Stats row */}
             <div className={styles.filterRow}>
               <button className={styles.sortButton}>
                 Best match first
@@ -523,30 +549,120 @@ function VariantC() {
               <span className={styles.statsText}>0 viewed · 0 applied</span>
             </div>
 
-            {/* Ultra CTA Banner */}
-            {showUltra && (
-              <UltraBanner onDismiss={() => setShowUltra(false)} />
-            )}
-
-            {/* Empty state */}
+            {showUltra && <UltraBanner onDismiss={() => setShowUltra(false)} />}
             <CandidatesEmptyState />
           </div>
         )}
 
-        {/* ===== Tab: Recommended by Mellow ===== */}
-        {activeTab === "recommended" && (
+        {/* Tab: Recommended by Mellow */}
+        {activeTab === "recommended" && selected && (
           <div className={styles.recommendedTabContent}>
             <p className={styles.poolSubtitle}>
               Here's a shortlist of contractors suggested by AI Scout based on your request
             </p>
 
-            <PoolContractorsView
-              contractors={contractors}
-              selectedId={selectedId}
-              onSelect={handleSelect}
-              onInvite={handleInvite}
-              onSkip={handleSkip}
-            />
+            <div className={styles.mainLayout}>
+              <div className={styles.contractorList}>
+                {contractors.map((c, i) => (
+                  <div
+                    key={c.id}
+                    className={`${styles.contractorCard} ${i === selectedIdx ? styles.contractorCardSelected : ""} ${c.status === "invited" ? styles.contractorCardInvited : ""} ${c.status === "skipped" ? styles.contractorCardSkipped : ""}`}
+                    onClick={() => handleSelect(i)}
+                  >
+                    <div className={styles.contractorAvatar}>{c.initials}</div>
+                    <div className={styles.contractorInfo}>
+                      <p className={styles.contractorName}>{c.name}</p>
+                      <p className={styles.contractorRole}>{c.role}</p>
+                    </div>
+                    <div className={styles.contractorRight}>
+                      <span className={styles.matchScore}>{c.matchScore}%</span>
+                      <span className={`${styles.cardBadge} ${
+                        c.status === "new" ? styles.badgeNew :
+                        c.status === "viewed" ? styles.badgeViewed :
+                        c.status === "invited" ? styles.badgeInvited :
+                        styles.badgeSkipped
+                      }`}>
+                        {c.status === "skipped" ? "skipped" : c.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.rightPanel}>
+                {showResume ? (
+                  <>
+                    <button className={styles.backToProfile} onClick={() => setShowResume(false)}>
+                      ← Back to profile
+                    </button>
+                    <ResumeView contractor={selected} />
+                    <div className={styles.resumeActions}>
+                      <button
+                        className={styles.btnPrimary}
+                        onClick={handleInvite}
+                        disabled={selected.status === "invited"}
+                      >
+                        {selected.status === "invited" ? "✓ Invited" : "Send Invitation"}
+                      </button>
+                      <button className={styles.btnSecondary} onClick={handleSkip}>
+                        Skip
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className={styles.detailPanel}>
+                    <div className={styles.detailTop}>
+                      <div className={styles.detailAvatar}>{selected.initials}</div>
+                      <div className={styles.detailHeaderInfo}>
+                        <h3 className={styles.detailName}>{selected.name}</h3>
+                        <p className={styles.detailRole}>{selected.role}</p>
+                        <div className={styles.detailMatchBadge}>{selected.matchScore}% match</div>
+                        <p className={styles.detailStatus}>Not applied yet</p>
+                      </div>
+                    </div>
+
+                    <div className={styles.detailFields}>
+                      <div className={styles.detailField}>
+                        <span className={styles.detailFieldLabel}>Experience</span>
+                        <span className={styles.detailFieldValue}>{selected.experience}</span>
+                      </div>
+                      <div className={styles.detailField}>
+                        <span className={styles.detailFieldLabel}>Rate</span>
+                        <span className={styles.detailFieldValue}>{selected.rate}</span>
+                      </div>
+                      <div className={styles.detailField}>
+                        <span className={styles.detailFieldLabel}>Location</span>
+                        <span className={styles.detailFieldValue}>{selected.location}</span>
+                      </div>
+                      <div className={styles.detailField}>
+                        <span className={styles.detailFieldLabel}>Skills</span>
+                        <div className={styles.skillsList}>
+                          {selected.skills.map((skill) => (
+                            <span key={skill} className={styles.skillTag}>{skill}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={styles.detailActions}>
+                      <button className={styles.btnViewResume} onClick={() => setShowResume(true)}>
+                        View Resume
+                      </button>
+                      <button
+                        className={styles.btnPrimary}
+                        onClick={handleInvite}
+                        disabled={selected.status === "invited"}
+                      >
+                        {selected.status === "invited" ? "✓ Invited" : "Send Invitation"}
+                      </button>
+                      <button className={styles.btnSecondary} onClick={handleSkip}>
+                        Skip
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -564,7 +680,9 @@ function VariantC() {
    MAIN EXPORT
    ============================================================ */
 
-export function MellowPoolScreen({ variant }: { variant: PoolVariant }) {
+export function MellowPoolScreen() {
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
+
   return (
     <div className={styles.screen}>
       <Header />
@@ -574,9 +692,11 @@ export function MellowPoolScreen({ variant }: { variant: PoolVariant }) {
             <h1 className={styles.requestTitle}>Senior React Developer</h1>
           </div>
 
-          {variant === "A" && <VariantA />}
-          {variant === "B" && <VariantB />}
-          {variant === "C" && <VariantC />}
+          {isFirstVisit ? (
+            <FirstVisitPool onComplete={() => setIsFirstVisit(false)} />
+          ) : (
+            <ReturningView />
+          )}
         </div>
       </div>
     </div>
