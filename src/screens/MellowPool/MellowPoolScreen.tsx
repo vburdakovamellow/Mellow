@@ -263,27 +263,26 @@ function FirstVisitPool({
 }) {
   const [contractors, setContractors] = useState(POOL_CONTRACTORS);
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [showResume, setShowResume] = useState(false);
   const [inviteCount, setInviteCount] = useState(0);
   const [showRateLimit, setShowRateLimit] = useState(false);
 
   const reviewed = contractors.filter((c) => c.status !== "new").length;
   const total = contractors.length;
   const current = contractors[currentIdx];
-  const allReviewed = reviewed === total;
 
-  const goNext = () => {
-    setShowResume(false);
-    if (currentIdx < total - 1) {
-      setCurrentIdx(currentIdx + 1);
-    }
+  const markViewed = (idx: number) => {
+    setContractors((prev) =>
+      prev.map((c, i) => (i === idx && c.status === "new" ? { ...c, status: "viewed" as const } : c))
+    );
   };
 
-  const handleViewResume = () => {
-    setShowResume(true);
-    setContractors((prev) =>
-      prev.map((c, i) => (i === currentIdx && c.status === "new" ? { ...c, status: "viewed" as const } : c))
-    );
+  const goNext = () => {
+    if (currentIdx < total - 1) {
+      setCurrentIdx(currentIdx + 1);
+      markViewed(currentIdx + 1);
+    } else {
+      onComplete();
+    }
   };
 
   const handleInvite = () => {
@@ -296,9 +295,7 @@ function FirstVisitPool({
       prev.map((c, i) => (i === currentIdx ? { ...c, status: "invited" as const } : c))
     );
     setInviteCount((n) => n + 1);
-    if (currentIdx < total - 1) {
-      setTimeout(goNext, 400);
-    }
+    setTimeout(goNext, 400);
   };
 
   const handleSkip = () => {
@@ -310,12 +307,11 @@ function FirstVisitPool({
 
   const handleSelectCard = (idx: number) => {
     setCurrentIdx(idx);
-    setShowResume(false);
+    markViewed(idx);
   };
 
   if (!current) return null;
 
-  const hasViewedCurrent = current.status !== "new";
   const isInvited = current.status === "invited";
 
   return (
@@ -365,104 +361,80 @@ function FirstVisitPool({
           ))}
         </div>
 
-        {/* Right: detail or resume */}
+        {/* Right: detail panel */}
         <div className={styles.rightPanel}>
-          {showResume ? (
-            <>
-              <button className={styles.backToProfile} onClick={() => setShowResume(false)}>
-                ← Back to profile
-              </button>
-              <ResumeView contractor={current} />
-              <div className={styles.resumeActions}>
-                <button
-                  className={styles.btnPrimary}
-                  onClick={handleInvite}
-                  disabled={isInvited}
-                >
-                  {isInvited ? "✓ Invited" : "Send Invitation"}
-                </button>
-                <button className={styles.btnSecondary} onClick={handleSkip}>
-                  Skip
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className={styles.detailPanel}>
-              <div className={styles.detailTop}>
-                <div className={styles.detailAvatar}>{current.initials}</div>
-                <div className={styles.detailHeaderInfo}>
-                  <h3 className={styles.detailName}>{current.name}</h3>
-                  <p className={styles.detailRole}>{current.role}</p>
-                  <div className={styles.detailMatchBadge}>{current.matchScore}% match</div>
-                  <p className={styles.detailStatus}>Not applied yet</p>
-                </div>
-              </div>
-
-              <div className={styles.detailFields}>
-                <div className={styles.detailField}>
-                  <span className={styles.detailFieldLabel}>Experience</span>
-                  <span className={styles.detailFieldValue}>{current.experience}</span>
-                </div>
-                <div className={styles.detailField}>
-                  <span className={styles.detailFieldLabel}>Rate</span>
-                  <span className={styles.detailFieldValue}>{current.rate}</span>
-                </div>
-                <div className={styles.detailField}>
-                  <span className={styles.detailFieldLabel}>Location</span>
-                  <span className={styles.detailFieldValue}>{current.location}</span>
-                </div>
-                <div className={styles.detailField}>
-                  <span className={styles.detailFieldLabel}>Skills</span>
-                  <div className={styles.skillsList}>
-                    {current.skills.map((skill) => (
-                      <span key={skill} className={styles.skillTag}>{skill}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.detailActions}>
-                {!hasViewedCurrent ? (
-                  <button className={styles.btnPrimary} onClick={handleViewResume}>
-                    View Resume
-                  </button>
-                ) : (
-                  <>
-                    <button className={styles.btnViewResume} onClick={handleViewResume}>
-                      View Resume
-                    </button>
-                    <button
-                      className={styles.btnPrimary}
-                      onClick={handleInvite}
-                      disabled={isInvited}
-                    >
-                      {isInvited ? "✓ Invited" : "Send Invitation"}
-                    </button>
-                  </>
-                )}
-                <button className={styles.btnSecondary} onClick={handleSkip}>
-                  Skip
-                </button>
+          <div className={styles.detailPanel}>
+            <div className={styles.detailTop}>
+              <div className={styles.detailAvatar}>{current.initials}</div>
+              <div className={styles.detailHeaderInfo}>
+                <h3 className={styles.detailName}>{current.name}</h3>
+                <p className={styles.detailRole}>{current.role}</p>
+                <div className={styles.detailMatchBadge}>{current.matchScore}% match</div>
+                <p className={styles.detailStatus}>Not applied yet</p>
               </div>
             </div>
-          )}
+
+            <div className={styles.detailFields}>
+              <div className={styles.detailField}>
+                <span className={styles.detailFieldLabel}>Experience</span>
+                <span className={styles.detailFieldValue}>{current.experience}</span>
+              </div>
+              <div className={styles.detailField}>
+                <span className={styles.detailFieldLabel}>Rate</span>
+                <span className={styles.detailFieldValue}>{current.rate}</span>
+              </div>
+              <div className={styles.detailField}>
+                <span className={styles.detailFieldLabel}>Location</span>
+                <span className={styles.detailFieldValue}>{current.location}</span>
+              </div>
+              <div className={styles.detailField}>
+                <span className={styles.detailFieldLabel}>Skills</span>
+                <div className={styles.skillsList}>
+                  {current.skills.map((skill) => (
+                    <span key={skill} className={styles.skillTag}>{skill}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* CV file attachment */}
+              <div className={styles.detailField}>
+                <span className={styles.detailFieldLabel}>Resume</span>
+                <div className={styles.cvFile}>
+                  <div className={styles.cvFileIcon}>
+                    <svg width="20" height="24" viewBox="0 0 20 24" fill="none">
+                      <path d="M0 3C0 1.34315 1.34315 0 3 0H12L20 8V21C20 22.6569 18.6569 24 17 24H3C1.34315 24 0 22.6569 0 21V3Z" fill="#f0f0f0" stroke="#cccccc" strokeWidth="1"/>
+                      <path d="M12 0L20 8H15C13.3431 8 12 6.65685 12 5V0Z" fill="#e0e0e0"/>
+                      <rect x="4" y="12" width="12" height="1.5" rx="0.75" fill="#cccccc"/>
+                      <rect x="4" y="15.5" width="9" height="1.5" rx="0.75" fill="#cccccc"/>
+                      <rect x="4" y="19" width="10" height="1.5" rx="0.75" fill="#cccccc"/>
+                    </svg>
+                  </div>
+                  <div className={styles.cvFileInfo}>
+                    <span className={styles.cvFileName}>{current.name.replace(" ", "_")}_CV.pdf</span>
+                    <span className={styles.cvFileSize}>PDF · 124 KB</span>
+                  </div>
+                  <button className={styles.cvFileView} onClick={() => alert(`Opening ${current.name}'s CV (stub)`)}>
+                    View
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.detailActions}>
+              <button
+                className={styles.btnPrimary}
+                onClick={handleInvite}
+                disabled={isInvited}
+              >
+                {isInvited ? "✓ Invited" : "Send Invitation"}
+              </button>
+              <button className={styles.btnSecondary} onClick={handleSkip}>
+                Skip
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Completion bar */}
-      {allReviewed && (
-        <div className={styles.completionBar}>
-          <div className={styles.completionInfo}>
-            <span className={styles.completionTitle}>All contractors reviewed</span>
-            <span className={styles.completionStats}>
-              {contractors.filter((c) => c.status === "invited").length} invited · {contractors.filter((c) => c.status === "skipped").length} skipped
-            </span>
-          </div>
-          <button className={styles.btnPrimary} onClick={onComplete} style={{ width: "auto" }}>
-            Continue to Candidates →
-          </button>
-        </div>
-      )}
 
       {showRateLimit && (
         <div className={styles.rateLimitToast}>
