@@ -134,57 +134,68 @@ function Header() {
 }
 
 /* ============================================================
-   Resume Viewer
+   CV Preview — visual document preview like in production
    ============================================================ */
 
-function ResumeView({ contractor }: { contractor: Contractor }) {
+function CvPreview({ contractor }: { contractor: Contractor }) {
   return (
-    <div className={styles.resumePanel}>
-      <div className={styles.resumeHeader}>
-        <div className={styles.resumeAvatar}>{contractor.initials}</div>
-        <div>
-          <h3 className={styles.resumeName}>{contractor.name}</h3>
-          <p className={styles.resumeRole}>{contractor.role}</p>
-          <p className={styles.resumeLocation}>{contractor.location}</p>
-        </div>
-      </div>
-
-      <div className={styles.resumeSection}>
-        <h4 className={styles.resumeSectionTitle}>About</h4>
-        <p className={styles.resumeText}>{contractor.bio}</p>
-      </div>
-
-      <div className={styles.resumeSection}>
-        <h4 className={styles.resumeSectionTitle}>Experience</h4>
-        {contractor.workHistory.map((job, i) => (
-          <div key={i} className={styles.resumeJob}>
-            <div className={styles.resumeJobTitle}>{job.role}</div>
-            <div className={styles.resumeJobCompany}>{job.company}</div>
-            <div className={styles.resumeJobPeriod}>{job.period}</div>
+    <div className={styles.cvPreviewWrapper}>
+      <span className={styles.detailFieldLabel}>Resume</span>
+      <div className={styles.cvPreviewDoc}>
+        <div className={styles.cvDocPage}>
+          {/* Mock CV content */}
+          <div className={styles.cvDocHeader}>
+            <div className={styles.cvDocName}>{contractor.name.toUpperCase()}</div>
+            <div className={styles.cvDocRole}>{contractor.role}</div>
           </div>
-        ))}
-      </div>
-
-      <div className={styles.resumeSection}>
-        <h4 className={styles.resumeSectionTitle}>Education</h4>
-        <p className={styles.resumeText}>{contractor.education}</p>
-      </div>
-
-      <div className={styles.resumeSection}>
-        <h4 className={styles.resumeSectionTitle}>Skills</h4>
-        <div className={styles.skillsList}>
-          {contractor.skills.map((skill) => (
-            <span key={skill} className={styles.skillTag}>{skill}</span>
-          ))}
+          <div className={styles.cvDocSection}>
+            <div className={styles.cvDocColumns}>
+              <div className={styles.cvDocLeft}>
+                <div className={styles.cvDocSectionTitle}>DETAILS</div>
+                <div className={styles.cvDocLine} style={{ width: "80%" }} />
+                <div className={styles.cvDocLine} style={{ width: "65%" }} />
+                <div className={styles.cvDocLine} style={{ width: "72%" }} />
+                <div className={styles.cvDocSectionTitle} style={{ marginTop: 10 }}>SKILLS</div>
+                {contractor.skills.slice(0, 3).map((s) => (
+                  <div key={s} className={styles.cvDocSkillLine}>{s}</div>
+                ))}
+              </div>
+              <div className={styles.cvDocRight}>
+                <div className={styles.cvDocSectionTitle}>PROFILE</div>
+                <div className={styles.cvDocLine} style={{ width: "100%" }} />
+                <div className={styles.cvDocLine} style={{ width: "95%" }} />
+                <div className={styles.cvDocLine} style={{ width: "88%" }} />
+                <div className={styles.cvDocSectionTitle} style={{ marginTop: 10 }}>EXPERIENCE</div>
+                {contractor.workHistory.slice(0, 2).map((job, i) => (
+                  <div key={i} className={styles.cvDocJobEntry}>
+                    <div className={styles.cvDocJobRole}>{job.role}</div>
+                    <div className={styles.cvDocLine} style={{ width: "60%" }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div className={styles.resumeSection}>
-        <div className={styles.resumeMeta}>
-          <span>Rate: {contractor.rate}</span>
-          <span>·</span>
-          <span>Experience: {contractor.experience}</span>
+      <div className={styles.cvPreviewFooter}>
+        <div className={styles.cvPreviewFileIcon}>
+          <svg width="16" height="18" viewBox="0 0 16 18" fill="none">
+            <path d="M0 2.5C0 1.12 1.12 0 2.5 0H10L16 6V15.5C16 16.88 14.88 18 13.5 18H2.5C1.12 18 0 16.88 0 15.5V2.5Z" fill="#f0f0f0" stroke="#ccc" strokeWidth="0.5"/>
+            <path d="M10 0L16 6H12.5C11.12 6 10 4.88 10 3.5V0Z" fill="#e0e0e0"/>
+          </svg>
         </div>
+        <span className={styles.cvPreviewFileName}>
+          {contractor.name.replace(" ", "_")}_CV.pdf
+        </span>
+        <span className={styles.cvPreviewFileSize}>124 KB</span>
+        <button
+          className={styles.cvPreviewDownload}
+          onClick={() => alert(`Downloading ${contractor.name}'s CV (stub)`)}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 2v8M8 10l-3-3M8 10l3-3M3 13h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
       </div>
     </div>
   );
@@ -253,15 +264,88 @@ function CandidatesEmptyState() {
 }
 
 /* ============================================================
+   Contractor Detail Panel (shared)
+   ============================================================ */
+
+function ContractorDetail({
+  contractor,
+  onInvite,
+  onSkip,
+  inviteDisabled,
+}: {
+  contractor: Contractor;
+  onInvite: () => void;
+  onSkip: () => void;
+  inviteDisabled: boolean;
+}) {
+  const isInvited = contractor.status === "invited";
+
+  return (
+    <div className={styles.detailPanel}>
+      <div className={styles.detailTop}>
+        <div className={styles.detailAvatar}>{contractor.initials}</div>
+        <div className={styles.detailHeaderInfo}>
+          <h3 className={styles.detailName}>{contractor.name}</h3>
+          <p className={styles.detailRole}>{contractor.role}</p>
+          <div className={styles.detailMatchBadge}>{contractor.matchScore}% match</div>
+          <p className={styles.detailStatus}>Not applied yet</p>
+        </div>
+      </div>
+
+      <div className={styles.detailFields}>
+        <div className={styles.detailField}>
+          <span className={styles.detailFieldLabel}>Experience</span>
+          <span className={styles.detailFieldValue}>{contractor.experience}</span>
+        </div>
+        <div className={styles.detailField}>
+          <span className={styles.detailFieldLabel}>Rate</span>
+          <span className={styles.detailFieldValue}>{contractor.rate}</span>
+        </div>
+        <div className={styles.detailField}>
+          <span className={styles.detailFieldLabel}>Location</span>
+          <span className={styles.detailFieldValue}>{contractor.location}</span>
+        </div>
+        <div className={styles.detailField}>
+          <span className={styles.detailFieldLabel}>Skills</span>
+          <div className={styles.skillsList}>
+            {contractor.skills.map((skill) => (
+              <span key={skill} className={styles.skillTag}>{skill}</span>
+            ))}
+          </div>
+        </div>
+
+        <CvPreview contractor={contractor} />
+      </div>
+
+      <div className={styles.detailActions}>
+        <button
+          className={styles.btnPrimary}
+          onClick={onInvite}
+          disabled={isInvited || inviteDisabled}
+        >
+          {isInvited ? "✓ Invited" : "Send Invitation"}
+        </button>
+        <button className={styles.btnSecondary} onClick={onSkip}>
+          Skip
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
    FIRST VISIT — Pool as a dedicated step
    ============================================================ */
 
 function FirstVisitPool({
+  contractors,
+  setContractors,
   onComplete,
 }: {
+  contractors: Contractor[];
+  setContractors: React.Dispatch<React.SetStateAction<Contractor[]>>;
   onComplete: () => void;
 }) {
-  const [contractors, setContractors] = useState(POOL_CONTRACTORS);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [inviteCount, setInviteCount] = useState(0);
   const [showRateLimit, setShowRateLimit] = useState(false);
@@ -278,8 +362,9 @@ function FirstVisitPool({
 
   const goNext = () => {
     if (currentIdx < total - 1) {
-      setCurrentIdx(currentIdx + 1);
-      markViewed(currentIdx + 1);
+      const nextIdx = currentIdx + 1;
+      setCurrentIdx(nextIdx);
+      markViewed(nextIdx);
     } else {
       onComplete();
     }
@@ -312,11 +397,8 @@ function FirstVisitPool({
 
   if (!current) return null;
 
-  const isInvited = current.status === "invited";
-
   return (
     <div className={styles.firstVisitWrapper}>
-      {/* Step header */}
       <div className={styles.stepHeader}>
         <div className={styles.stepHeaderLeft}>
           <h2 className={styles.stepTitle}>We found contractors for your request</h2>
@@ -333,7 +415,6 @@ function FirstVisitPool({
       </div>
 
       <div className={styles.firstVisitLayout}>
-        {/* Left: contractor list */}
         <div className={styles.contractorList}>
           {contractors.map((c, i) => (
             <div
@@ -361,78 +442,13 @@ function FirstVisitPool({
           ))}
         </div>
 
-        {/* Right: detail panel */}
         <div className={styles.rightPanel}>
-          <div className={styles.detailPanel}>
-            <div className={styles.detailTop}>
-              <div className={styles.detailAvatar}>{current.initials}</div>
-              <div className={styles.detailHeaderInfo}>
-                <h3 className={styles.detailName}>{current.name}</h3>
-                <p className={styles.detailRole}>{current.role}</p>
-                <div className={styles.detailMatchBadge}>{current.matchScore}% match</div>
-                <p className={styles.detailStatus}>Not applied yet</p>
-              </div>
-            </div>
-
-            <div className={styles.detailFields}>
-              <div className={styles.detailField}>
-                <span className={styles.detailFieldLabel}>Experience</span>
-                <span className={styles.detailFieldValue}>{current.experience}</span>
-              </div>
-              <div className={styles.detailField}>
-                <span className={styles.detailFieldLabel}>Rate</span>
-                <span className={styles.detailFieldValue}>{current.rate}</span>
-              </div>
-              <div className={styles.detailField}>
-                <span className={styles.detailFieldLabel}>Location</span>
-                <span className={styles.detailFieldValue}>{current.location}</span>
-              </div>
-              <div className={styles.detailField}>
-                <span className={styles.detailFieldLabel}>Skills</span>
-                <div className={styles.skillsList}>
-                  {current.skills.map((skill) => (
-                    <span key={skill} className={styles.skillTag}>{skill}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* CV file attachment */}
-              <div className={styles.detailField}>
-                <span className={styles.detailFieldLabel}>Resume</span>
-                <div className={styles.cvFile}>
-                  <div className={styles.cvFileIcon}>
-                    <svg width="20" height="24" viewBox="0 0 20 24" fill="none">
-                      <path d="M0 3C0 1.34315 1.34315 0 3 0H12L20 8V21C20 22.6569 18.6569 24 17 24H3C1.34315 24 0 22.6569 0 21V3Z" fill="#f0f0f0" stroke="#cccccc" strokeWidth="1"/>
-                      <path d="M12 0L20 8H15C13.3431 8 12 6.65685 12 5V0Z" fill="#e0e0e0"/>
-                      <rect x="4" y="12" width="12" height="1.5" rx="0.75" fill="#cccccc"/>
-                      <rect x="4" y="15.5" width="9" height="1.5" rx="0.75" fill="#cccccc"/>
-                      <rect x="4" y="19" width="10" height="1.5" rx="0.75" fill="#cccccc"/>
-                    </svg>
-                  </div>
-                  <div className={styles.cvFileInfo}>
-                    <span className={styles.cvFileName}>{current.name.replace(" ", "_")}_CV.pdf</span>
-                    <span className={styles.cvFileSize}>PDF · 124 KB</span>
-                  </div>
-                  <button className={styles.cvFileView} onClick={() => alert(`Opening ${current.name}'s CV (stub)`)}>
-                    View
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.detailActions}>
-              <button
-                className={styles.btnPrimary}
-                onClick={handleInvite}
-                disabled={isInvited}
-              >
-                {isInvited ? "✓ Invited" : "Send Invitation"}
-              </button>
-              <button className={styles.btnSecondary} onClick={handleSkip}>
-                Skip
-              </button>
-            </div>
-          </div>
+          <ContractorDetail
+            contractor={current}
+            onInvite={handleInvite}
+            onSkip={handleSkip}
+            inviteDisabled={inviteCount >= 10}
+          />
         </div>
       </div>
 
@@ -449,12 +465,16 @@ function FirstVisitPool({
    RETURNING VIEW — Tabs: Candidates + Recommended by Mellow
    ============================================================ */
 
-function ReturningView() {
+function ReturningView({
+  contractors,
+  setContractors,
+}: {
+  contractors: Contractor[];
+  setContractors: React.Dispatch<React.SetStateAction<Contractor[]>>;
+}) {
   const [activeTab, setActiveTab] = useState<"candidates" | "recommended">("candidates");
   const [showUltra, setShowUltra] = useState(true);
-  const [contractors, setContractors] = useState(POOL_CONTRACTORS);
   const [selectedIdx, setSelectedIdx] = useState(0);
-  const [showResume, setShowResume] = useState(false);
   const [inviteCount, setInviteCount] = useState(0);
   const [showRateLimit, setShowRateLimit] = useState(false);
 
@@ -462,7 +482,6 @@ function ReturningView() {
 
   const handleSelect = (idx: number) => {
     setSelectedIdx(idx);
-    setShowResume(false);
     setContractors((prev) =>
       prev.map((c, i) => (i === idx && c.status === "new" ? { ...c, status: "viewed" as const } : c))
     );
@@ -488,6 +507,8 @@ function ReturningView() {
       handleSelect(selectedIdx + 1);
     }
   };
+
+  const invitedCount = contractors.filter((c) => c.status === "invited").length;
 
   return (
     <>
@@ -530,7 +551,9 @@ function ReturningView() {
         {activeTab === "recommended" && selected && (
           <div className={styles.recommendedTabContent}>
             <p className={styles.poolSubtitle}>
-              Here's a shortlist of contractors suggested by AI Scout based on your request
+              {invitedCount > 0
+                ? `You've invited ${invitedCount} contractor${invitedCount > 1 ? "s" : ""}. Review others or request more suggestions.`
+                : "Here's a shortlist of contractors suggested by AI Scout based on your request"}
             </p>
 
             <div className={styles.mainLayout}>
@@ -559,80 +582,26 @@ function ReturningView() {
                     </div>
                   </div>
                 ))}
+
+                {/* More suggestions CTA */}
+                <div className={styles.moreSuggestions}>
+                  <p className={styles.moreSuggestionsText}>Want to see more contractors?</p>
+                  <button
+                    className={styles.btnOutlined}
+                    onClick={() => alert("Requesting more suggestions from Mellow Pool (stub)")}
+                  >
+                    Get more suggestions
+                  </button>
+                </div>
               </div>
 
               <div className={styles.rightPanel}>
-                {showResume ? (
-                  <>
-                    <button className={styles.backToProfile} onClick={() => setShowResume(false)}>
-                      ← Back to profile
-                    </button>
-                    <ResumeView contractor={selected} />
-                    <div className={styles.resumeActions}>
-                      <button
-                        className={styles.btnPrimary}
-                        onClick={handleInvite}
-                        disabled={selected.status === "invited"}
-                      >
-                        {selected.status === "invited" ? "✓ Invited" : "Send Invitation"}
-                      </button>
-                      <button className={styles.btnSecondary} onClick={handleSkip}>
-                        Skip
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div className={styles.detailPanel}>
-                    <div className={styles.detailTop}>
-                      <div className={styles.detailAvatar}>{selected.initials}</div>
-                      <div className={styles.detailHeaderInfo}>
-                        <h3 className={styles.detailName}>{selected.name}</h3>
-                        <p className={styles.detailRole}>{selected.role}</p>
-                        <div className={styles.detailMatchBadge}>{selected.matchScore}% match</div>
-                        <p className={styles.detailStatus}>Not applied yet</p>
-                      </div>
-                    </div>
-
-                    <div className={styles.detailFields}>
-                      <div className={styles.detailField}>
-                        <span className={styles.detailFieldLabel}>Experience</span>
-                        <span className={styles.detailFieldValue}>{selected.experience}</span>
-                      </div>
-                      <div className={styles.detailField}>
-                        <span className={styles.detailFieldLabel}>Rate</span>
-                        <span className={styles.detailFieldValue}>{selected.rate}</span>
-                      </div>
-                      <div className={styles.detailField}>
-                        <span className={styles.detailFieldLabel}>Location</span>
-                        <span className={styles.detailFieldValue}>{selected.location}</span>
-                      </div>
-                      <div className={styles.detailField}>
-                        <span className={styles.detailFieldLabel}>Skills</span>
-                        <div className={styles.skillsList}>
-                          {selected.skills.map((skill) => (
-                            <span key={skill} className={styles.skillTag}>{skill}</span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.detailActions}>
-                      <button className={styles.btnViewResume} onClick={() => setShowResume(true)}>
-                        View Resume
-                      </button>
-                      <button
-                        className={styles.btnPrimary}
-                        onClick={handleInvite}
-                        disabled={selected.status === "invited"}
-                      >
-                        {selected.status === "invited" ? "✓ Invited" : "Send Invitation"}
-                      </button>
-                      <button className={styles.btnSecondary} onClick={handleSkip}>
-                        Skip
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <ContractorDetail
+                  contractor={selected}
+                  onInvite={handleInvite}
+                  onSkip={handleSkip}
+                  inviteDisabled={inviteCount >= 10}
+                />
               </div>
             </div>
           </div>
@@ -654,6 +623,7 @@ function ReturningView() {
 
 export function MellowPoolScreen() {
   const [isFirstVisit, setIsFirstVisit] = useState(true);
+  const [contractors, setContractors] = useState(POOL_CONTRACTORS);
 
   return (
     <div className={styles.screen}>
@@ -665,9 +635,16 @@ export function MellowPoolScreen() {
           </div>
 
           {isFirstVisit ? (
-            <FirstVisitPool onComplete={() => setIsFirstVisit(false)} />
+            <FirstVisitPool
+              contractors={contractors}
+              setContractors={setContractors}
+              onComplete={() => setIsFirstVisit(false)}
+            />
           ) : (
-            <ReturningView />
+            <ReturningView
+              contractors={contractors}
+              setContractors={setContractors}
+            />
           )}
         </div>
       </div>
