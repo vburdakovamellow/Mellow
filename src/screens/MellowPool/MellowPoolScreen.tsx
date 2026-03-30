@@ -109,12 +109,10 @@ function Header() {
 function ContractorDetailPanel({
   contractor,
   onInvite,
-  onShortlist,
   onSkip,
 }: {
   contractor: Contractor;
   onInvite: () => void;
-  onShortlist: () => void;
   onSkip: () => void;
 }) {
   const isInvited = contractor.status === "invited";
@@ -166,14 +164,9 @@ function ContractorDetailPanel({
         >
           {isInvited ? "✓ Invited" : "Send Invitation"}
         </button>
-        <div className={styles.btnSecondaryRow}>
-          <button className={styles.btnSecondary} onClick={onShortlist}>
-            Add to shortlist
-          </button>
-          <button className={styles.btnSecondary} onClick={onSkip}>
-            Skip
-          </button>
-        </div>
+        <button className={styles.btnSecondary} onClick={onSkip}>
+          Skip
+        </button>
       </div>
     </div>
   );
@@ -188,14 +181,12 @@ function PoolContractorsView({
   selectedId,
   onSelect,
   onInvite,
-  onShortlist,
   onSkip,
 }: {
   contractors: Contractor[];
   selectedId: string;
   onSelect: (id: string) => void;
   onInvite: () => void;
-  onShortlist: () => void;
   onSkip: () => void;
 }) {
   const selected = contractors.find((c) => c.id === selectedId) ?? contractors[0];
@@ -236,7 +227,6 @@ function PoolContractorsView({
       <ContractorDetailPanel
         contractor={selected}
         onInvite={onInvite}
-        onShortlist={onShortlist}
         onSkip={onSkip}
       />
     </div>
@@ -370,7 +360,6 @@ function VariantA() {
           selectedId={selectedId}
           onSelect={handleSelect}
           onInvite={handleInvite}
-          onShortlist={() => alert("Added to shortlist (stub)")}
           onSkip={handleSkip}
         />
       </div>
@@ -468,7 +457,6 @@ function VariantB() {
           <ContractorDetailPanel
             contractor={selected}
             onInvite={handleInvite}
-            onShortlist={() => alert("Added to shortlist (stub)")}
             onSkip={() => setSelectedId(null)}
           />
         )}
@@ -557,7 +545,6 @@ function VariantC() {
               selectedId={selectedId}
               onSelect={handleSelect}
               onInvite={handleInvite}
-              onShortlist={() => alert("Added to shortlist (stub)")}
               onSkip={handleSkip}
             />
           </div>
