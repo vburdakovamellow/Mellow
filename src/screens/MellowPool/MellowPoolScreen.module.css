@@ -419,6 +419,40 @@
 }
 
 /* ========================================
+   Section Headers (Priority Inbox)
+   ======================================== */
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  margin-bottom: 10px;
+  padding-bottom: 0;
+}
+
+.sectionHeader:first-child {
+  margin-top: 0;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+}
+
+.sectionCount {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #e5e5e5;
+  color: #666;
+}
+
+/* ========================================
    Pool List & Candidate Rows
    ======================================== */
 
@@ -503,6 +537,11 @@
 .badgeSkipped {
   background: #f0f0f0;
   color: #999;
+}
+
+.badgeApplied {
+  background: #000;
+  color: #fff;
 }
 
 .candidateInfo {
@@ -896,6 +935,15 @@
   color: #999;
   padding: 3px 10px;
   border: 1px dashed #ccc;
+  border-radius: 6px;
+}
+
+.modalAppliedTag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+  padding: 3px 10px;
+  border: 1.5px solid #000;
   border-radius: 6px;
 }
 

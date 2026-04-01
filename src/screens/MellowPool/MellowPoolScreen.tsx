@@ -1,10 +1,10 @@
 import { useState } from "react";
 import styles from "./MellowPoolScreen.module.css";
 
-type CardStatus = "new" | "viewed" | "invited" | "skipped";
-type ViewMode = "first-visit" | "variant-b";
+type CardStatus = "new" | "viewed" | "invited" | "skipped" | "applied";
+type ViewMode = "first-visit" | "returning";
 
-type ContractorSource = "mellow-pool" | "signal";
+type ContractorSource = "mellow-pool" | "signal" | "organic";
 
 interface Contractor {
   id: string;
@@ -133,6 +133,177 @@ const POOL_CONTRACTORS: Contractor[] = [
     status: "new",
     source: "mellow-pool",
   },
+  {
+    id: "c6",
+    name: "Sarah Müller",
+    initials: "SM",
+    role: "React Developer",
+    matchScore: 90,
+    experience: "5 years",
+    rate: "$50/hr",
+    location: "Munich, Germany",
+    skills: ["React", "TypeScript", "Redux", "Jest", "Webpack"],
+    education: "BSc Informatics, LMU Munich",
+    email: "s.mueller@mail.com",
+    cvFileName: "CV_Sarah_Mueller.pdf",
+    bio: "Frontend developer focused on React and TypeScript. Delivered projects for automotive and healthcare sectors.",
+    workHistory: [
+      { company: "BMW Group", role: "Frontend Developer", period: "2022 – present" },
+      { company: "Freelance", role: "React Developer", period: "2020 – 2022" },
+    ],
+    status: "new",
+    source: "mellow-pool",
+  },
+  {
+    id: "c7",
+    name: "David Kim",
+    initials: "DK",
+    role: "Frontend Engineer",
+    matchScore: 87,
+    experience: "6 years",
+    rate: "$60/hr",
+    location: "Seoul, South Korea",
+    skills: ["React", "Next.js", "TypeScript", "Storybook", "Figma"],
+    education: "BSc Computer Science, KAIST",
+    email: "d.kim@mail.com",
+    cvFileName: "CV_David_Kim.pdf",
+    bio: "Frontend engineer with design systems expertise. Built component libraries used across 20+ teams.",
+    workHistory: [
+      { company: "Coupang", role: "Senior Frontend Engineer", period: "2021 – present" },
+      { company: "LINE Corp", role: "Frontend Developer", period: "2019 – 2021" },
+    ],
+    status: "new",
+    source: "signal",
+  },
+  {
+    id: "c8",
+    name: "Lara Novak",
+    initials: "LN",
+    role: "TypeScript Developer",
+    matchScore: 86,
+    experience: "4 years",
+    rate: "$45/hr",
+    location: "Prague, Czech Republic",
+    skills: ["React", "TypeScript", "Node.js", "PostgreSQL", "Docker"],
+    education: "MSc Software Engineering, CTU Prague",
+    email: "l.novak@mail.com",
+    cvFileName: "CV_Lara_Novak.pdf",
+    bio: "Full-stack TypeScript developer. Specializes in type-safe architectures and API design.",
+    workHistory: [
+      { company: "Productboard", role: "Frontend Engineer", period: "2023 – present" },
+      { company: "JetBrains", role: "Developer", period: "2021 – 2023" },
+    ],
+    status: "new",
+    source: "mellow-pool",
+  },
+  {
+    id: "c9",
+    name: "Marcus Reid",
+    initials: "MR",
+    role: "UI Engineer",
+    matchScore: 83,
+    experience: "5 years",
+    rate: "$55/hr",
+    location: "London, UK",
+    skills: ["React", "CSS", "Animation", "Accessibility", "Svelte"],
+    education: "BA Digital Design, Goldsmiths London",
+    email: "m.reid@mail.com",
+    cvFileName: "CV_Marcus_Reid.pdf",
+    bio: "UI engineer specializing in animation, accessibility, and micro-interactions. Design-engineering hybrid.",
+    workHistory: [
+      { company: "Monzo", role: "UI Engineer", period: "2022 – present" },
+      { company: "BBC", role: "Frontend Developer", period: "2020 – 2022" },
+    ],
+    status: "new",
+    source: "signal",
+  },
+  {
+    id: "c10",
+    name: "Yuki Tanaka",
+    initials: "YT",
+    role: "React Specialist",
+    matchScore: 80,
+    experience: "4 years",
+    rate: "$40/hr",
+    location: "Tokyo, Japan",
+    skills: ["React", "TypeScript", "React Query", "Zustand", "Vite"],
+    education: "BSc Information Science, U of Tokyo",
+    email: "y.tanaka@mail.com",
+    cvFileName: "CV_Yuki_Tanaka.pdf",
+    bio: "React specialist focused on state management and performance. Contributor to open-source React ecosystem tools.",
+    workHistory: [
+      { company: "Mercari", role: "Frontend Engineer", period: "2023 – present" },
+      { company: "SmartNews", role: "React Developer", period: "2021 – 2023" },
+    ],
+    status: "new",
+    source: "mellow-pool",
+  },
+];
+
+const APPLIED_CANDIDATES: Contractor[] = [
+  {
+    id: "a1",
+    name: "Raj Patel",
+    initials: "RP",
+    role: "Frontend Developer",
+    matchScore: 89,
+    experience: "5 years",
+    rate: "$50/hr",
+    location: "Mumbai, India",
+    skills: ["React", "TypeScript", "Next.js", "TailwindCSS", "MongoDB"],
+    education: "BTech Computer Science, IIT Bombay",
+    email: "r.patel@mail.com",
+    cvFileName: "CV_Raj_Patel.pdf",
+    bio: "Frontend developer with strong React skills. Experienced in building scalable web applications for startups.",
+    workHistory: [
+      { company: "Razorpay", role: "Frontend Engineer", period: "2022 – present" },
+      { company: "Freshworks", role: "Developer", period: "2020 – 2022" },
+    ],
+    status: "applied",
+    source: "organic",
+  },
+  {
+    id: "a2",
+    name: "Elena Vasquez",
+    initials: "EV",
+    role: "React Engineer",
+    matchScore: 84,
+    experience: "4 years",
+    rate: "$45/hr",
+    location: "Barcelona, Spain",
+    skills: ["React", "JavaScript", "GraphQL", "Storybook", "Cypress"],
+    education: "MSc Web Engineering, UPC Barcelona",
+    email: "e.vasquez@mail.com",
+    cvFileName: "CV_Elena_Vasquez.pdf",
+    bio: "React engineer with testing-first approach. Experienced in building component libraries and design systems.",
+    workHistory: [
+      { company: "Glovo", role: "Frontend Engineer", period: "2022 – present" },
+      { company: "Typeform", role: "Junior Developer", period: "2021 – 2022" },
+    ],
+    status: "applied",
+    source: "organic",
+  },
+  {
+    id: "a3",
+    name: "Sophie Laurent",
+    initials: "SL",
+    role: "Full-Stack Developer",
+    matchScore: 76,
+    experience: "3 years",
+    rate: "$35/hr",
+    location: "Lyon, France",
+    skills: ["React", "Node.js", "Express", "MongoDB", "Git"],
+    education: "Engineering Degree, INSA Lyon",
+    email: "s.laurent@mail.com",
+    cvFileName: "CV_Sophie_Laurent.pdf",
+    bio: "Full-stack developer with growing React expertise. Quick learner with strong problem-solving skills.",
+    workHistory: [
+      { company: "OVHcloud", role: "Full-Stack Developer", period: "2023 – present" },
+      { company: "Freelance", role: "Web Developer", period: "2022 – 2023" },
+    ],
+    status: "applied",
+    source: "organic",
+  },
 ];
 
 /* ============================================================
@@ -185,8 +356,8 @@ function ViewSwitcher({
         First Visit
       </button>
       <button
-        className={`${styles.viewSwitcherBtn} ${mode === "variant-b" ? styles.viewSwitcherBtnActive : ""}`}
-        onClick={() => onChange("variant-b")}
+        className={`${styles.viewSwitcherBtn} ${mode === "returning" ? styles.viewSwitcherBtnActive : ""}`}
+        onClick={() => onChange("returning")}
       >
         Returning Visit
       </button>
@@ -265,21 +436,27 @@ function ContractorRow({
 }) {
   const isInactive = contractor.status === "invited" || contractor.status === "skipped";
 
+  const badgeClass =
+    contractor.status === "applied" ? styles.badgeApplied :
+    contractor.status === "new" ? styles.badgeNew :
+    contractor.status === "viewed" ? styles.badgeViewed :
+    contractor.status === "invited" ? styles.badgeInvited :
+    styles.badgeSkipped;
+
+  const badgeLabel =
+    contractor.status === "applied" ? "Applied" :
+    contractor.status === "invited" ? "Invited" :
+    contractor.status === "skipped" ? "Skipped" :
+    contractor.status === "viewed" ? "Viewed" : "New";
+
   return (
     <div
       className={`${styles.candidateRow} ${isInactive ? styles.candidateRowInactive : ""}`}
       onClick={onClick}
     >
       <div className={styles.candidateRowLeft}>
-        <span className={`${styles.candidateBadge} ${
-          contractor.status === "new" ? styles.badgeNew :
-          contractor.status === "viewed" ? styles.badgeViewed :
-          contractor.status === "invited" ? styles.badgeInvited :
-          styles.badgeSkipped
-        }`}>
-          {contractor.status === "invited" ? "Invited" :
-           contractor.status === "skipped" ? "Skipped" :
-           contractor.status === "viewed" ? "Viewed" : "New"}
+        <span className={`${styles.candidateBadge} ${badgeClass}`}>
+          {badgeLabel}
         </span>
         <span className={styles.candidateName}>{contractor.name}</span>
       </div>
@@ -315,6 +492,7 @@ function ContractorModal({
   hasNext: boolean;
   inviteDisabled: boolean;
 }) {
+  const isApplied = contractor.status === "applied";
   const isInvited = contractor.status === "invited";
   const isSkipped = contractor.status === "skipped";
 
@@ -322,7 +500,9 @@ function ContractorModal({
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>Recommended Contractor</h2>
+          <h2 className={styles.modalTitle}>
+            {isApplied ? "Application" : "Recommended Contractor"}
+          </h2>
           <button className={styles.modalClose} onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -333,7 +513,11 @@ function ContractorModal({
         <div className={styles.modalBody}>
           <div className={styles.modalRoleRow}>
             <span className={styles.modalRoleLabel}>{contractor.role}</span>
-            <span className={styles.modalNotApplied}>Not applied yet</span>
+            {isApplied ? (
+              <span className={styles.modalAppliedTag}>Applied</span>
+            ) : (
+              <span className={styles.modalNotApplied}>Not applied yet</span>
+            )}
           </div>
           <h3 className={styles.modalName}>{contractor.name}</h3>
 
@@ -396,7 +580,9 @@ function ContractorModal({
               </svg>
             </div>
             <div className={styles.modalCtaText}>
-              {isInvited
+              {isApplied
+                ? "This contractor applied to your request. Review their profile and add to shortlist."
+                : isInvited
                 ? "Invitation sent. You'll be notified when they respond."
                 : isSkipped
                 ? "You skipped this contractor. You can still send an invitation."
@@ -405,9 +591,9 @@ function ContractorModal({
             <button
               className={styles.modalCtaBtn}
               onClick={onInvite}
-              disabled={isInvited || inviteDisabled}
+              disabled={isInvited || (!isApplied && inviteDisabled)}
             >
-              {isInvited ? "✓ Invited" : "Send Invitation"}
+              {isApplied ? "Add to Shortlist" : isInvited ? "✓ Invited" : "Send Invitation"}
             </button>
           </div>
 
@@ -441,7 +627,7 @@ function ContractorModal({
 
           {!isInvited && !isSkipped && (
             <button className={styles.skipBtn} onClick={onSkip}>
-              Skip this contractor
+              {isApplied ? "Reject application" : "Skip this contractor"}
             </button>
           )}
         </div>
@@ -657,56 +843,103 @@ function FirstVisitView({
 }
 
 /* ============================================================
-   RETURNING VISIT — Pool as sub-tab within Candidates
+   Section Header — for priority inbox sections
    ============================================================ */
 
-function VariantB({
+function SectionHeader({ title, count }: { title: string; count: number }) {
+  return (
+    <div className={styles.sectionHeader}>
+      <span className={styles.sectionTitle}>{title}</span>
+      <span className={styles.sectionCount}>{count}</span>
+    </div>
+  );
+}
+
+/* ============================================================
+   RETURNING VISIT — Unified priority inbox
+   ============================================================ */
+
+function ReturningVisit({
   contractors,
   setContractors,
+  appliedCandidates,
+  setAppliedCandidates,
 }: {
   contractors: Contractor[];
   setContractors: React.Dispatch<React.SetStateAction<Contractor[]>>;
+  appliedCandidates: Contractor[];
+  setAppliedCandidates: React.Dispatch<React.SetStateAction<Contractor[]>>;
 }) {
   const [activeTab, setActiveTab] = useState<string>("candidates");
-  const [subTab, setSubTab] = useState<"applied" | "recommended">("recommended");
-  const [ultraExpanded, setUltraExpanded] = useState(true);
-  const [modalIdx, setModalIdx] = useState<number | null>(null);
+  const [modalId, setModalId] = useState<string | null>(null);
   const [inviteCount, setInviteCount] = useState(0);
 
-  const invitedCount = contractors.filter((c) => c.status === "invited").length;
-  const poolCount = contractors.length;
+  const applied = appliedCandidates.filter((c) => c.status === "applied");
+  const recommendations = contractors.filter((c) => c.status === "new" || c.status === "viewed");
+  const invited = contractors.filter((c) => c.status === "invited");
+  const skipped = contractors.filter((c) => c.status === "skipped");
 
-  const openModal = (idx: number) => {
-    setModalIdx(idx);
+  const flatList = [...applied, ...recommendations, ...invited, ...skipped];
+  const totalCount = flatList.length;
+
+  const modalContractor = flatList.find((c) => c.id === modalId) ?? null;
+  const currentIdx = flatList.findIndex((c) => c.id === modalId);
+  const hasPrev = currentIdx > 0;
+  const hasNext = currentIdx < flatList.length - 1;
+
+  const openModal = (id: string) => {
+    setModalId(id);
     setContractors((prev) =>
-      prev.map((c, i) => (i === idx && c.status === "new" ? { ...c, status: "viewed" as const } : c))
+      prev.map((c) => (c.id === id && c.status === "new" ? { ...c, status: "viewed" as const } : c))
     );
   };
 
   const handleInvite = () => {
-    if (modalIdx === null) return;
-    setContractors((prev) =>
-      prev.map((c, i) => (i === modalIdx ? { ...c, status: "invited" as const } : c))
-    );
+    if (!modalContractor) return;
+    if (modalContractor.status === "applied") {
+      setAppliedCandidates((prev) =>
+        prev.map((c) => (c.id === modalContractor.id ? { ...c, status: "invited" as const } : c))
+      );
+    } else {
+      setContractors((prev) =>
+        prev.map((c) => (c.id === modalContractor.id ? { ...c, status: "invited" as const } : c))
+      );
+    }
     setInviteCount((n) => n + 1);
   };
 
   const handleSkip = () => {
-    if (modalIdx === null) return;
-    setContractors((prev) =>
-      prev.map((c, i) =>
-        i === modalIdx && (c.status === "new" || c.status === "viewed")
-          ? { ...c, status: "skipped" as const }
-          : c
-      )
-    );
+    if (!modalContractor) return;
+    if (modalContractor.status === "applied") {
+      setAppliedCandidates((prev) =>
+        prev.map((c) =>
+          c.id === modalContractor.id ? { ...c, status: "skipped" as const } : c
+        )
+      );
+    } else {
+      setContractors((prev) =>
+        prev.map((c) =>
+          c.id === modalContractor.id && (c.status === "new" || c.status === "viewed")
+            ? { ...c, status: "skipped" as const }
+            : c
+        )
+      );
+    }
+  };
+
+  const handlePrev = () => {
+    if (hasPrev) openModal(flatList[currentIdx - 1].id);
+  };
+
+  const handleNext = () => {
+    if (hasNext) openModal(flatList[currentIdx + 1].id);
   };
 
   return (
     <>
       <RequestNavigation
         tabs={[
-          { id: "candidates", label: "Candidates" },
+          { id: "candidates", label: "Candidates", badge: totalCount },
           { id: "promotion", label: "Promotion" },
           { id: "edit", label: "Edit" },
         ]}
@@ -716,72 +949,69 @@ function VariantB({
 
       {activeTab === "candidates" && (
         <div className={styles.tabContent}>
-          <div className={styles.subTabs}>
-            <button
-              className={`${styles.subTab} ${subTab === "recommended" ? styles.subTabActive : ""}`}
-              onClick={() => setSubTab("recommended")}
-            >
-              Recommended by Mellow
-              <span className={styles.subTabBadge}>{poolCount}</span>
-            </button>
-            <button
-              className={`${styles.subTab} ${subTab === "applied" ? styles.subTabActive : ""}`}
-              onClick={() => setSubTab("applied")}
-            >
-              Applied
-            </button>
-          </div>
-
-          {subTab === "applied" && (
+          {applied.length > 0 && (
             <>
-              <div className={styles.sortRow}>
-                <button className={styles.sortBtn}>
-                  Sort by Status
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                </button>
-              </div>
-              {ultraExpanded ? (
-                <UltraBannerExpanded onCollapse={() => setUltraExpanded(false)} />
-              ) : (
-                <UltraBannerCompact onExpand={() => setUltraExpanded(true)} />
-              )}
-              <CandidatesEmptyState />
-            </>
-          )}
-
-          {subTab === "recommended" && (
-            <>
-              <p className={styles.poolSubtitle}>
-                {invitedCount > 0
-                  ? `You've invited ${invitedCount} contractor${invitedCount > 1 ? "s" : ""}. Waiting for their response.`
-                  : "Here's a shortlist of contractors suggested by AI Scout based on your request"}
-              </p>
+              <SectionHeader title="New Applications" count={applied.length} />
               <div className={styles.poolList}>
-                {contractors.map((c, i) => (
-                  <ContractorRow key={c.id} contractor={c} onClick={() => openModal(i)} />
+                {applied.map((c) => (
+                  <ContractorRow key={c.id} contractor={c} onClick={() => openModal(c.id)} />
                 ))}
-                <div className={styles.moreSuggestions}>
-                  <span>Want to see more contractors?</span>
-                  <button className={styles.btnOutline}>Get more suggestions</button>
-                </div>
               </div>
             </>
           )}
+
+          {recommendations.length > 0 && (
+            <>
+              <SectionHeader title="Recommended by Mellow" count={recommendations.length} />
+              <div className={styles.poolList}>
+                {recommendations.map((c) => (
+                  <ContractorRow key={c.id} contractor={c} onClick={() => openModal(c.id)} />
+                ))}
+              </div>
+            </>
+          )}
+
+          {invited.length > 0 && (
+            <>
+              <SectionHeader title="Invited — waiting for response" count={invited.length} />
+              <div className={styles.poolList}>
+                {invited.map((c) => (
+                  <ContractorRow key={c.id} contractor={c} onClick={() => openModal(c.id)} />
+                ))}
+              </div>
+            </>
+          )}
+
+          {skipped.length > 0 && (
+            <>
+              <SectionHeader title="Skipped" count={skipped.length} />
+              <div className={styles.poolList}>
+                {skipped.map((c) => (
+                  <ContractorRow key={c.id} contractor={c} onClick={() => openModal(c.id)} />
+                ))}
+              </div>
+            </>
+          )}
+
+          <UltraBannerCompact onExpand={() => {}} />
+
+          <div className={styles.moreSuggestions}>
+            <span>Want to see more contractors?</span>
+            <button className={styles.btnOutline}>Get more suggestions</button>
+          </div>
         </div>
       )}
 
-      {modalIdx !== null && contractors[modalIdx] && (
+      {modalContractor && (
         <ContractorModal
-          contractor={contractors[modalIdx]}
-          onClose={() => setModalIdx(null)}
+          contractor={modalContractor}
+          onClose={() => setModalId(null)}
           onInvite={handleInvite}
           onSkip={handleSkip}
-          onPrev={() => modalIdx > 0 && openModal(modalIdx - 1)}
-          onNext={() => modalIdx < contractors.length - 1 && openModal(modalIdx + 1)}
-          hasPrev={modalIdx > 0}
-          hasNext={modalIdx < contractors.length - 1}
+          onPrev={handlePrev}
+          onNext={handleNext}
+          hasPrev={hasPrev}
+          hasNext={hasNext}
           inviteDisabled={inviteCount >= 10}
         />
       )}
@@ -795,13 +1025,21 @@ function VariantB({
 
 export function MellowPoolScreen() {
   const [viewMode, setViewMode] = useState<ViewMode>("first-visit");
-  const [contractors, setContractors] = useState(POOL_CONTRACTORS);
-
-  const resetContractors = () => setContractors(POOL_CONTRACTORS.map((c) => ({ ...c, status: "new" as const })));
+  const [contractors, setContractors] = useState(POOL_CONTRACTORS.map((c) => ({ ...c, status: "new" as const })));
+  const [appliedCandidates, setAppliedCandidates] = useState(APPLIED_CANDIDATES);
 
   const handleViewChange = (m: ViewMode) => {
     setViewMode(m);
-    resetContractors();
+    if (m === "first-visit") {
+      setContractors(POOL_CONTRACTORS.map((c) => ({ ...c, status: "new" as const })));
+      setAppliedCandidates(APPLIED_CANDIDATES);
+    } else {
+      setContractors(POOL_CONTRACTORS.map((c, i) => ({
+        ...c,
+        status: (i < 3 ? "invited" : i < 5 ? "skipped" : "new") as CardStatus,
+      })));
+      setAppliedCandidates(APPLIED_CANDIDATES);
+    }
   };
 
   return (
@@ -816,14 +1054,16 @@ export function MellowPoolScreen() {
             <FirstVisitView
               contractors={contractors}
               setContractors={setContractors}
-              onComplete={() => setViewMode("variant-b")}
+              onComplete={() => setViewMode("returning")}
             />
           )}
 
-          {viewMode === "variant-b" && (
-            <VariantB
+          {viewMode === "returning" && (
+            <ReturningVisit
               contractors={contractors}
               setContractors={setContractors}
+              appliedCandidates={appliedCandidates}
+              setAppliedCandidates={setAppliedCandidates}
             />
           )}
         </div>
