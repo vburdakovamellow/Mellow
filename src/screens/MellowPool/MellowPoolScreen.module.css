@@ -1985,3 +1985,843 @@
     display: none;
   }
 }
+
+/* ========================================
+   V2 PROTOTYPE: Pool Section Above Candidates
+   ======================================== */
+
+.poolSection {
+  margin-bottom: 32px;
+}
+
+.poolSectionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.poolSectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 4px;
+}
+
+.poolSectionSubtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 20px;
+}
+
+.poolSectionCount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #999;
+  padding: 6px 14px;
+  background: #f0f0f0;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Aha Moment */
+.ahaMoment {
+  padding: 28px 32px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.ahaMomentIcon {
+  margin-bottom: 12px;
+}
+
+.ahaMomentTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 8px;
+}
+
+.ahaMomentSubtitle {
+  font-size: 15px;
+  color: #666;
+  margin: 0;
+  line-height: 22px;
+}
+
+/* Loading State */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 24px;
+  background: #fff;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.loadingSpinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loadingText {
+  font-size: 15px;
+  color: #666;
+  margin: 0;
+}
+
+/* Pool Divider */
+.poolDivider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 32px 0;
+}
+
+/* ========================================
+   Grid Layout (2-3 cards per row)
+   ======================================== */
+
+.poolGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .poolGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .poolGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gridCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  border: 1px solid #e5e5e5;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+
+.gridCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-color: #ccc;
+}
+
+.gridCardInactive {
+  opacity: 0.55;
+}
+
+.gridCardTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gridAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.gridNameBlock {
+  flex: 1;
+  min-width: 0;
+}
+
+.gridName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gridRole {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gridMatchBadge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  padding: 4px 12px;
+  background: #f0f0f0;
+  border-radius: 16px;
+}
+
+.gridStatusBadge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.gridStatusNew {
+  background: #000;
+  color: #fff;
+}
+
+.gridStatusViewed {
+  background: #e5e5e5;
+  color: #666;
+}
+
+.gridStatusInvited {
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+}
+
+/* Why Match in Grid Card */
+.gridWhyMatch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gridWhyTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.whyTag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  color: #000;
+}
+
+.whyTagHighlight {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.gridWhyText {
+  font-size: 12px;
+  color: #666;
+  line-height: 16px;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Grid Card Meta */
+.gridMeta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #999;
+}
+
+.gridMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Grid Card CTA */
+.gridCta {
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.gridInviteBtn {
+  width: 100%;
+  padding: 10px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.gridInviteBtn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.gridInviteBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.gridInvitedBtn {
+  width: 100%;
+  padding: 10px;
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: default;
+}
+
+/* ========================================
+   List Layout (rich rows, 1 per line)
+   ======================================== */
+
+.listCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: #fff;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease;
+  border: 1px solid #e5e5e5;
+}
+
+.listCard:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-color: #ccc;
+}
+
+.listCardInactive {
+  opacity: 0.55;
+}
+
+.listAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.listInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.listNameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.listName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listRole {
+  font-size: 13px;
+  color: #666;
+}
+
+.listStatusBadge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.listWhyRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.listWhyText {
+  font-size: 12px;
+  color: #666;
+  line-height: 16px;
+}
+
+.listMeta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #999;
+}
+
+.listRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.listMatch {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+  padding: 8px 16px;
+  background: #f0f0f0;
+  border-radius: 20px;
+}
+
+.listInviteBtn {
+  padding: 10px 18px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.listInviteBtn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.listInviteBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.listInvitedBtn {
+  padding: 10px 18px;
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ========================================
+   Side Panel
+   ======================================== */
+
+.sidePanelOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 300;
+}
+
+.sidePanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 480px;
+  max-width: 90vw;
+  height: 100vh;
+  background: #fff;
+  z-index: 301;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+  animation: slideInPanel 0.25s ease;
+}
+
+@keyframes slideInPanel {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.sidePanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.sidePanelTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidePanelClose {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  color: #666;
+  cursor: pointer;
+}
+
+.sidePanelClose:hover {
+  border-color: #000;
+  color: #000;
+}
+
+.sidePanelBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.sidePanelTopRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.sidePanelAvatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.sidePanelNameBlock {
+  flex: 1;
+}
+
+.sidePanelName {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 2px;
+}
+
+.sidePanelRole {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 4px;
+}
+
+.sidePanelNotApplied {
+  font-size: 11px;
+  color: #999;
+  padding: 2px 8px;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+}
+
+.sidePanelMatchRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.sidePanelMatchScore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: 2px solid #000;
+  border-radius: 14px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #000;
+}
+
+.sidePanelWhyBlock {
+  flex: 1;
+}
+
+.sidePanelWhyLabel {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+  margin: 0 0 6px;
+  display: block;
+}
+
+.sidePanelWhyTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.sidePanelWhyText {
+  font-size: 13px;
+  color: #333;
+  line-height: 18px;
+  margin: 0;
+}
+
+.sidePanelCtaBlock {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.sidePanelInviteBtn {
+  flex: 1;
+  padding: 12px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sidePanelInviteBtn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.sidePanelInviteBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sidePanelSkipBtn {
+  padding: 12px 20px;
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+}
+
+.sidePanelSkipBtn:hover {
+  border-color: #000;
+  color: #000;
+}
+
+.sidePanelSection {
+  margin-bottom: 20px;
+}
+
+.sidePanelSectionLabel {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #999;
+  margin: 0 0 8px;
+  display: block;
+}
+
+.sidePanelGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.sidePanelFieldLabel {
+  font-size: 12px;
+  color: #999;
+  margin: 0 0 2px;
+}
+
+.sidePanelFieldValue {
+  font-size: 14px;
+  color: #000;
+  font-weight: 500;
+}
+
+.sidePanelSkillsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sidePanelBioText {
+  font-size: 14px;
+  color: #333;
+  line-height: 22px;
+  margin: 0;
+}
+
+.sidePanelWorkItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.sidePanelWorkItem:last-child {
+  border-bottom: none;
+}
+
+.sidePanelWorkCompany {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+}
+
+.sidePanelWorkRole {
+  font-size: 13px;
+  color: #666;
+}
+
+.sidePanelWorkPeriod {
+  font-size: 12px;
+  color: #999;
+}
+
+.sidePanelFooter {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.sidePanelNavBtn {
+  padding: 10px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  cursor: pointer;
+  text-align: center;
+}
+
+.sidePanelNavBtn:hover:not(:disabled) {
+  background: #e5e5e5;
+}
+
+.sidePanelNavBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   Load More Button
+   ======================================== */
+
+.loadMoreBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  margin-top: 14px;
+  background: #fff;
+  border: 1px dashed #ccc;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.loadMoreBtn:hover {
+  border-color: #000;
+  color: #000;
+}
+
+/* ========================================
+   Candidates Section Below Pool
+   ======================================== */
+
+.candidatesSection {
+  margin-top: 0;
+}
+
+.candidatesSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.candidatesSectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+}
+
+.candidatesSectionCount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  padding: 4px 12px;
+  background: #e5e5e5;
+  border-radius: 16px;
+}

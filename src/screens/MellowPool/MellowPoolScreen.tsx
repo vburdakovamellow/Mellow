@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./MellowPoolScreen.module.css";
 
 type CardStatus = "new" | "viewed" | "invited" | "skipped" | "applied";
-type ViewMode = "create-request" | "first-visit" | "variant-a" | "variant-a-empty" | "returning";
+type ViewMode = "create-request" | "first-visit" | "variant-a" | "variant-a-empty" | "returning" | "section-grid" | "section-list" | "section-empty";
 
 type ContractorSource = "mellow-pool" | "signal" | "organic" | "ultra";
+
+interface WhyMatch {
+  tags: string[];
+  text: string;
+}
 
 interface Contractor {
   id: string;
@@ -23,6 +28,7 @@ interface Contractor {
   workHistory: { company: string; role: string; period: string }[];
   status: CardStatus;
   source: ContractorSource;
+  whyMatch?: WhyMatch;
 }
 
 const POOL_CONTRACTORS: Contractor[] = [
@@ -47,6 +53,7 @@ const POOL_CONTRACTORS: Contractor[] = [
     ],
     status: "new",
     source: "mellow-pool",
+    whyMatch: { tags: ["React", "TypeScript", "Node.js"], text: "8 years of React experience. Built frontend architecture for fintech products serving 500K+ users. Rate within budget." },
   },
   {
     id: "c2",
@@ -68,6 +75,7 @@ const POOL_CONTRACTORS: Contractor[] = [
     ],
     status: "new",
     source: "mellow-pool",
+    whyMatch: { tags: ["React", "Python", "PostgreSQL"], text: "6 years full-stack experience. Strong React skills with end-to-end delivery. Competitive rate." },
   },
   {
     id: "c3",
@@ -90,6 +98,7 @@ const POOL_CONTRACTORS: Contractor[] = [
     ],
     status: "new",
     source: "signal",
+    whyMatch: { tags: ["React", "TypeScript", "Design Systems"], text: "10 years of frontend architecture. Led teams of 8+ engineers at Shopify. Design systems expert." },
   },
   {
     id: "c4",
@@ -111,6 +120,7 @@ const POOL_CONTRACTORS: Contractor[] = [
     ],
     status: "new",
     source: "signal",
+    whyMatch: { tags: ["React", "React Native", "TypeScript"], text: "5 years cross-platform development. Delivered 10+ production apps across Europe. Strong mobile expertise." },
   },
   {
     id: "c5",
@@ -132,6 +142,7 @@ const POOL_CONTRACTORS: Contractor[] = [
     ],
     status: "new",
     source: "mellow-pool",
+    whyMatch: { tags: ["React", "Next.js", "Testing"], text: "7 years frontend with testing-first culture. High-performance web apps at Booking.com and Adyen." },
   },
   {
     id: "c6",
@@ -153,6 +164,7 @@ const POOL_CONTRACTORS: Contractor[] = [
     ],
     status: "new",
     source: "mellow-pool",
+    whyMatch: { tags: ["React", "TypeScript", "Redux"], text: "5 years focused React/TypeScript. Delivered projects for automotive and healthcare sectors." },
   },
   {
     id: "c7",
@@ -174,6 +186,7 @@ const POOL_CONTRACTORS: Contractor[] = [
     ],
     status: "new",
     source: "signal",
+    whyMatch: { tags: ["React", "Next.js", "Storybook"], text: "6 years with design systems expertise. Built component libraries used by 20+ teams at Coupang." },
   },
   {
     id: "c8",
@@ -195,6 +208,7 @@ const POOL_CONTRACTORS: Contractor[] = [
     ],
     status: "new",
     source: "mellow-pool",
+    whyMatch: { tags: ["React", "TypeScript", "Node.js"], text: "4 years full-stack TypeScript. Type-safe architectures at JetBrains and Productboard." },
   },
   {
     id: "c9",
@@ -216,6 +230,7 @@ const POOL_CONTRACTORS: Contractor[] = [
     ],
     status: "new",
     source: "signal",
+    whyMatch: { tags: ["React", "CSS", "Accessibility"], text: "5 years UI engineering. Animation and accessibility specialist at Monzo. Design-engineering hybrid." },
   },
   {
     id: "c10",
@@ -237,6 +252,7 @@ const POOL_CONTRACTORS: Contractor[] = [
     ],
     status: "new",
     source: "mellow-pool",
+    whyMatch: { tags: ["React", "TypeScript", "Vite"], text: "4 years React specialist. State management expert. Open-source contributor to React ecosystem." },
   },
 ];
 
@@ -658,29 +674,47 @@ function ViewSwitcher({
       </button>
       <span className={styles.viewSwitcherArrow}>→</span>
       <button
+        className={`${styles.viewSwitcherBtn} ${mode === "section-grid" ? styles.viewSwitcherBtnActive : ""}`}
+        onClick={() => onChange("section-grid")}
+      >
+        Grid + Side Panel
+      </button>
+      <button
+        className={`${styles.viewSwitcherBtn} ${mode === "section-list" ? styles.viewSwitcherBtnActive : ""}`}
+        onClick={() => onChange("section-list")}
+      >
+        List + Side Panel
+      </button>
+      <button
+        className={`${styles.viewSwitcherBtn} ${mode === "section-empty" ? styles.viewSwitcherBtnActive : ""}`}
+        onClick={() => onChange("section-empty")}
+      >
+        Empty Pool
+      </button>
+      <span className={styles.viewSwitcherSep}>|</span>
+      <button
         className={`${styles.viewSwitcherBtn} ${mode === "first-visit" ? styles.viewSwitcherBtnActive : ""}`}
         onClick={() => onChange("first-visit")}
       >
-        2. First Visit (Pool)
+        v1: First Visit
       </button>
-      <span className={styles.viewSwitcherSep}>|</span>
       <button
         className={`${styles.viewSwitcherBtn} ${mode === "variant-a" ? styles.viewSwitcherBtnActive : ""}`}
         onClick={() => onChange("variant-a")}
       >
-        A: Pool tab w/candidates
+        v1: Tabs
       </button>
       <button
         className={`${styles.viewSwitcherBtn} ${mode === "variant-a-empty" ? styles.viewSwitcherBtnActive : ""}`}
         onClick={() => onChange("variant-a-empty")}
       >
-        A2: Pool tab w/o candidates
+        v1: Empty
       </button>
       <button
         className={`${styles.viewSwitcherBtn} ${mode === "returning" ? styles.viewSwitcherBtnActive : ""}`}
         onClick={() => onChange("returning")}
       >
-        B: Priority Inbox
+        v1: Inbox
       </button>
     </div>
   );
@@ -1594,6 +1628,646 @@ function ReturningVisit({
 }
 
 /* ============================================================
+   SIDE PANEL — alternative to modal, keeps list visible
+   ============================================================ */
+
+function SidePanel({
+  contractor,
+  onClose,
+  onInvite,
+  onSkip,
+  onPrev,
+  onNext,
+  hasPrev,
+  hasNext,
+  inviteDisabled,
+}: {
+  contractor: Contractor;
+  onClose: () => void;
+  onInvite: () => void;
+  onSkip: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  hasPrev: boolean;
+  hasNext: boolean;
+  inviteDisabled: boolean;
+}) {
+  const isInvited = contractor.status === "invited";
+  const isSkipped = contractor.status === "skipped";
+
+  return (
+    <>
+      <div className={styles.sidePanelOverlay} onClick={onClose} />
+      <div className={styles.sidePanel}>
+        <div className={styles.sidePanelHeader}>
+          <span className={styles.sidePanelTitle}>Recommended Contractor</span>
+          <button className={styles.sidePanelClose} onClick={onClose}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 4l8 8M12 4L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div className={styles.sidePanelBody}>
+          <div className={styles.sidePanelTopRow}>
+            <div className={styles.sidePanelAvatar}>{contractor.initials}</div>
+            <div className={styles.sidePanelNameBlock}>
+              <h3 className={styles.sidePanelName}>{contractor.name}</h3>
+              <p className={styles.sidePanelRole}>{contractor.role}</p>
+              <span className={styles.sidePanelNotApplied}>Not applied yet</span>
+            </div>
+          </div>
+
+          <div className={styles.sidePanelMatchRow}>
+            <div className={styles.sidePanelMatchScore}>{contractor.matchScore}%</div>
+            {contractor.whyMatch && (
+              <div className={styles.sidePanelWhyBlock}>
+                <span className={styles.sidePanelWhyLabel}>Why this candidate</span>
+                <div className={styles.sidePanelWhyTags}>
+                  {contractor.whyMatch.tags.map((t) => (
+                    <span key={t} className={`${styles.whyTag} ${styles.whyTagHighlight}`}>{t}</span>
+                  ))}
+                </div>
+                <p className={styles.sidePanelWhyText}>{contractor.whyMatch.text}</p>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.sidePanelCtaBlock}>
+            {isInvited ? (
+              <button className={styles.sidePanelInviteBtn} disabled>✓ Invited</button>
+            ) : (
+              <button
+                className={styles.sidePanelInviteBtn}
+                onClick={(e) => { e.stopPropagation(); onInvite(); }}
+                disabled={inviteDisabled}
+              >
+                Send Invitation
+              </button>
+            )}
+            {!isInvited && !isSkipped && (
+              <button className={styles.sidePanelSkipBtn} onClick={onSkip}>Skip</button>
+            )}
+          </div>
+
+          <div className={styles.sidePanelSection}>
+            <span className={styles.sidePanelSectionLabel}>Details</span>
+            <div className={styles.sidePanelGrid}>
+              <div>
+                <p className={styles.sidePanelFieldLabel}>Experience</p>
+                <p className={styles.sidePanelFieldValue}>{contractor.experience}</p>
+              </div>
+              <div>
+                <p className={styles.sidePanelFieldLabel}>Rate</p>
+                <p className={styles.sidePanelFieldValue}>{contractor.rate}</p>
+              </div>
+              <div>
+                <p className={styles.sidePanelFieldLabel}>Location</p>
+                <p className={styles.sidePanelFieldValue}>{contractor.location}</p>
+              </div>
+              <div>
+                <p className={styles.sidePanelFieldLabel}>Education</p>
+                <p className={styles.sidePanelFieldValue}>{contractor.education}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.sidePanelSection}>
+            <span className={styles.sidePanelSectionLabel}>Skills</span>
+            <div className={styles.sidePanelSkillsList}>
+              {contractor.skills.map((s) => (
+                <span key={s} className={styles.skillTag}>{s}</span>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.sidePanelSection}>
+            <span className={styles.sidePanelSectionLabel}>About</span>
+            <p className={styles.sidePanelBioText}>{contractor.bio}</p>
+          </div>
+
+          <div className={styles.sidePanelSection}>
+            <span className={styles.sidePanelSectionLabel}>Work History</span>
+            {contractor.workHistory.map((w, i) => (
+              <div key={i} className={styles.sidePanelWorkItem}>
+                <span className={styles.sidePanelWorkCompany}>{w.company}</span>
+                <span className={styles.sidePanelWorkRole}>{w.role}</span>
+                <span className={styles.sidePanelWorkPeriod}>{w.period}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.sidePanelSection}>
+            <span className={styles.sidePanelSectionLabel}>Contact</span>
+            <div className={styles.sidePanelGrid}>
+              <div>
+                <p className={styles.sidePanelFieldLabel}>Email</p>
+                <p className={styles.sidePanelFieldValue}>{contractor.email}</p>
+              </div>
+              <div>
+                <p className={styles.sidePanelFieldLabel}>CV</p>
+                <p className={styles.sidePanelFieldValue}>{contractor.cvFileName}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.sidePanelFooter}>
+          <button className={styles.sidePanelNavBtn} onClick={onPrev} disabled={!hasPrev}>← Previous</button>
+          <button className={styles.sidePanelNavBtn} onClick={onNext} disabled={!hasNext}>Next →</button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ============================================================
+   POOL SECTION — Grid layout variant
+   ============================================================ */
+
+function PoolSectionGrid({
+  contractors,
+  setContractors,
+  appliedCandidates,
+  isFirstVisit,
+}: {
+  contractors: Contractor[];
+  setContractors: React.Dispatch<React.SetStateAction<Contractor[]>>;
+  appliedCandidates: Contractor[];
+  isFirstVisit: boolean;
+}) {
+  const [panelId, setPanelId] = useState<string | null>(null);
+  const [inviteCount, setInviteCount] = useState(0);
+  const [showRateLimit, setShowRateLimit] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [loading, setLoading] = useState(isFirstVisit);
+
+  const visibleContractors = contractors.slice(0, visibleCount);
+  const hasMore = contractors.length > visibleCount;
+  const remainingCount = contractors.length - visibleCount;
+
+  const panelContractor = contractors.find((c) => c.id === panelId) ?? null;
+  const currentIdx = contractors.findIndex((c) => c.id === panelId);
+
+  useEffect(() => {
+    if (isFirstVisit && loading) {
+      const t = setTimeout(() => setLoading(false), 2000);
+      return () => clearTimeout(t);
+    }
+  }, [isFirstVisit, loading]);
+
+  const openPanel = (id: string) => {
+    setPanelId(id);
+    setContractors((prev) =>
+      prev.map((c) => (c.id === id && c.status === "new" ? { ...c, status: "viewed" as const } : c))
+    );
+  };
+
+  const handleInvite = (id?: string) => {
+    const targetId = id ?? panelId;
+    if (!targetId) return;
+    if (inviteCount >= 10) {
+      setShowRateLimit(true);
+      setTimeout(() => setShowRateLimit(false), 3000);
+      return;
+    }
+    setContractors((prev) =>
+      prev.map((c) => (c.id === targetId ? { ...c, status: "invited" as const } : c))
+    );
+    setInviteCount((n) => n + 1);
+  };
+
+  const handleSkip = () => {
+    if (!panelId) return;
+    setContractors((prev) =>
+      prev.map((c) =>
+        c.id === panelId && (c.status === "new" || c.status === "viewed")
+          ? { ...c, status: "skipped" as const }
+          : c
+      )
+    );
+  };
+
+  return (
+    <>
+      <RequestNavigation
+        tabs={[
+          { id: "candidates", label: "Candidates", badge: appliedCandidates.length },
+          { id: "promotion", label: "Promotion" },
+          { id: "edit", label: "Edit" },
+        ]}
+        activeTab="candidates"
+        onTabChange={() => {}}
+      />
+
+      {/* Loading State */}
+      {loading && (
+        <div className={styles.loadingState}>
+          <div className={styles.loadingSpinner} />
+          <p className={styles.loadingText}>Searching for matching contractors...</p>
+        </div>
+      )}
+
+      {/* Aha Moment (first visit only) */}
+      {!loading && isFirstVisit && contractors.length > 0 && (
+        <div className={styles.ahaMoment}>
+          <div className={styles.ahaMomentIcon}>
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="24" r="20" stroke="#000" strokeWidth="2" fill="none" />
+              <path d="M16 24l5 5 11-11" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <h2 className={styles.ahaMomentTitle}>We found {contractors.length} contractors matching your request</h2>
+          <p className={styles.ahaMomentSubtitle}>Review profiles, compare and invite the best ones to apply</p>
+        </div>
+      )}
+
+      {/* Pool Section */}
+      {!loading && contractors.length > 0 && (
+        <div className={styles.poolSection}>
+          {!isFirstVisit && (
+            <div className={styles.poolSectionHeader}>
+              <div>
+                <h2 className={styles.poolSectionTitle}>Mellow Pool</h2>
+                <p className={styles.poolSectionSubtitle}>Contractors from our database matching your request</p>
+              </div>
+              <span className={styles.poolSectionCount}>{contractors.length} matched</span>
+            </div>
+          )}
+
+          <div className={styles.poolGrid}>
+            {visibleContractors.map((c) => {
+              const isInactive = c.status === "invited" || c.status === "skipped";
+              return (
+                <div
+                  key={c.id}
+                  className={`${styles.gridCard} ${isInactive ? styles.gridCardInactive : ""}`}
+                  onClick={() => openPanel(c.id)}
+                >
+                  {c.status === "new" && <span className={`${styles.gridStatusBadge} ${styles.gridStatusNew}`}>New</span>}
+                  {c.status === "viewed" && <span className={`${styles.gridStatusBadge} ${styles.gridStatusViewed}`}>Viewed</span>}
+                  {c.status === "invited" && <span className={`${styles.gridStatusBadge} ${styles.gridStatusInvited}`}>Invited</span>}
+                  <span className={styles.gridMatchBadge}>{c.matchScore}%</span>
+
+                  <div className={styles.gridCardTop}>
+                    <div className={styles.gridAvatar}>{c.initials}</div>
+                    <div className={styles.gridNameBlock}>
+                      <p className={styles.gridName}>{c.name}</p>
+                      <p className={styles.gridRole}>{c.role}</p>
+                    </div>
+                  </div>
+
+                  {c.whyMatch && (
+                    <div className={styles.gridWhyMatch}>
+                      <div className={styles.gridWhyTags}>
+                        {c.whyMatch.tags.map((t) => (
+                          <span key={t} className={`${styles.whyTag} ${styles.whyTagHighlight}`}>{t}</span>
+                        ))}
+                      </div>
+                      <p className={styles.gridWhyText}>{c.whyMatch.text}</p>
+                    </div>
+                  )}
+
+                  <div className={styles.gridMeta}>
+                    <span className={styles.gridMetaItem}>{c.experience}</span>
+                    <span className={styles.gridMetaItem}>{c.rate}</span>
+                    <span className={styles.gridMetaItem}>{c.location.split(",")[0]}</span>
+                  </div>
+
+                  <div className={styles.gridCta}>
+                    {c.status === "invited" ? (
+                      <button className={styles.gridInvitedBtn} onClick={(e) => e.stopPropagation()}>✓ Invited</button>
+                    ) : (
+                      <button
+                        className={styles.gridInviteBtn}
+                        onClick={(e) => { e.stopPropagation(); handleInvite(c.id); }}
+                        disabled={inviteCount >= 10}
+                      >
+                        Send Invitation
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {hasMore && (
+            <button className={styles.loadMoreBtn} onClick={() => setVisibleCount((n) => n + 6)}>
+              Load more ({remainingCount} more)
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Divider */}
+      {!loading && contractors.length > 0 && <div className={styles.poolDivider} />}
+
+      {/* Candidates Section */}
+      <div className={styles.candidatesSection}>
+        <div className={styles.candidatesSectionHeader}>
+          <h2 className={styles.candidatesSectionTitle}>Candidates</h2>
+          {appliedCandidates.length > 0 && (
+            <span className={styles.candidatesSectionCount}>{appliedCandidates.length}</span>
+          )}
+        </div>
+
+        {appliedCandidates.length > 0 ? (
+          <div className={styles.poolList}>
+            {appliedCandidates.map((c) => (
+              <ContractorRow key={c.id} contractor={c} onClick={() => {}} showSourceTag />
+            ))}
+          </div>
+        ) : (
+          <CandidatesEmptyState />
+        )}
+
+        <UltraBannerCompact onExpand={() => {}} />
+      </div>
+
+      {/* Side Panel */}
+      {panelContractor && (
+        <SidePanel
+          contractor={panelContractor}
+          onClose={() => setPanelId(null)}
+          onInvite={() => handleInvite()}
+          onSkip={handleSkip}
+          onPrev={() => currentIdx > 0 && openPanel(contractors[currentIdx - 1].id)}
+          onNext={() => currentIdx < contractors.length - 1 && openPanel(contractors[currentIdx + 1].id)}
+          hasPrev={currentIdx > 0}
+          hasNext={currentIdx < contractors.length - 1}
+          inviteDisabled={inviteCount >= 10}
+        />
+      )}
+
+      {showRateLimit && (
+        <div className={styles.rateLimitToast}>
+          You've reached the invitation limit. Please try again later.
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ============================================================
+   POOL SECTION — List layout variant
+   ============================================================ */
+
+function PoolSectionList({
+  contractors,
+  setContractors,
+  appliedCandidates,
+  isFirstVisit,
+}: {
+  contractors: Contractor[];
+  setContractors: React.Dispatch<React.SetStateAction<Contractor[]>>;
+  appliedCandidates: Contractor[];
+  isFirstVisit: boolean;
+}) {
+  const [panelId, setPanelId] = useState<string | null>(null);
+  const [inviteCount, setInviteCount] = useState(0);
+  const [showRateLimit, setShowRateLimit] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(5);
+  const [loading, setLoading] = useState(isFirstVisit);
+
+  const visibleContractors = contractors.slice(0, visibleCount);
+  const hasMore = contractors.length > visibleCount;
+  const remainingCount = contractors.length - visibleCount;
+
+  const panelContractor = contractors.find((c) => c.id === panelId) ?? null;
+  const currentIdx = contractors.findIndex((c) => c.id === panelId);
+
+  useEffect(() => {
+    if (isFirstVisit && loading) {
+      const t = setTimeout(() => setLoading(false), 2000);
+      return () => clearTimeout(t);
+    }
+  }, [isFirstVisit, loading]);
+
+  const openPanel = (id: string) => {
+    setPanelId(id);
+    setContractors((prev) =>
+      prev.map((c) => (c.id === id && c.status === "new" ? { ...c, status: "viewed" as const } : c))
+    );
+  };
+
+  const handleInvite = (id?: string) => {
+    const targetId = id ?? panelId;
+    if (!targetId) return;
+    if (inviteCount >= 10) {
+      setShowRateLimit(true);
+      setTimeout(() => setShowRateLimit(false), 3000);
+      return;
+    }
+    setContractors((prev) =>
+      prev.map((c) => (c.id === targetId ? { ...c, status: "invited" as const } : c))
+    );
+    setInviteCount((n) => n + 1);
+  };
+
+  const handleSkip = () => {
+    if (!panelId) return;
+    setContractors((prev) =>
+      prev.map((c) =>
+        c.id === panelId && (c.status === "new" || c.status === "viewed")
+          ? { ...c, status: "skipped" as const }
+          : c
+      )
+    );
+  };
+
+  return (
+    <>
+      <RequestNavigation
+        tabs={[
+          { id: "candidates", label: "Candidates", badge: appliedCandidates.length },
+          { id: "promotion", label: "Promotion" },
+          { id: "edit", label: "Edit" },
+        ]}
+        activeTab="candidates"
+        onTabChange={() => {}}
+      />
+
+      {/* Loading State */}
+      {loading && (
+        <div className={styles.loadingState}>
+          <div className={styles.loadingSpinner} />
+          <p className={styles.loadingText}>Searching for matching contractors...</p>
+        </div>
+      )}
+
+      {/* Aha Moment */}
+      {!loading && isFirstVisit && contractors.length > 0 && (
+        <div className={styles.ahaMoment}>
+          <div className={styles.ahaMomentIcon}>
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="24" r="20" stroke="#000" strokeWidth="2" fill="none" />
+              <path d="M16 24l5 5 11-11" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <h2 className={styles.ahaMomentTitle}>We found {contractors.length} contractors matching your request</h2>
+          <p className={styles.ahaMomentSubtitle}>Review profiles, compare and invite the best ones to apply</p>
+        </div>
+      )}
+
+      {/* Pool Section — List Layout */}
+      {!loading && contractors.length > 0 && (
+        <div className={styles.poolSection}>
+          {!isFirstVisit && (
+            <div className={styles.poolSectionHeader}>
+              <div>
+                <h2 className={styles.poolSectionTitle}>Mellow Pool</h2>
+                <p className={styles.poolSectionSubtitle}>Contractors from our database matching your request</p>
+              </div>
+              <span className={styles.poolSectionCount}>{contractors.length} matched</span>
+            </div>
+          )}
+
+          <div className={styles.poolList}>
+            {visibleContractors.map((c) => {
+              const isInactive = c.status === "invited" || c.status === "skipped";
+              const statusBadgeClass =
+                c.status === "new" ? styles.gridStatusNew :
+                c.status === "viewed" ? styles.gridStatusViewed :
+                c.status === "invited" ? styles.gridStatusInvited :
+                styles.gridStatusViewed;
+              const statusLabel =
+                c.status === "new" ? "New" :
+                c.status === "viewed" ? "Viewed" :
+                c.status === "invited" ? "Invited" : "Skipped";
+
+              return (
+                <div
+                  key={c.id}
+                  className={`${styles.listCard} ${isInactive ? styles.listCardInactive : ""}`}
+                  onClick={() => openPanel(c.id)}
+                >
+                  <div className={styles.listAvatar}>{c.initials}</div>
+                  <div className={styles.listInfo}>
+                    <div className={styles.listNameRow}>
+                      <span className={styles.listName}>{c.name}</span>
+                      <span className={`${styles.listStatusBadge} ${statusBadgeClass}`}>{statusLabel}</span>
+                    </div>
+                    <span className={styles.listRole}>{c.role}</span>
+                    {c.whyMatch && (
+                      <div className={styles.listWhyRow}>
+                        {c.whyMatch.tags.map((t) => (
+                          <span key={t} className={`${styles.whyTag} ${styles.whyTagHighlight}`}>{t}</span>
+                        ))}
+                        <span className={styles.listWhyText}>{c.whyMatch.text}</span>
+                      </div>
+                    )}
+                    <div className={styles.listMeta}>
+                      <span>{c.experience}</span>
+                      <span>{c.rate}</span>
+                      <span>{c.location}</span>
+                    </div>
+                  </div>
+                  <div className={styles.listRight}>
+                    <span className={styles.listMatch}>{c.matchScore}%</span>
+                    {c.status === "invited" ? (
+                      <button className={styles.listInvitedBtn} onClick={(e) => e.stopPropagation()}>✓ Invited</button>
+                    ) : (
+                      <button
+                        className={styles.listInviteBtn}
+                        onClick={(e) => { e.stopPropagation(); handleInvite(c.id); }}
+                        disabled={inviteCount >= 10}
+                      >
+                        Send Invitation
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {hasMore && (
+            <button className={styles.loadMoreBtn} onClick={() => setVisibleCount((n) => n + 5)}>
+              Load more ({remainingCount} more)
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Divider */}
+      {!loading && contractors.length > 0 && <div className={styles.poolDivider} />}
+
+      {/* Candidates Section */}
+      <div className={styles.candidatesSection}>
+        <div className={styles.candidatesSectionHeader}>
+          <h2 className={styles.candidatesSectionTitle}>Candidates</h2>
+          {appliedCandidates.length > 0 && (
+            <span className={styles.candidatesSectionCount}>{appliedCandidates.length}</span>
+          )}
+        </div>
+
+        {appliedCandidates.length > 0 ? (
+          <div className={styles.poolList}>
+            {appliedCandidates.map((c) => (
+              <ContractorRow key={c.id} contractor={c} onClick={() => {}} showSourceTag />
+            ))}
+          </div>
+        ) : (
+          <CandidatesEmptyState />
+        )}
+
+        <UltraBannerCompact onExpand={() => {}} />
+      </div>
+
+      {/* Side Panel */}
+      {panelContractor && (
+        <SidePanel
+          contractor={panelContractor}
+          onClose={() => setPanelId(null)}
+          onInvite={() => handleInvite()}
+          onSkip={handleSkip}
+          onPrev={() => currentIdx > 0 && openPanel(contractors[currentIdx - 1].id)}
+          onNext={() => currentIdx < contractors.length - 1 && openPanel(contractors[currentIdx + 1].id)}
+          hasPrev={currentIdx > 0}
+          hasNext={currentIdx < contractors.length - 1}
+          inviteDisabled={inviteCount >= 10}
+        />
+      )}
+
+      {showRateLimit && (
+        <div className={styles.rateLimitToast}>
+          You've reached the invitation limit. Please try again later.
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ============================================================
+   POOL SECTION — Empty state (no matches)
+   ============================================================ */
+
+function PoolSectionEmpty() {
+  const [showUltra, setShowUltra] = useState(true);
+
+  return (
+    <>
+      <RequestNavigation
+        tabs={[
+          { id: "candidates", label: "Candidates" },
+          { id: "promotion", label: "Promotion" },
+          { id: "edit", label: "Edit" },
+        ]}
+        activeTab="candidates"
+        onTabChange={() => {}}
+      />
+
+      {showUltra && (
+        <UltraBannerExpanded onCollapse={() => setShowUltra(false)} />
+      )}
+
+      <CandidatesEmptyState />
+    </>
+  );
+}
+
+/* ============================================================
    MAIN EXPORT
    ============================================================ */
 
@@ -1604,7 +2278,7 @@ export function MellowPoolScreen() {
 
   const handleViewChange = (m: ViewMode) => {
     setViewMode(m);
-    if (m === "create-request" || m === "first-visit") {
+    if (m === "create-request" || m === "first-visit" || m === "section-grid" || m === "section-list") {
       setContractors(POOL_CONTRACTORS.map((c) => ({ ...c, status: "new" as const })));
       setAppliedCandidates(APPLIED_CANDIDATES);
     } else if (m === "variant-a") {
@@ -1613,7 +2287,7 @@ export function MellowPoolScreen() {
         status: (i < 3 ? "viewed" : "new") as CardStatus,
       })));
       setAppliedCandidates(APPLIED_CANDIDATES);
-    } else if (m === "variant-a-empty") {
+    } else if (m === "variant-a-empty" || m === "section-empty") {
       setContractors(POOL_CONTRACTORS.map((c) => ({ ...c, status: "new" as const })));
       setAppliedCandidates([]);
     } else {
@@ -1630,15 +2304,37 @@ export function MellowPoolScreen() {
       <ViewSwitcher mode={viewMode} onChange={handleViewChange} />
 
       {viewMode === "create-request" && (
-        <CreateRequestStep onSave={() => handleViewChange("first-visit")} />
+        <CreateRequestStep onSave={() => handleViewChange("section-grid")} />
       )}
 
       {viewMode !== "create-request" && (
         <>
-          {viewMode !== "first-visit" && <Header />}
+          <Header />
           <div className={styles.content}>
             <div className={styles.container}>
               <h1 className={styles.requestTitle}>Senior React Developer</h1>
+
+              {viewMode === "section-grid" && (
+                <PoolSectionGrid
+                  contractors={contractors}
+                  setContractors={setContractors}
+                  appliedCandidates={appliedCandidates}
+                  isFirstVisit={true}
+                />
+              )}
+
+              {viewMode === "section-list" && (
+                <PoolSectionList
+                  contractors={contractors}
+                  setContractors={setContractors}
+                  appliedCandidates={appliedCandidates}
+                  isFirstVisit={true}
+                />
+              )}
+
+              {viewMode === "section-empty" && (
+                <PoolSectionEmpty />
+              )}
 
               {viewMode === "first-visit" && (
                 <FirstVisitView
@@ -1648,18 +2344,18 @@ export function MellowPoolScreen() {
                 />
               )}
 
-          {viewMode === "variant-a" && (
-            <VariantA
-              contractors={contractors}
-              setContractors={setContractors}
-              appliedCandidates={appliedCandidates}
-              setAppliedCandidates={setAppliedCandidates}
-            />
-          )}
+              {viewMode === "variant-a" && (
+                <VariantA
+                  contractors={contractors}
+                  setContractors={setContractors}
+                  appliedCandidates={appliedCandidates}
+                  setAppliedCandidates={setAppliedCandidates}
+                />
+              )}
 
-          {viewMode === "variant-a-empty" && (
-            <VariantAEmpty />
-          )}
+              {viewMode === "variant-a-empty" && (
+                <VariantAEmpty />
+              )}
 
               {viewMode === "returning" && (
                 <ReturningVisit
