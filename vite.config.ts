@@ -1,9 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { readFileSync, writeFileSync, copyFileSync } from "fs";
-import { join } from "path";
+import { copyFileSync } from "fs";
+import { join, resolve } from "path";
 
-// Plugin to create 404.html for GitHub Pages SPA routing
 const githubPages404Plugin = () => {
   return {
     name: 'github-pages-404',
@@ -14,7 +13,6 @@ const githubPages404Plugin = () => {
         const notFoundPath = join(distPath, '404.html');
         
         try {
-          // Copy index.html to 404.html
           copyFileSync(indexPath, notFoundPath);
           console.log('Created 404.html for GitHub Pages SPA routing');
         } catch (error) {
@@ -25,9 +23,19 @@ const githubPages404Plugin = () => {
   };
 };
 
+const isDemo = process.env.DEMO === '1';
+
 export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '/Mellow/' : '/',
   plugins: [react(), githubPages404Plugin()],
+  build: isDemo
+    ? {
+        outDir: 'dist-demo',
+        rollupOptions: {
+          input: resolve(__dirname, 'demo.html'),
+        },
+      }
+    : undefined,
   server: {
     port: 5173,
     strictPort: true,

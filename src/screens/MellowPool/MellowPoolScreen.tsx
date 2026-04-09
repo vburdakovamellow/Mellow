@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./MellowPoolScreen.module.css";
 
 type CardStatus = "new" | "viewed" | "invited" | "skipped" | "applied";
-type ViewMode = "create-request" | "first-visit" | "variant-a" | "variant-a-empty" | "returning" | "section-grid" | "section-list" | "section-empty";
+type ViewMode = "create-request" | "first-visit" | "variant-a" | "variant-a-empty" | "returning" | "section-grid" | "section-list" | "section-empty" | "section-kanban" | "section-kanban-empty" | "section-kanban-list" | "section-kanban-list-empty";
 
 type ContractorSource = "mellow-pool" | "signal" | "organic" | "ultra";
 
@@ -656,66 +656,57 @@ function Header() {
    View Mode Switcher — for toggling between prototype views
    ============================================================ */
 
+type ViewDef = { id: ViewMode; label: string; arrow?: boolean; sep?: boolean };
+
+const ALL_VIEWS: ViewDef[] = [
+  { id: "create-request", label: "1. Create Request", arrow: true },
+  { id: "section-grid", label: "Grid + Side Panel" },
+  { id: "section-list", label: "List + Side Panel" },
+  { id: "section-empty", label: "Empty Pool" },
+  { id: "section-kanban", label: "Kanban" },
+  { id: "section-kanban-empty", label: "Kanban: No Applicants" },
+  { id: "section-kanban-list", label: "Kanban: List" },
+  { id: "section-kanban-list-empty", label: "Kanban: List Empty", sep: true },
+  { id: "first-visit", label: "v1: First Visit" },
+  { id: "variant-a", label: "v1: Tabs" },
+  { id: "variant-a-empty", label: "v1: Empty" },
+  { id: "returning", label: "v1: Inbox" },
+];
+
+const DEMO_VIEW_IDS: ViewMode[] = [
+  "create-request",
+  "section-kanban",
+  "section-kanban-empty",
+];
+
 function ViewSwitcher({
   mode,
   onChange,
+  allowedViews,
 }: {
   mode: ViewMode;
   onChange: (m: ViewMode) => void;
+  allowedViews?: ViewMode[];
 }) {
+  const views = allowedViews
+    ? ALL_VIEWS.filter((v) => allowedViews.includes(v.id))
+    : ALL_VIEWS;
+
   return (
     <div className={styles.viewSwitcher}>
       <span className={styles.viewSwitcherLabel}>Prototype:</span>
-      <button
-        className={`${styles.viewSwitcherBtn} ${mode === "create-request" ? styles.viewSwitcherBtnActive : ""}`}
-        onClick={() => onChange("create-request")}
-      >
-        1. Create Request
-      </button>
-      <span className={styles.viewSwitcherArrow}>→</span>
-      <button
-        className={`${styles.viewSwitcherBtn} ${mode === "section-grid" ? styles.viewSwitcherBtnActive : ""}`}
-        onClick={() => onChange("section-grid")}
-      >
-        Grid + Side Panel
-      </button>
-      <button
-        className={`${styles.viewSwitcherBtn} ${mode === "section-list" ? styles.viewSwitcherBtnActive : ""}`}
-        onClick={() => onChange("section-list")}
-      >
-        List + Side Panel
-      </button>
-      <button
-        className={`${styles.viewSwitcherBtn} ${mode === "section-empty" ? styles.viewSwitcherBtnActive : ""}`}
-        onClick={() => onChange("section-empty")}
-      >
-        Empty Pool
-      </button>
-      <span className={styles.viewSwitcherSep}>|</span>
-      <button
-        className={`${styles.viewSwitcherBtn} ${mode === "first-visit" ? styles.viewSwitcherBtnActive : ""}`}
-        onClick={() => onChange("first-visit")}
-      >
-        v1: First Visit
-      </button>
-      <button
-        className={`${styles.viewSwitcherBtn} ${mode === "variant-a" ? styles.viewSwitcherBtnActive : ""}`}
-        onClick={() => onChange("variant-a")}
-      >
-        v1: Tabs
-      </button>
-      <button
-        className={`${styles.viewSwitcherBtn} ${mode === "variant-a-empty" ? styles.viewSwitcherBtnActive : ""}`}
-        onClick={() => onChange("variant-a-empty")}
-      >
-        v1: Empty
-      </button>
-      <button
-        className={`${styles.viewSwitcherBtn} ${mode === "returning" ? styles.viewSwitcherBtnActive : ""}`}
-        onClick={() => onChange("returning")}
-      >
-        v1: Inbox
-      </button>
+      {views.map((v, i) => (
+        <React.Fragment key={v.id}>
+          <button
+            className={`${styles.viewSwitcherBtn} ${mode === v.id ? styles.viewSwitcherBtnActive : ""}`}
+            onClick={() => onChange(v.id)}
+          >
+            {v.label}
+          </button>
+          {v.arrow && i < views.length - 1 && <span className={styles.viewSwitcherArrow}>→</span>}
+          {v.sep && i < views.length - 1 && <span className={styles.viewSwitcherSep}>|</span>}
+        </React.Fragment>
+      ))}
     </div>
   );
 }
@@ -2268,10 +2259,762 @@ function PoolSectionEmpty() {
 }
 
 /* ============================================================
+   POOL SECTION — Kanban layout (candidates by pipeline stage)
+   ============================================================ */
+
+type KanbanStage = "recommended" | "new-applicants" | "shortlist" | "contacted" | "final-choice" | "rejected" | "agreed" | "onboarded";
+
+type RecommendedTag = "new" | "viewed";
+type AgreedTag = "agreed" | "onboarded";
+
+const KANBAN_COLUMNS: { id: KanbanStage; label: string }[] = [
+  { id: "recommended", label: "Recommended" },
+  { id: "new-applicants", label: "New applicants" },
+  { id: "shortlist", label: "Shortlist" },
+  { id: "contacted", label: "Contacted" },
+  { id: "final-choice", label: "Final choice" },
+  { id: "agreed", label: "Agreed" },
+];
+
+function toKanbanStage(status: CardStatus): KanbanStage {
+  switch (status) {
+    case "new":
+    case "viewed":
+      return "recommended";
+    case "applied":
+      return "new-applicants";
+    case "invited":
+      return "shortlist";
+    case "skipped":
+      return "rejected";
+  }
+}
+
+function toRecommendedTag(status: CardStatus): RecommendedTag {
+  return status === "viewed" ? "viewed" : "new";
+}
+
+function getMatchReasons(contractor: Contractor): string[] {
+  if (contractor.matchScore >= 90) {
+    return ["Exact role fit", "Skills are a full match", "Rate is within budget"];
+  } else if (contractor.matchScore >= 80) {
+    return ["Exact role fit", "Skills are a full match"];
+  } else if (contractor.matchScore >= 70) {
+    return ["Role is close, but not exact", "Skills partially match", "Rate is below market"];
+  }
+  return ["Role is close, but not exact", "Skills partially match"];
+}
+
+function StageDropdown({
+  currentStage,
+  onSelect,
+}: {
+  currentStage: KanbanStage;
+  onSelect: (stage: KanbanStage) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const order: { id: KanbanStage; label: string }[] = [
+    { id: "shortlist", label: "Shortlist" },
+    { id: "contacted", label: "Contacted" },
+    { id: "final-choice", label: "Final choice" },
+    { id: "agreed", label: "Agreed" },
+  ];
+
+  const startIdx = currentStage === "new-applicants"
+    ? 0
+    : order.findIndex((s) => s.id === currentStage) + 1;
+  const stages = order.slice(startIdx);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  if (stages.length === 0) return null;
+
+  return (
+    <div className={styles.stageDropdown} ref={dropdownRef}>
+      <button
+        className={styles.kanbanMoveBtn}
+        onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
+      >
+        {stages[0].label}
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ marginLeft: 4 }}>
+          <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </button>
+      {open && (
+        <div className={styles.stageDropdownMenu}>
+          {stages.map((s) => (
+            <button
+              key={s.id}
+              className={styles.stageDropdownItem}
+              onClick={(e) => { e.stopPropagation(); onSelect(s.id); setOpen(false); }}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CandidateModal({
+  contractor,
+  onClose,
+  onInvite,
+  onReject,
+  onMoveToStage,
+  currentStage,
+  inviteDisabled,
+}: {
+  contractor: Contractor;
+  onClose: () => void;
+  onInvite: () => void;
+  onReject: () => void;
+  onMoveToStage: (stage: KanbanStage) => void;
+  currentStage: KanbanStage;
+  inviteDisabled: boolean;
+}) {
+  const isInvited = contractor.status === "invited";
+  const isSkipped = contractor.status === "skipped";
+
+  const order: { id: KanbanStage; label: string }[] = [
+    { id: "shortlist", label: "Add to shortlist" },
+    { id: "contacted", label: "Contacted" },
+    { id: "final-choice", label: "Final choice" },
+    { id: "agreed", label: "Agreed" },
+  ];
+  const startIdx = currentStage === "recommended" || currentStage === "new-applicants"
+    ? 0
+    : order.findIndex((s) => s.id === currentStage) + 1;
+  const availableStages = order.slice(startIdx);
+
+  const sourceLabel = contractor.source === "mellow-pool" ? "Mellow Pool"
+    : contractor.source === "ultra" ? "Ultra"
+    : contractor.source === "signal" ? "Signal" : "Organic";
+
+  return (
+    <>
+      <div className={styles.candidateModalOverlay} onClick={onClose} />
+      <div className={styles.candidateModalContent}>
+        <button className={styles.candidateModalClose} onClick={onClose}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M5 5l8 8M13 5L5 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </button>
+
+        <div className={styles.candidateModalLayout}>
+          <div className={styles.candidateModalLeft}>
+            <div className={styles.candidateModalHeader}>
+              <div className={styles.candidateModalAvatar}>{contractor.initials}</div>
+              <div>
+                <h2 className={styles.candidateModalName}>{contractor.name}</h2>
+                <p className={styles.candidateModalRole}>{contractor.role}</p>
+                <div className={styles.candidateModalEmailRow}>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <rect x="1" y="3" width="12" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.2" fill="none"/>
+                    <path d="M1 4.5L7 8l6-3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                  </svg>
+                  <span className={styles.candidateModalEmail}>{contractor.email}</span>
+                  <button className={styles.candidateModalSendBtn}>Send intro email</button>
+                </div>
+              </div>
+            </div>
+
+            <p className={styles.candidateModalApplied}>Source: {sourceLabel}</p>
+
+            <div className={styles.candidateModalSection}>
+              <h3 className={styles.candidateModalSectionTitle}>About</h3>
+              <p className={styles.candidateModalText}>{contractor.bio}</p>
+            </div>
+
+            {contractor.whyMatch && (
+              <div className={styles.candidateModalSection}>
+                <h3 className={styles.candidateModalSectionTitle}>Why this candidate</h3>
+                <div className={styles.candidateModalWhyTags}>
+                  {contractor.whyMatch.tags.map((t) => (
+                    <span key={t} className={styles.candidateModalWhyTag}>{t}</span>
+                  ))}
+                </div>
+                <p className={styles.candidateModalText}>{contractor.whyMatch.text}</p>
+              </div>
+            )}
+
+            <div className={styles.candidateModalSection}>
+              <h3 className={styles.candidateModalSectionTitle}>Skills</h3>
+              <div className={styles.candidateModalSkills}>
+                {contractor.skills.map((s) => (
+                  <span key={s} className={styles.candidateModalSkillTag}>{s}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.candidateModalSection}>
+              <h3 className={styles.candidateModalSectionTitle}>Work History</h3>
+              {contractor.workHistory.map((w, i) => (
+                <div key={i} className={styles.candidateModalWorkItem}>
+                  <div className={styles.candidateModalWorkTop}>
+                    <span className={styles.candidateModalWorkRole}>{w.role}</span>
+                    <span className={styles.candidateModalWorkPeriod}>{w.period}</span>
+                  </div>
+                  <span className={styles.candidateModalWorkCompany}>{w.company}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className={styles.candidateModalSection}>
+              <h3 className={styles.candidateModalSectionTitle}>Resume</h3>
+              <div className={styles.candidateModalResume}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M4 1h5l4 4v9a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.2" fill="none"/>
+                  <path d="M9 1v4h4" stroke="currentColor" strokeWidth="1.2"/>
+                </svg>
+                <span>{contractor.cvFileName}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.candidateModalRight}>
+            <div className={styles.candidateModalMatchBlock}>
+              <span className={styles.candidateModalMatchLabel}>AI Match</span>
+              <span className={styles.candidateModalMatchScore}>{contractor.matchScore}%</span>
+              <span className={styles.candidateModalMatchBadge}>
+                {contractor.matchScore >= 90 ? "Excellent fit" : contractor.matchScore >= 80 ? "Good fit" : "Partial fit"}
+              </span>
+            </div>
+
+            <div className={styles.candidateModalDetail}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2" fill="none"/><path d="M7 4v3l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              <div>
+                <span className={styles.candidateModalDetailLabel}>Status</span>
+                <span className={styles.candidateModalDetailValue}>
+                  {isInvited ? "Invited" : isSkipped ? "Rejected" : contractor.status === "applied" ? "Applied" : contractor.status === "viewed" ? "Viewed" : "New"}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.candidateModalDetail}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1" stroke="currentColor" strokeWidth="1.2" fill="none"/><path d="M5 4h4M5 6.5h4M5 9h2" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/></svg>
+              <div>
+                <span className={styles.candidateModalDetailLabel}>Experience</span>
+                <span className={styles.candidateModalDetailValue}>{contractor.experience}</span>
+              </div>
+            </div>
+
+            <div className={styles.candidateModalDetail}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4l2-4z" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinejoin="round"/></svg>
+              <div>
+                <span className={styles.candidateModalDetailLabel}>Education</span>
+                <span className={styles.candidateModalDetailValue}>{contractor.education}</span>
+              </div>
+            </div>
+
+            <div className={styles.candidateModalDetail}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5.5" r="2.5" stroke="currentColor" strokeWidth="1.2" fill="none"/><path d="M2 13c0-2.8 10-2.8 10 0" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round"/></svg>
+              <div>
+                <span className={styles.candidateModalDetailLabel}>Location</span>
+                <span className={styles.candidateModalDetailValue}>{contractor.location}</span>
+              </div>
+            </div>
+
+            <div className={styles.candidateModalDetail}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2" fill="none"/><path d="M4.5 7h5M7 4.5v5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              <div>
+                <span className={styles.candidateModalDetailLabel}>Rate</span>
+                <span className={styles.candidateModalDetailValue}>{contractor.rate}</span>
+              </div>
+            </div>
+
+            <div className={styles.candidateModalActions}>
+              {currentStage === "recommended" ? (
+                isInvited ? (
+                  <button className={styles.candidateModalActionBtn} disabled>Invitation Sent</button>
+                ) : (
+                  <button className={styles.candidateModalActionBtn} onClick={onInvite} disabled={inviteDisabled}>
+                    Send Invitation
+                  </button>
+                )
+              ) : availableStages.length > 0 ? (
+                <button className={styles.candidateModalActionBtn} onClick={() => onMoveToStage(availableStages[0].id)}>
+                  {availableStages[0].label}
+                </button>
+              ) : null}
+
+              {!isInvited && !isSkipped && (
+                <button className={styles.candidateModalRejectBtn} onClick={onReject}>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  Reject
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function PoolSectionKanban({
+  contractors,
+  setContractors,
+  appliedCandidates,
+  emptyApplicants,
+  initialView = "kanban",
+}: {
+  contractors: Contractor[];
+  setContractors: React.Dispatch<React.SetStateAction<Contractor[]>>;
+  appliedCandidates: Contractor[];
+  emptyApplicants?: boolean;
+  initialView?: "kanban" | "list";
+}) {
+  const [viewType, setViewType] = useState<"kanban" | "list">(initialView);
+  const [panelId, setPanelId] = useState<string | null>(null);
+  const [inviteCount, setInviteCount] = useState(0);
+  const [showRateLimit, setShowRateLimit] = useState(false);
+  const [kanbanStatuses, setKanbanStatuses] = useState<Record<string, KanbanStage>>(() => {
+    const map: Record<string, KanbanStage> = {};
+    contractors.forEach((c) => { map[c.id] = toKanbanStage(c.status); });
+    appliedCandidates.forEach((c) => { map[c.id] = toKanbanStage(c.status); });
+    return map;
+  });
+  const [recommendedTags, setRecommendedTags] = useState<Record<string, RecommendedTag>>(() => {
+    const map: Record<string, RecommendedTag> = {};
+    contractors.forEach((c) => { map[c.id] = toRecommendedTag(c.status); });
+    appliedCandidates.forEach((c) => { map[c.id] = toRecommendedTag(c.status); });
+    return map;
+  });
+  const [agreedTags, setAgreedTags] = useState<Record<string, AgreedTag>>({});
+
+  const allCandidates = [...contractors, ...appliedCandidates];
+
+  const columnData = KANBAN_COLUMNS.map((col) => ({
+    ...col,
+    items: allCandidates.filter((c) => {
+      const stage = kanbanStatuses[c.id] ?? toKanbanStage(c.status);
+      if (col.id === "agreed") return stage === "agreed" || stage === "onboarded";
+      return stage === col.id;
+    }),
+  }));
+
+  const panelContractor = allCandidates.find((c) => c.id === panelId) ?? null;
+  const panelList = allCandidates;
+  const currentIdx = panelList.findIndex((c) => c.id === panelId);
+
+  const openPanel = (id: string) => {
+    setPanelId(id);
+    setContractors((prev) =>
+      prev.map((c) => (c.id === id && c.status === "new" ? { ...c, status: "viewed" as const } : c))
+    );
+    setRecommendedTags((prev) => {
+      if (prev[id] === "new") return { ...prev, [id]: "viewed" as RecommendedTag };
+      return prev;
+    });
+  };
+
+  const handleInvite = () => {
+    if (!panelId) return;
+    if (inviteCount >= 10) {
+      setShowRateLimit(true);
+      setTimeout(() => setShowRateLimit(false), 3000);
+      return;
+    }
+    setContractors((prev) =>
+      prev.map((c) => (c.id === panelId ? { ...c, status: "invited" as const } : c))
+    );
+    setKanbanStatuses((prev) => ({ ...prev, [panelId]: "shortlist" }));
+    setInviteCount((n) => n + 1);
+  };
+
+  const handleSkip = () => {
+    if (!panelId) return;
+    setContractors((prev) =>
+      prev.map((c) =>
+        c.id === panelId && (c.status === "new" || c.status === "viewed")
+          ? { ...c, status: "skipped" as const }
+          : c
+      )
+    );
+    setKanbanStatuses((prev) => ({ ...prev, [panelId]: "rejected" }));
+  };
+
+  const moveCard = (id: string, targetStage: KanbanStage) => {
+    setKanbanStatuses((prev) => ({ ...prev, [id]: targetStage }));
+    if (targetStage === "onboarded") {
+      setAgreedTags((prev) => ({ ...prev, [id]: "onboarded" }));
+    } else if (targetStage === "agreed") {
+      setAgreedTags((prev) => ({ ...prev, [id]: "agreed" }));
+    }
+    if (targetStage === "shortlist") {
+      setContractors((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, status: "invited" as const } : c))
+      );
+    } else if (targetStage === "rejected") {
+      setContractors((prev) =>
+        prev.map((c) =>
+          c.id === id && c.status !== "invited" ? { ...c, status: "skipped" as const } : c
+        )
+      );
+    }
+  };
+
+  const getNextStage = (current: KanbanStage): KanbanStage | null => {
+    const order: KanbanStage[] = ["recommended", "shortlist", "contacted", "final-choice", "agreed", "onboarded"];
+    const idx = order.indexOf(current);
+    return idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null;
+  };
+
+  const getNextLabel = (stage: KanbanStage): string => {
+    switch (stage) {
+      case "shortlist": return "Shortlist";
+      case "contacted": return "Contact";
+      case "final-choice": return "Final choice";
+      case "agreed": return "Agreed";
+      case "onboarded": return "Onboarded";
+      default: return "Next";
+    }
+  };
+
+  return (
+    <>
+      <RequestNavigation
+        tabs={[
+          { id: "candidates", label: "Candidates", badge: allCandidates.length },
+          { id: "promotion", label: "Promotion" },
+          { id: "edit", label: "Edit" },
+        ]}
+        activeTab="candidates"
+        onTabChange={() => {}}
+      />
+
+      <div className={styles.kanbanViewToggle}>
+        <button className={`${styles.kanbanViewBtn} ${viewType === "list" ? styles.kanbanViewBtnActive : ""}`} title="List view" onClick={() => setViewType("list")}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </button>
+        <button className={`${styles.kanbanViewBtn} ${viewType === "kanban" ? styles.kanbanViewBtnActive : ""}`} title="Kanban view" onClick={() => setViewType("kanban")}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <rect x="2" y="3" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none" />
+            <rect x="7" y="3" width="4" height="8" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none" />
+            <rect x="12" y="3" width="4" height="10" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none" />
+          </svg>
+        </button>
+      </div>
+
+      {viewType === "kanban" ? (
+      <div className={styles.kanbanBoard}>
+        {columnData.map((col) => (
+          <div key={col.id} className={styles.kanbanColumn}>
+            <div className={styles.kanbanColumnHeader}>
+              {col.id === "recommended" && <span className={styles.kanbanDotNew} />}
+              {col.id === "new-applicants" && col.items.length > 0 && <span className={styles.kanbanDotNew} />}
+              <span className={styles.kanbanColumnTitle}>{col.label}</span>
+              <span className={styles.kanbanColumnCount}>{col.items.length}</span>
+            </div>
+
+            <div className={styles.kanbanColumnBody}>
+              {col.items.map((c) => (
+                <div
+                  key={c.id}
+                  className={`${styles.kanbanCard} ${
+                    col.id === "recommended" && (recommendedTags[c.id] ?? toRecommendedTag(c.status)) === "viewed"
+                      ? styles.kanbanCardViewed
+                      : ""
+                  }`}
+                  onClick={() => openPanel(c.id)}
+                >
+                  <div className={styles.kanbanCardTop}>
+                    <span className={styles.kanbanCardName}>{c.name}</span>
+                    <span className={styles.kanbanCardMatch}>{c.matchScore}%</span>
+                  </div>
+
+                  {col.id === "agreed" && (
+                    <span className={`${styles.kanbanStatusTag} ${
+                      (agreedTags[c.id] ?? "agreed") === "onboarded"
+                        ? styles.kanbanStatusTagOnboarded
+                        : styles.kanbanStatusTagAgreed
+                    }`}>
+                      {(agreedTags[c.id] ?? "agreed") === "onboarded" ? "Onboarded" : "Agreed"}
+                    </span>
+                  )}
+
+                  <span className={styles.kanbanCardRole}>{c.role}</span>
+
+                  <div className={styles.kanbanCardMeta}>
+                    <span>{c.experience}</span>
+                    <span className={styles.kanbanCardMetaSep}>·</span>
+                    <span>{c.rate}</span>
+                    <span className={styles.kanbanCardMetaSep}>·</span>
+                    <span>{c.location}</span>
+                  </div>
+
+                  <div className={styles.kanbanCardSkills}>
+                    {c.skills.slice(0, 3).map((s) => (
+                      <span key={s} className={styles.kanbanCardSkillTag}>{s}</span>
+                    ))}
+                    {c.skills.length > 3 && (
+                      <span className={styles.kanbanCardSkillMore}>+{c.skills.length - 3}</span>
+                    )}
+                  </div>
+
+                  {col.id === "recommended" && (
+                    <div className={styles.kanbanCardActions}>
+                      {c.status === "invited" ? (
+                        <span className={styles.kanbanInvitedLabel}>Invitation Sent</span>
+                      ) : (
+                        <button
+                          className={styles.kanbanMoveBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setContractors((prev) =>
+                              prev.map((ct) => (ct.id === c.id ? { ...ct, status: "invited" as const } : ct))
+                            );
+                          }}
+                        >
+                          Send Invitation
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {col.id === "new-applicants" && (
+                    <div className={styles.kanbanCardActions}>
+                      <StageDropdown
+                        currentStage="new-applicants"
+                        onSelect={(stage) => moveCard(c.id, stage)}
+                      />
+                    </div>
+                  )}
+
+                  {col.id !== "recommended" && col.id !== "new-applicants" && col.id !== "rejected" && (() => {
+                    const currentStage = (kanbanStatuses[c.id] ?? toKanbanStage(c.status));
+                    if (currentStage === "onboarded") return null;
+                    return (
+                      <div className={styles.kanbanCardActions}>
+                        <StageDropdown
+                          currentStage={currentStage}
+                          onSelect={(stage) => moveCard(c.id, stage)}
+                        />
+                      </div>
+                    );
+                  })()}
+                </div>
+              ))}
+
+              {col.items.length === 0 && col.id === "new-applicants" && emptyApplicants && (
+                <div className={styles.kanbanEmptyApplicants}>
+                  <div className={styles.kanbanEmptyIcon}>
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <circle cx="16" cy="16" r="15" stroke="#ccc" strokeWidth="1.5" strokeDasharray="4 3" />
+                      <path d="M16 10v12M10 16h12" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                  <span className={styles.kanbanEmptyTitle}>No applicants yet</span>
+                  <span className={styles.kanbanEmptyHint}>Candidates who apply to your request will appear here</span>
+                </div>
+              )}
+
+              {col.items.length === 0 && !(col.id === "new-applicants" && emptyApplicants) && (
+                <div className={styles.kanbanEmpty}>
+                  No candidates
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      ) : (
+      <div className={styles.kanbanListView}>
+        {appliedCandidates.length > 0 && !emptyApplicants && (
+          <>
+            <div className={styles.kanbanListSectionHeader}>
+              <h3 className={styles.kanbanListSectionTitle}>Candidates</h3>
+              <span className={styles.kanbanListSectionCount}>{appliedCandidates.length} applied</span>
+            </div>
+            <div className={styles.kanbanListCards}>
+              {appliedCandidates.map((c) => {
+                const stage = kanbanStatuses[c.id] ?? toKanbanStage(c.status);
+                const stageLabels: Record<string, string> = {
+                  "new-applicants": "New applicant",
+                  shortlist: "Shortlisted",
+                  contacted: "Contacted",
+                  "final-choice": "Final choice",
+                  agreed: "Agreed",
+                  onboarded: "Onboarded",
+                };
+                return (
+                  <div key={c.id} className={styles.kanbanListCard} onClick={() => openPanel(c.id)}>
+                    <div className={styles.kanbanListCardAvatar}>{c.initials}</div>
+                    <div className={styles.kanbanListCardInfo}>
+                      <div className={styles.kanbanListCardNameRow}>
+                        <span className={styles.kanbanListCardName}>{c.name}</span>
+                        {c.source === "ultra" && (
+                          <span className={styles.kanbanListCardBadge}>
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 0l1.5 3h3.5l-2.5 2.5 1 3.5L5 7l-3.5 2 1-3.5L0 3h3.5z" fill="currentColor"/></svg>
+                            Ultra
+                          </span>
+                        )}
+                      </div>
+                      {stage === "new-applicants" && (
+                        <span className={styles.kanbanListCardStatusNew}>New</span>
+                      )}
+                      {stage !== "new-applicants" && stage !== "recommended" && stageLabels[stage] && (
+                        <span className={styles.kanbanListCardStage}>{stageLabels[stage]}</span>
+                      )}
+                      <p className={styles.kanbanListCardBio}>{c.bio}</p>
+                      <div className={styles.kanbanListCardTags}>
+                        <span className={styles.kanbanListCardTag}>{c.role}</span>
+                        <span className={styles.kanbanListCardTag}>{c.experience} of experience</span>
+                        <span className={styles.kanbanListCardTag}>{c.education}</span>
+                      </div>
+                    </div>
+                    <div className={styles.kanbanListCardRight}>
+                      <div className={styles.kanbanListCardMatchHeader}>
+                        <div className={styles.kanbanListCardMatchRow}>
+                          <span className={styles.kanbanListCardMatchIcon}>✦</span>
+                          <span className={styles.kanbanListCardMatchScore}>{c.matchScore}%</span>
+                        </div>
+                        <button className={styles.kanbanListCardFav} onClick={(e) => e.stopPropagation()}>
+                          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15.5s-6.5-4-6.5-8A3.5 3.5 0 019 4.5a3.5 3.5 0 016.5 3c0 4-6.5 8-6.5 8z" stroke="currentColor" strokeWidth="1.3" fill="none"/></svg>
+                        </button>
+                      </div>
+                      <span className={styles.kanbanListCardMatchLabel}>AI match score</span>
+                      <div className={styles.kanbanListCardReasons}>
+                        {getMatchReasons(c).map((r, i) => (
+                          <span key={i} className={styles.kanbanListCardReason}>→ {r}</span>
+                        ))}
+                      </div>
+                      <button className={styles.kanbanListCardActionBtn} onClick={(e) => { e.stopPropagation(); openPanel(c.id); }}>
+                        Send email
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {emptyApplicants && appliedCandidates.length === 0 && (
+          <div className={styles.kanbanListEmptySection}>
+            <div className={styles.kanbanEmptyIcon}>
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="15" stroke="#ccc" strokeWidth="1.5" strokeDasharray="4 3" />
+                <path d="M16 10v12M10 16h12" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </div>
+            <span className={styles.kanbanEmptyTitle}>No applicants yet</span>
+            <span className={styles.kanbanEmptyHint}>Candidates who apply to your request will appear here</span>
+          </div>
+        )}
+
+        <div className={styles.kanbanListSectionHeader}>
+          <h3 className={styles.kanbanListSectionTitle}>From Mellow Pool</h3>
+          <span className={styles.kanbanListSectionCount}>{contractors.length} recommended</span>
+        </div>
+        <div className={styles.kanbanListCards}>
+          {contractors.map((c) => {
+            const stage = kanbanStatuses[c.id] ?? toKanbanStage(c.status);
+            return (
+              <div key={c.id} className={`${styles.kanbanListCard} ${c.status === "viewed" ? styles.kanbanListCardViewed : ""}`} onClick={() => openPanel(c.id)}>
+                <div className={styles.kanbanListCardAvatar}>{c.initials}</div>
+                <div className={styles.kanbanListCardInfo}>
+                  <div className={styles.kanbanListCardNameRow}>
+                    <span className={styles.kanbanListCardName}>{c.name}</span>
+                    {c.source === "ultra" && (
+                      <span className={styles.kanbanListCardBadge}>
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 0l1.5 3h3.5l-2.5 2.5 1 3.5L5 7l-3.5 2 1-3.5L0 3h3.5z" fill="currentColor"/></svg>
+                        Ultra
+                      </span>
+                    )}
+                    {c.source === "signal" && <span className={styles.kanbanListCardBadgeSignal}>Signal</span>}
+                  </div>
+                  {(recommendedTags[c.id] ?? toRecommendedTag(c.status)) === "new" && (
+                    <span className={styles.kanbanListCardStatusNew}>New</span>
+                  )}
+                  {c.status === "invited" && (
+                    <span className={styles.kanbanListCardStage}>Invited</span>
+                  )}
+                  {stage !== "recommended" && stage !== "new-applicants" && (
+                    <span className={styles.kanbanListCardStage}>
+                      {stage === "shortlist" ? "Shortlisted" : stage === "contacted" ? "Contacted" : stage === "final-choice" ? "Final choice" : stage === "agreed" ? "Agreed" : ""}
+                    </span>
+                  )}
+                  <p className={styles.kanbanListCardBio}>{c.bio}</p>
+                  <div className={styles.kanbanListCardTags}>
+                    <span className={styles.kanbanListCardTag}>{c.role}</span>
+                    <span className={styles.kanbanListCardTag}>{c.experience} of experience</span>
+                    <span className={styles.kanbanListCardTag}>{c.education}</span>
+                  </div>
+                </div>
+                <div className={styles.kanbanListCardRight}>
+                  <div className={styles.kanbanListCardMatchHeader}>
+                    <div className={styles.kanbanListCardMatchRow}>
+                      <span className={styles.kanbanListCardMatchIcon}>✦</span>
+                      <span className={styles.kanbanListCardMatchScore}>{c.matchScore}%</span>
+                    </div>
+                    <button className={styles.kanbanListCardFav} onClick={(e) => e.stopPropagation()}>
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15.5s-6.5-4-6.5-8A3.5 3.5 0 019 4.5a3.5 3.5 0 016.5 3c0 4-6.5 8-6.5 8z" stroke="currentColor" strokeWidth="1.3" fill="none"/></svg>
+                    </button>
+                  </div>
+                  <span className={styles.kanbanListCardMatchLabel}>AI match score</span>
+                  <div className={styles.kanbanListCardReasons}>
+                    {getMatchReasons(c).map((r, i) => (
+                      <span key={i} className={styles.kanbanListCardReason}>→ {r}</span>
+                    ))}
+                  </div>
+                  {c.status === "invited" ? (
+                    <span className={styles.kanbanListCardSentLabel}>Invitation Sent</span>
+                  ) : (
+                    <button className={styles.kanbanListCardActionBtn} onClick={(e) => {
+                      e.stopPropagation();
+                      setContractors((prev) => prev.map((ct) => (ct.id === c.id ? { ...ct, status: "invited" as const } : ct)));
+                    }}>
+                      Send Invitation
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      )}
+
+      {panelContractor && (
+        <CandidateModal
+          contractor={panelContractor}
+          onClose={() => setPanelId(null)}
+          onInvite={handleInvite}
+          onReject={handleSkip}
+          onMoveToStage={(stage) => { moveCard(panelContractor.id, stage); setPanelId(null); }}
+          currentStage={kanbanStatuses[panelContractor.id] ?? toKanbanStage(panelContractor.status)}
+          inviteDisabled={inviteCount >= 10}
+        />
+      )}
+
+      {showRateLimit && (
+        <div className={styles.rateLimitToast}>
+          You've reached the invitation limit. Please try again later.
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ============================================================
    MAIN EXPORT
    ============================================================ */
 
-export function MellowPoolScreen() {
+export function MellowPoolScreen({ demoMode }: { demoMode?: boolean } = {}) {
   const [viewMode, setViewMode] = useState<ViewMode>("create-request");
   const [contractors, setContractors] = useState(POOL_CONTRACTORS.map((c) => ({ ...c, status: "new" as const })));
   const [appliedCandidates, setAppliedCandidates] = useState(APPLIED_CANDIDATES);
@@ -2281,6 +3024,30 @@ export function MellowPoolScreen() {
     if (m === "create-request" || m === "first-visit" || m === "section-grid" || m === "section-list") {
       setContractors(POOL_CONTRACTORS.map((c) => ({ ...c, status: "new" as const })));
       setAppliedCandidates(APPLIED_CANDIDATES);
+    } else if (m === "section-kanban") {
+      setContractors(POOL_CONTRACTORS.map((c, i) => ({
+        ...c,
+        status: (i < 6 ? "new" : i < 8 ? "viewed" : "new") as CardStatus,
+      })));
+      setAppliedCandidates(APPLIED_CANDIDATES.map((c, i) => ({
+        ...c,
+        status: (i === 0 ? "applied" : i === 1 ? "invited" : i === 2 ? "applied" : "applied") as CardStatus,
+      })));
+    } else if (m === "section-kanban-empty") {
+      setContractors(POOL_CONTRACTORS.map((c) => ({ ...c, status: "new" as const })));
+      setAppliedCandidates([]);
+    } else if (m === "section-kanban-list") {
+      setContractors(POOL_CONTRACTORS.map((c, i) => ({
+        ...c,
+        status: (i < 6 ? "new" : i < 8 ? "viewed" : "new") as CardStatus,
+      })));
+      setAppliedCandidates(APPLIED_CANDIDATES.map((c, i) => ({
+        ...c,
+        status: (i === 0 ? "applied" : i === 1 ? "invited" : i === 2 ? "applied" : "applied") as CardStatus,
+      })));
+    } else if (m === "section-kanban-list-empty") {
+      setContractors(POOL_CONTRACTORS.map((c) => ({ ...c, status: "new" as const })));
+      setAppliedCandidates([]);
     } else if (m === "variant-a") {
       setContractors(POOL_CONTRACTORS.map((c, i) => ({
         ...c,
@@ -2301,17 +3068,17 @@ export function MellowPoolScreen() {
 
   return (
     <div className={styles.screen}>
-      <ViewSwitcher mode={viewMode} onChange={handleViewChange} />
+      <ViewSwitcher mode={viewMode} onChange={handleViewChange} allowedViews={demoMode ? DEMO_VIEW_IDS : undefined} />
 
       {viewMode === "create-request" && (
-        <CreateRequestStep onSave={() => handleViewChange("section-grid")} />
+        <CreateRequestStep onSave={() => handleViewChange(demoMode ? "section-kanban" : "section-grid")} />
       )}
 
       {viewMode !== "create-request" && (
         <>
           <Header />
           <div className={styles.content}>
-            <div className={styles.container}>
+            <div className={viewMode === "section-kanban" || viewMode === "section-kanban-empty" || viewMode === "section-kanban-list" || viewMode === "section-kanban-list-empty" ? styles.containerWide : styles.container}>
               <h1 className={styles.requestTitle}>Senior React Developer</h1>
 
               {viewMode === "section-grid" && (
@@ -2334,6 +3101,42 @@ export function MellowPoolScreen() {
 
               {viewMode === "section-empty" && (
                 <PoolSectionEmpty />
+              )}
+
+              {viewMode === "section-kanban" && (
+                <PoolSectionKanban
+                  contractors={contractors}
+                  setContractors={setContractors}
+                  appliedCandidates={appliedCandidates}
+                />
+              )}
+
+              {viewMode === "section-kanban-empty" && (
+                <PoolSectionKanban
+                  contractors={contractors}
+                  setContractors={setContractors}
+                  appliedCandidates={appliedCandidates}
+                  emptyApplicants
+                />
+              )}
+
+              {viewMode === "section-kanban-list" && (
+                <PoolSectionKanban
+                  contractors={contractors}
+                  setContractors={setContractors}
+                  appliedCandidates={appliedCandidates}
+                  initialView="list"
+                />
+              )}
+
+              {viewMode === "section-kanban-list-empty" && (
+                <PoolSectionKanban
+                  contractors={contractors}
+                  setContractors={setContractors}
+                  appliedCandidates={appliedCandidates}
+                  emptyApplicants
+                  initialView="list"
+                />
               )}
 
               {viewMode === "first-visit" && (
