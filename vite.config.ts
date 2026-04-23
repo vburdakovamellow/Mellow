@@ -29,11 +29,12 @@ export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '/Mellow/' : '/',
   plugins: [react(), githubPages404Plugin()],
   server: {
-    port: 5173,
-    strictPort: true,
+    port: 10173,
+    host: "localhost",
+    strictPort: false,
     hmr: {
       overlay: true,
-      clientPort: 5173
+      clientPort: 10173
     },
     watch: {
       usePolling: false,

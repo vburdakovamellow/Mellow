@@ -1,0 +1,1717 @@
+/* ==== Prototype root: strict B/W per setup-checklist ==== */
+.root {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #000000;
+  font-family: var(--ds-font-family-body);
+}
+
+/* ===== Prototype navigator (not part of product UI) ===== */
+.protoBar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 24px;
+  background: #000000;
+  color: #ffffff;
+  border-bottom: 1px solid #000000;
+  font-size: 13px;
+}
+
+.protoLeft,
+.protoRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.protoBtn {
+  appearance: none;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.protoBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.protoBtnGhost {
+  background: transparent;
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.protoStepName {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.protoStepIndex {
+  opacity: 0.7;
+}
+
+/* ===== Shared canvas ===== */
+.canvas {
+  width: 100%;
+  min-height: calc(100vh - 44px);
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+}
+
+.frame {
+  width: 1280px;
+  background: #ffffff;
+}
+
+.frameWide {
+  width: 1440px;
+}
+
+/* ===== Reused header (Mellow-like, B/W) ===== */
+.appHeader {
+  height: 64px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  justify-content: space-between;
+}
+
+.appLogo {
+  font-size: 18px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.appHeaderRight {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  color: #666666;
+  font-size: 14px;
+}
+
+/* ============================================================ */
+/* 1) LANDING                                                    */
+/* ============================================================ */
+.landingBody {
+  max-width: 1248px;
+  margin: 0 auto;
+  padding: 32px 32px 80px;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+}
+
+.landingMain {
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+}
+
+.landingPad {
+  padding: 32px;
+}
+
+.companyLine {
+  font-size: 14px;
+  color: #666666;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.companyLine span {
+  color: #666666;
+}
+
+.dot {
+  color: #666666;
+}
+
+.requestTitle {
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 500;
+  margin: 16px 0 16px;
+  color: #000000;
+}
+
+.requestDescription {
+  font-size: 16px;
+  line-height: 24px;
+  color: #000000;
+  margin: 0 0 24px;
+}
+
+.metaBlock {
+  margin-top: 24px;
+}
+
+.metaLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: #666666;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.pillRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border: 1px solid #000000;
+  font-size: 14px;
+  color: #000000;
+  background: #ffffff;
+  border-radius: 999px;
+}
+
+.section {
+  margin-top: 32px;
+  border-top: 1px solid #e5e5e5;
+  padding-top: 24px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 12px;
+  color: #000000;
+}
+
+.sectionText {
+  font-size: 14px;
+  line-height: 22px;
+  color: #000000;
+  margin: 0;
+}
+
+.applyCard {
+  margin-top: 32px;
+  border: 1px solid #000000;
+  padding: 32px;
+}
+
+.applyTitle {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 500;
+  margin: 0 0 8px;
+  color: #000000;
+}
+
+.applySub {
+  font-size: 14px;
+  color: #666666;
+  margin: 0 0 20px;
+  line-height: 22px;
+}
+
+.uploadBox {
+  border: 1px dashed #000000;
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 16px;
+  color: #000000;
+}
+
+.uploadBox small {
+  display: block;
+  color: #666666;
+  margin-top: 4px;
+}
+
+.primaryBtn {
+  appearance: none;
+  display: inline-block;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  padding: 14px 24px;
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: center;
+  width: 100%;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.primaryInlineBtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.primaryInlineBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  appearance: none;
+  display: inline-block;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.linkBtn {
+  appearance: none;
+  background: none;
+  border: 0;
+  color: #000000;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  padding: 0;
+}
+
+.sidebar {
+  border: 1px solid #e5e5e5;
+  padding: 20px;
+  height: fit-content;
+}
+
+.sidebarRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 14px;
+  color: #000000;
+}
+
+.sidebarRow:last-child {
+  border-bottom: 0;
+}
+
+.sidebarKey {
+  color: #666666;
+}
+
+/* ============================================================ */
+/* 2) REGISTER (sign-up + verify)                                */
+/* ============================================================ */
+.regWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 56px 24px 80px;
+  box-sizing: border-box;
+}
+
+.regCard {
+  width: 392px;
+  max-width: 100%;
+  border: 1px solid #000000;
+  padding: 28px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.regBack {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  color: #666666;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.regTitle {
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 500;
+  margin: 0 0 6px;
+  color: #000000;
+}
+
+.regSub {
+  font-size: 13px;
+  color: #666666;
+  margin: 0 0 20px;
+  line-height: 20px;
+}
+
+.regGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.regField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.regGrid2 .regField {
+  margin-bottom: 0;
+}
+
+.regLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.regInput {
+  width: 100%;
+  appearance: none;
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  font: inherit;
+  font-size: 15px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.regInput:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 2px #e5e5e5;
+}
+
+.regHint {
+  font-size: 12px;
+  color: #666666;
+  margin-top: 2px;
+}
+
+.regFooter {
+  font-size: 12px;
+  color: #666666;
+  text-align: center;
+  margin: 16px 0 0;
+}
+
+.regFooter a {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.regAltRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.codeRow {
+  display: grid;
+  grid-template-columns: repeat(6, 44px);
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0 24px;
+}
+
+.codeInput {
+  width: 44px;
+  height: 52px;
+  text-align: center;
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 500;
+  border-radius: 6px;
+  outline: none;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.codeInput:focus {
+  box-shadow: 0 0 0 2px #e5e5e5;
+}
+
+/* ============================================================ */
+/* 3) SCREENING (single chat, accumulating)                      */
+/* ============================================================ */
+.screeningWrap {
+  width: 1280px;
+  min-height: calc(100vh - 44px);
+  display: flex;
+  flex-direction: column;
+}
+
+.screeningHeader {
+  height: 64px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+.screeningHeaderRight {
+  font-size: 14px;
+  color: #666666;
+}
+
+.chatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 24px 24px;
+}
+
+.chatInner {
+  width: 744px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.requestRecap {
+  border: 1px solid #000000;
+  border-radius: 12px;
+  padding: 20px 24px;
+  background: #ffffff;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+}
+
+.requestRecapHead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.requestRecapKicker {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #666666;
+  font-weight: 500;
+}
+
+.requestRecapTitle {
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 500;
+  margin: 0;
+  color: #000000;
+}
+
+.requestRecapSub {
+  font-size: 13px;
+  color: #666666;
+}
+
+.requestRecapMetrics {
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
+}
+
+.recapMetric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 90px;
+}
+
+.recapLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #666666;
+  font-weight: 500;
+}
+
+.recapValue {
+  font-size: 14px;
+  color: #000000;
+  font-weight: 500;
+}
+
+.recapValueLg {
+  font-size: 18px;
+  color: #000000;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.bubbleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.bubbleRowEnd {
+  justify-content: flex-end;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #000000;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bubble {
+  max-width: 600px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 12px;
+  font-size: 15px;
+  line-height: 22px;
+  color: #000000;
+}
+
+.bubbleAi {
+  border-color: #000000;
+  background: #ffffff;
+}
+
+.bubbleUser {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.bubbleThinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #666666;
+}
+
+.thinkingDots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.thinkingDots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #000000;
+  display: inline-block;
+  opacity: 0.3;
+  animation: thinkingBlink 1.2s infinite ease-in-out;
+}
+
+.thinkingDots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.thinkingDots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes thinkingBlink {
+  0%, 80%, 100% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+.thinkingLabel {
+  font-size: 14px;
+  color: #666666;
+}
+
+.chatOptionsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: 44px;
+  width: 460px;
+}
+
+.optionItem {
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  padding: 14px 16px;
+  border-radius: 8px;
+  color: #000000;
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.optionItem.selected {
+  border-color: #000000;
+  background: #f4f4f4;
+}
+
+.optionItemTitle {
+  font-weight: 500;
+  display: block;
+}
+
+.optionItemDesc {
+  display: block;
+  color: #666666;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.cvUploadRow {
+  margin-left: 44px;
+  width: 600px;
+}
+
+.cvUploadCard {
+  border: 1px dashed #000000;
+  padding: 16px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #ffffff;
+}
+
+.cvUploadIcon {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #000000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.cvUploadTitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.cvUploadSub {
+  font-size: 12px;
+  color: #666666;
+  margin-top: 2px;
+}
+
+.cvUploadCard > div:nth-child(2) {
+  flex: 1;
+}
+
+.summaryCard {
+  margin-left: 44px;
+  width: 600px;
+  border: 1px solid #000000;
+  border-radius: 12px;
+  padding: 20px;
+  background: #ffffff;
+}
+
+.summaryRow {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e5e5;
+  align-items: start;
+}
+
+.summaryRow:first-child {
+  padding-top: 0;
+}
+
+.summaryRow:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.summaryLabel {
+  font-size: 11px;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  padding-top: 4px;
+}
+
+.summaryValue {
+  font-size: 14px;
+  color: #000000;
+  line-height: 22px;
+}
+
+/* Cover letter form (in screening chat) */
+.coverFormCard {
+  margin-left: 44px;
+  width: 600px;
+  border: 1px solid #000000;
+  border-radius: 12px;
+  padding: 20px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.coverFormHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.coverFormLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #666666;
+  font-weight: 500;
+}
+
+.coverChatTextarea {
+  width: 100%;
+  min-height: 180px;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  padding: 12px;
+  font: inherit;
+  font-size: 14px;
+  line-height: 22px;
+  resize: vertical;
+  outline: none;
+  color: #000000;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.coverChatTextarea:focus {
+  box-shadow: 0 0 0 2px #e5e5e5;
+}
+
+.coverChatTextarea[readonly] {
+  background: #f4f4f4;
+  cursor: default;
+}
+
+.coverFormHint {
+  font-size: 12px;
+  color: #666666;
+  margin-top: -4px;
+}
+
+.coverFormDivider {
+  height: 1px;
+  background: #e5e5e5;
+  margin: 6px 0 2px;
+}
+
+/* Attachments inside form */
+.extrasList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.extrasEmpty {
+  font-size: 13px;
+  color: #666666;
+  padding: 8px 12px;
+  border: 1px dashed #cccccc;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.extraRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 13px;
+  color: #000000;
+}
+
+.extraIcon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #666666;
+  flex-shrink: 0;
+}
+
+.extraName {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.extraRemove {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: #666666;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0 4px;
+  line-height: 1;
+  font-family: inherit;
+}
+
+.extraRemove:hover {
+  color: #000000;
+}
+
+.extraAddBtn {
+  appearance: none;
+  background: #ffffff;
+  border: 1px dashed #000000;
+  color: #000000;
+  font: inherit;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.extraAddBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Link inputs */
+.linksGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.linkField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.linkLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #666666;
+  font-weight: 500;
+}
+
+.linkInput {
+  width: 100%;
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  font: inherit;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.linkInput:focus {
+  box-shadow: 0 0 0 2px #e5e5e5;
+}
+
+.linkInput[readonly] {
+  background: #f4f4f4;
+  cursor: default;
+}
+
+/* Confirm preview — extras + links */
+.previewMuted {
+  color: #666666;
+  font-style: italic;
+}
+
+.previewFiles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.previewFileRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #000000;
+}
+
+.previewLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  color: #000000;
+}
+
+.previewLinkLabel {
+  color: #666666;
+  font-weight: 500;
+}
+
+.chatActionRow {
+  margin-left: 44px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.chatInput {
+  width: 744px;
+  margin: 24px auto 32px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #000000;
+  border-radius: 12px;
+  padding: 8px 8px 8px 16px;
+  gap: 8px;
+}
+
+.chatInputField {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: 15px;
+  color: #000000;
+  background: transparent;
+}
+
+.sendBtn {
+  appearance: none;
+  background: #000000;
+  color: #ffffff;
+  border: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.contextStrip {
+  background: #f4f4f4;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 8px 32px;
+  font-size: 13px;
+  color: #666666;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.contextStripLabel {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  color: #666666;
+}
+
+.contextStripTitle {
+  color: #000000;
+  font-weight: 500;
+}
+
+/* ============================================================ */
+/* 4) CONFIRMATION                                               */
+/* ============================================================ */
+.confirmWrap {
+  width: 744px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+}
+
+.confirmIntro {
+  margin-bottom: 24px;
+}
+
+.confirmTitle {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 500;
+  margin: 0 0 8px;
+  color: #000000;
+}
+
+.confirmSub {
+  font-size: 15px;
+  color: #666666;
+  margin: 0;
+  line-height: 22px;
+}
+
+.confirmHidden {
+  font-size: 13px;
+  color: #666666;
+  margin: 0 0 12px;
+}
+
+.previewCard {
+  border: 1px solid #000000;
+  padding: 24px;
+  margin-bottom: 16px;
+  background: #ffffff;
+}
+
+.previewRow {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e5e5;
+  align-items: start;
+  font-size: 14px;
+}
+
+.previewRow:last-child {
+  border-bottom: 0;
+}
+
+.previewLabel {
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+  font-weight: 500;
+  padding-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.previewEditLink {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 12px;
+  color: #000000;
+  text-decoration: underline;
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.previewValue {
+  color: #000000;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.coverPreview {
+  white-space: pre-wrap;
+  color: #000000;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.coverTextarea {
+  width: 100%;
+  min-height: 220px;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  padding: 12px;
+  font: inherit;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+  color: #000000;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  align-items: center;
+}
+
+.confirmActions .primaryBtn {
+  flex: 1;
+}
+
+/* ============================================================ */
+/* 5) RADAR — Project Details / Applied                          */
+/* ============================================================ */
+.radarRoot {
+  width: 1280px;
+  min-height: calc(100vh - 44px);
+  display: flex;
+  background: #ffffff;
+}
+
+.radarMenu {
+  width: 64px;
+  border-right: 1px solid #e5e5e5;
+  padding: 20px 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.radarMenuLogo {
+  width: 32px;
+  height: 32px;
+  background: #000000;
+  color: #ffffff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+  font-size: 16px;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1;
+}
+
+.radarMenuIcon {
+  appearance: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #666666;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+
+.radarMenuIcon:hover {
+  color: #000000;
+}
+
+.radarMenuIconActive {
+  color: #000000;
+}
+
+.radarBody {
+  flex: 1;
+  padding: 24px 32px 60px;
+  position: relative;
+}
+
+.radarTopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.radarTopLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radarTopRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.radarBack {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  color: #666666;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.radarTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.radarTitle {
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 500;
+  margin: 0;
+  color: #000000;
+}
+
+.stageBadge {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid #000000;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #000000;
+  background: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.stageBadgeCaret {
+  font-size: 10px;
+  color: #666666;
+}
+
+.radarSubInfo {
+  font-size: 13px;
+  color: #666666;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.radarSubInfo a {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.radarIconBtn {
+  appearance: none;
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  color: #000000;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.bellDot {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #000000;
+  border: 1.5px solid #ffffff;
+  box-sizing: content-box;
+}
+
+.radarWorkspaceBtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  color: #000000;
+  cursor: pointer;
+}
+
+.radarAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #000000;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.radarContent {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+.radarRightCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailsCard {
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 24px;
+  background: #ffffff;
+}
+
+.detailsTitle {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 12px;
+  color: #000000;
+}
+
+.detailsSubTitle {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 20px 0 8px;
+  color: #000000;
+}
+
+.detailsBody {
+  font-size: 14px;
+  line-height: 22px;
+  color: #000000;
+  margin: 0;
+}
+
+.detailsMeta {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+  font-size: 12px;
+  color: #666666;
+  display: flex;
+  gap: 8px;
+}
+
+/* Overview card */
+.overviewCard,
+.funnelCard {
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 20px;
+  background: #ffffff;
+}
+
+.overviewHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.overviewTitle {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  color: #000000;
+}
+
+.overviewScore {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid #000000;
+  font-size: 12px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.overviewRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.overviewLabel {
+  color: #666666;
+}
+
+.overviewDots {
+  display: block;
+  height: 1px;
+  border-bottom: 1px dotted #cccccc;
+  transform: translateY(-3px);
+}
+
+.overviewValue {
+  color: #000000;
+  font-weight: 500;
+  text-align: right;
+}
+
+.overviewActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.overviewKebab {
+  appearance: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+/* Funnel card — pill column on the right per Figma */
+.funnelCard {
+  padding: 18px 20px 20px;
+}
+
+.funnelCard .overviewTitle {
+  margin-bottom: 14px;
+}
+
+.funnelRow {
+  display: grid;
+  grid-template-columns: 1fr 168px;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.funnelLabel {
+  color: #000000;
+  font-weight: 400;
+}
+
+.funnelLabelMuted {
+  color: #666666;
+}
+
+.funnelPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: #ededed;
+  color: #000000;
+  font-size: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.funnelPillText {
+  flex: 1;
+  text-align: left;
+}
+
+.funnelPillCheck {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  margin-left: 8px;
+}
+
+.funnelPillDone {
+  background: #ededed;
+  color: #000000;
+}
+
+.funnelPillCurrent {
+  background: #d6d6d6;
+  color: #000000;
+  font-weight: 500;
+  justify-content: center;
+}
+
+.funnelPillEmpty {
+  background: #ededed;
+  color: #999999;
+  justify-content: center;
+}
+
+.funnelDash {
+  color: #999999;
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Congrats modal */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 24px;
+}
+
+.modalCard {
+  width: 440px;
+  max-width: 100%;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 16px;
+  padding: 32px 32px 28px;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.modalClose {
+  appearance: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: 0;
+  font-size: 20px;
+  color: #666666;
+  cursor: pointer;
+  line-height: 1;
+  font-family: inherit;
+}
+
+.modalIcon {
+  width: 64px;
+  height: 64px;
+  border: 1px solid #000000;
+  border-radius: 50%;
+  margin: 8px auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #000000;
+}
+
+.modalTitle {
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 500;
+  margin: 0 0 8px;
+  color: #000000;
+}
+
+.modalText {
+  font-size: 14px;
+  line-height: 22px;
+  color: #666666;
+  margin: 0 0 24px;
+}
+
+.modalText strong {
+  color: #000000;
+  font-weight: 500;
+}
+
+.modalActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modalSecondary {
+  appearance: none;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  color: #000000;
+  font: inherit;
+  font-size: 14px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
