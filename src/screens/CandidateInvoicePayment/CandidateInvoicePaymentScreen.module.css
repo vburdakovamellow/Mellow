@@ -1,0 +1,645 @@
+/* ============================================================
+   Prototype root
+   ============================================================ */
+.root {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #000000;
+  font-family: var(--ds-font-family-body);
+}
+
+/* Prototype navigator (not part of product UI) */
+.protoBar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 24px;
+  background: #000000;
+  color: #ffffff;
+  border-bottom: 1px solid #000000;
+  font-size: 13px;
+}
+
+.protoLeft,
+.protoRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.protoBtn {
+  appearance: none;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.protoBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.protoBtnGhost { background: transparent; color: #ffffff; border-color: #ffffff; }
+.protoStepName { font-weight: 500; letter-spacing: 0.02em; }
+.protoStepIndex { opacity: 0.7; }
+
+.canvas {
+  width: 100%;
+  min-height: calc(100vh - 44px);
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+}
+
+/* ============================================================
+   SCOUT SIDE — strict B/W
+   ============================================================ */
+.scoutFrame {
+  width: 1280px;
+  background: #ffffff;
+  color: #000000;
+}
+
+.scoutHeader {
+  height: 64px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  justify-content: space-between;
+  gap: 24px;
+}
+.scoutLogo { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+.scoutNav {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  color: #666666;
+}
+.scoutNavActive { color: #000000; font-weight: 500; }
+
+.scoutHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #666666;
+}
+.avatarSm {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #000000;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.breadcrumb {
+  padding: 16px 32px 0;
+  font-size: 13px;
+  color: #666666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.crumb { color: #666666; }
+.crumbSep { color: #cccccc; }
+.crumbActive { color: #000000; font-weight: 500; }
+
+.scoutBody {
+  padding: 24px 32px 64px;
+}
+
+/* ===== Candidate header card ===== */
+.candCard {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 20px;
+  align-items: center;
+  padding: 20px 24px;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  background: #ffffff;
+}
+.candAvatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #000000;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.candMain { min-width: 0; }
+.candName { font-size: 22px; font-weight: 600; line-height: 1.2; }
+.candRole { font-size: 14px; color: #666666; margin-top: 2px; }
+.candMetaRow {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #666666;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.candMatch { text-align: right; }
+.candMatchVal { font-size: 28px; font-weight: 600; line-height: 1; }
+.candMatchLbl { font-size: 12px; color: #666666; margin-top: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+.dot { color: #cccccc; }
+
+/* ===== Status banner ===== */
+.banner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+.bannerDefault { background: #f5f5f5; border: 1px solid #e5e5e5; }
+.bannerActive { background: #000000; color: #ffffff; }
+.bannerDone { background: #ffffff; border: 2px solid #000000; }
+
+.bannerPill {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  white-space: nowrap;
+}
+.bannerActive .bannerPill { background: #ffffff; color: #000000; border-color: #ffffff; }
+.bannerDone .bannerPill { background: #000000; color: #ffffff; border-color: #000000; }
+
+.bannerTitle { font-size: 18px; font-weight: 600; line-height: 1.3; }
+.bannerSub { margin-top: 4px; font-size: 14px; opacity: 0.8; line-height: 1.5; }
+.bannerActive .bannerSub { opacity: 0.9; }
+
+/* ===== Body grid ===== */
+.bodyGrid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+.mainCol { display: flex; flex-direction: column; gap: 16px; }
+
+/* ===== Panels ===== */
+.panel {
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 24px;
+  background: #ffffff;
+}
+.panelDone {
+  border: 2px solid #000000;
+  border-radius: 12px;
+  padding: 24px;
+  background: #ffffff;
+}
+.panelGhost {
+  border: 1px dashed #d4d4d4;
+  border-radius: 12px;
+  padding: 20px 24px;
+  background: #fafafa;
+}
+.panelGhostTitle { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+.panelGhostText { margin: 0; font-size: 14px; color: #444444; line-height: 1.5; }
+
+.panelHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.panelTitle { font-size: 16px; font-weight: 600; }
+.panelHint { font-size: 12px; color: #666666; }
+.panelFooterMuted {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+  font-size: 13px;
+  color: #666666;
+}
+
+/* Checklist */
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.checklist li {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.checkBox {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid #000000;
+  flex-shrink: 0;
+}
+.checkDone .checkBox { background: #000000; color: #ffffff; }
+.checkActive .checkBox { background: #ffffff; color: #000000; border-width: 2px; }
+.checkPending .checkBox { background: #ffffff; color: #999999; border-color: #cccccc; border-style: dashed; }
+
+.checkLabel { font-size: 14px; font-weight: 500; }
+.checkSub { font-size: 13px; color: #666666; margin-top: 2px; line-height: 1.5; }
+.checkDone .checkLabel { text-decoration: line-through; text-decoration-thickness: 1px; color: #888888; }
+.checkPending .checkLabel { color: #999999; }
+
+/* KV list */
+.kvList { margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+.kvList > div { display: flex; flex-direction: column; gap: 4px; }
+.kvList dt {
+  font-size: 12px;
+  color: #666666;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.kvList dd { margin: 0; font-size: 14px; font-weight: 500; }
+
+/* ===== Invoice card (Scout side, B/W) ===== */
+.invoiceCardScout {
+  border: 2px solid #000000;
+  border-radius: 12px;
+  padding: 24px;
+  background: #ffffff;
+}
+.invHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 20px;
+}
+.invKicker { font-size: 13px; color: #666666; letter-spacing: 0.02em; }
+.invNo { font-size: 14px; font-weight: 500; margin-top: 4px; }
+.invTotalBlock { text-align: right; }
+.invTotalLbl { font-size: 12px; color: #666666; text-transform: uppercase; letter-spacing: 0.04em; }
+.invTotalVal { font-size: 32px; font-weight: 600; line-height: 1; margin-top: 4px; }
+
+.invTable { margin-bottom: 20px; }
+.invRowHead,
+.invRow {
+  display: grid;
+  grid-template-columns: 1fr 80px 100px 120px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  font-size: 14px;
+}
+.invRowHead {
+  font-size: 12px;
+  color: #666666;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 8px;
+}
+.invRow { font-weight: 500; }
+.right { text-align: right; }
+
+.invMetaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+  padding: 16px 0;
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 20px;
+}
+.invMetaLbl { font-size: 12px; color: #666666; text-transform: uppercase; letter-spacing: 0.04em; }
+.invMetaVal { font-size: 14px; font-weight: 500; margin-top: 4px; }
+
+.invActions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.btnPrimary {
+  appearance: none;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+}
+.btnPrimary:hover { background: #1a1a1a; }
+.btnGhost {
+  appearance: none;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btnGhost:hover { background: #f5f5f5; }
+
+.invFootnote {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+  font-size: 12px;
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* ===== Timeline ===== */
+.timeline {
+  position: sticky;
+  top: 80px;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 20px;
+  background: #ffffff;
+}
+.timelineTitle {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #666666;
+  margin-bottom: 14px;
+}
+.timelineList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.tlItem {
+  position: relative;
+  padding-left: 22px;
+  min-height: 22px;
+}
+.tlDot {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+}
+.tlActive .tlDot { background: #000000; }
+.tlFuture .tlDot { border-style: dashed; border-color: #999999; }
+
+.tlLine {
+  position: absolute;
+  left: 4.5px;
+  top: 16px;
+  bottom: -14px;
+  width: 1px;
+  background: #e5e5e5;
+}
+.tlFuture .tlLine { border-left: 1px dashed #cccccc; background: transparent; width: 0; }
+
+.tlBody { display: flex; flex-direction: column; gap: 2px; }
+.tlLabel { font-size: 13px; font-weight: 500; }
+.tlActive .tlLabel { font-weight: 600; }
+.tlHint { font-size: 12px; color: #666666; line-height: 1.4; }
+.tlDate { font-size: 11px; color: #999999; margin-top: 2px; }
+.tlFuture .tlLabel { color: #999999; }
+.tlFuture .tlHint { color: #999999; }
+
+/* ============================================================
+   MELLOW SIDE — branded replica of my.mellow.io invoice page
+   ============================================================ */
+.mellowFrame {
+  width: 100%;
+  min-height: calc(100vh - 44px);
+  background: #f8f2e9; /* porcelain */
+  font-family: var(--ds-font-family-body);
+  color: #232222;
+  display: flex;
+  flex-direction: column;
+}
+
+.mellowTopbar {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #efe8da;
+  color: #8a8686;
+  font-size: 13px;
+  border-bottom: 1px solid #e5dccc;
+}
+
+.mellowHeader {
+  position: relative;
+  padding: 28px 64px 16px;
+}
+.mellowLogo {
+  font-family: var(--ds-font-family-accent);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #232222;
+}
+.mellowGradient {
+  position: absolute;
+  left: 64px;
+  right: 64px;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(to right, #ff6f23 0%, #f6d8ba 30%, #ead8be 60%, #ead8be 100%);
+}
+
+.mellowMain {
+  position: relative;
+  padding: 32px 64px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mellowInvoice {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 40px 48px;
+}
+
+.mellowInvHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.mellowInvTitle {
+  font-family: var(--ds-font-family-accent);
+  margin: 0;
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #232222;
+}
+.mellowInvNo { font-size: 13px; color: #8a8686; margin-top: 6px; }
+.mellowInvDate { font-size: 13px; color: #8a8686; margin-top: 2px; }
+.mellowLogoSm {
+  font-family: var(--ds-font-family-accent);
+  font-size: 22px;
+  color: #ff6f23;
+  font-weight: 500;
+}
+
+.mellowParties {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.mellowPartyRight { text-align: right; }
+.mellowPartyName { font-size: 14px; font-weight: 600; color: #232222; }
+.mellowPartyEmail { font-size: 13px; color: #8a8686; margin-top: 2px; }
+
+.mellowTable { margin-bottom: 24px; }
+.mellowTableHead,
+.mellowTableRow {
+  display: grid;
+  grid-template-columns: 1fr 110px 130px 130px;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 0;
+  font-size: 14px;
+}
+.mellowTableHead {
+  border-bottom: 1px solid #ead8be;
+  color: #8a8686;
+  font-size: 13px;
+  padding-bottom: 12px;
+}
+.mellowTableRow {
+  border-bottom: 1px solid #f3eadc;
+}
+.mellowDesc { font-weight: 600; color: #232222; }
+
+.mellowMeta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding-top: 16px;
+}
+.mellowMetaLbl { font-size: 13px; color: #8a8686; }
+.mellowMetaVal { font-size: 14px; font-weight: 600; color: #232222; margin-top: 4px; }
+
+.mellowPayCard {
+  background: #ede2d6;
+  border-radius: 16px;
+  padding: 28px 32px;
+}
+.mellowPayTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #232222;
+  margin-bottom: 16px;
+}
+.mellowPayRow {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+}
+.mellowPayMethod { display: flex; flex-direction: column; gap: 4px; }
+.mellowPayMethodName { font-size: 15px; font-weight: 600; color: #232222; }
+.mellowPayMethodFee { font-size: 13px; color: #8a8686; }
+.mellowDownload {
+  margin-top: 10px;
+  align-self: flex-start;
+  appearance: none;
+  background: #ede2d6;
+  color: #232222;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.mellowDownload:hover { background: #e4d3c4; }
+.mellowPayTotal {
+  font-size: 24px;
+  font-weight: 600;
+  color: #232222;
+  text-align: right;
+}
+
+.mellowPayBtn {
+  appearance: none;
+  width: 100%;
+  margin-top: 20px;
+  height: 52px;
+  background: #ff6f23;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+.mellowPayBtn:hover { background: #e7621f; }
+
+.mellowSupportBtn {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #ff6f23;
+  color: #ffffff;
+  border: none;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(255, 111, 35, 0.32);
+}

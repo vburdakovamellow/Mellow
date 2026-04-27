@@ -1,31 +1,18 @@
-import { useMemo, useState } from "react";
-import { RequestCreationEditScreen } from "./screens/RequestCreationEdit/RequestCreationEditScreen";
-import { SharePackScreen, type SharePackRequest } from "./screens/SharePack/SharePackScreen";
+import { CandidateInvoicePaymentScreen } from "./screens/CandidateInvoicePayment/CandidateInvoicePaymentScreen";
 
-type ScreenId = "edit" | "share";
-
+/**
+ * ВЕТКА: fm/candidate-invoice-payment-flow
+ *
+ * Прототип алгоритма оплаты Scout → F2B (Путь Б — Инвойс).
+ * Старт со статуса Deal settled. Когда фрил создал инвойс — в карточке
+ * Scout появляется кнопка Pay → переход на my.mellow.io invoice page.
+ *
+ * Состояния прототипа:
+ *  1. Scout · Deal settled — awaiting invoice
+ *  2. Scout · Invoice received — Pay button visible
+ *  3. my.mellow.io · Invoice payment page (branded replica)
+ *  4. Scout · Paid — финальный статус с историей
+ */
 export function App() {
-  const [currentScreen, setCurrentScreen] = useState<ScreenId>("edit");
-  const [savedRequest, setSavedRequest] = useState<SharePackRequest | null>(null);
-
-  const nav = useMemo(() => {
-    return {
-      toEdit: () => setCurrentScreen("edit"),
-      toShare: (req?: SharePackRequest) => {
-        if (req) setSavedRequest(req);
-        if (req || savedRequest) setCurrentScreen("share");
-      }
-    };
-  }, [savedRequest]);
-
-  if (currentScreen === "share" && savedRequest) {
-    return <SharePackScreen request={savedRequest} onGoToEdit={nav.toEdit} />;
-  }
-
-  return (
-    <RequestCreationEditScreen
-      onRequestSaved={(req) => nav.toShare(req)}
-    />
-  );
+  return <CandidateInvoicePaymentScreen />;
 }
-
