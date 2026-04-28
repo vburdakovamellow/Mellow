@@ -9,23 +9,25 @@ import styles from "./CandidateInvoicePaymentScreen.module.css";
  * меняются только pill, кнопка и доп. блок. Модалка не закрывается между
  * переходами; фоном остаётся Candidates list.
  *
- * Сценарий (10 шагов, happy path · Verify):
+ * Сценарий (11 шагов, happy path · Verify):
  *  Scout (Candidates list + одна модалка карточки)
  *   01. Candidates list — раздел кабинета по реквесту, фильтры AI Match / Applied / Shortlisted.
- *   02. Application · New        — модалка с CV, кнопка Request proposal.
+ *   02. Application · Shortlisted — модалка с CV, кнопка Request proposal.
  *   03. Application · In Talks   — pill IN TALKS, ждём КП от фрилансера, кнопка Accept proposal.
- *   04. Application · Deal settled — pill DEAL SETTLED, фрил прислал инвойс, кнопка Pay invoice.
+ *   04. Application · Deal settled · awaiting invoice — pill DEAL SETTLED, фрил готовит инвойс,
+ *       Pay invoice неактивна.
+ *   05. Application · Deal settled · invoice ready — фрил прислал инвойс, кнопка Pay invoice активна.
  *  Mellow (my.mellow.io · branded · invoice page)
- *   05. Invoice page (pre-verify) — Confirm your company details + Bank/Card,
+ *   06. Invoice page (pre-verify) — Confirm your company details + Bank/Card,
  *       Pay disabled пока компания не верифицирована.
  *  Sumsub (modal over Mellow page · happy path only)
- *   06. Let's get you verified — 3 шага (identity, liveness, address).
- *   07. We're verifying your data — состояние ожидания.
- *   08. Verification passed — успех.
+ *   07. Let's get you verified — 3 шага (identity, liveness, address).
+ *   08. We're verifying your data — состояние ожидания.
+ *   09. Verification passed — успех.
  *  Mellow
- *   09. Invoice page (Pay enabled) — компания верифицирована, Pay активна.
+ *   10. Invoice page (Pay enabled) — компания верифицирована, Pay активна.
  *  Scout
- *   10. Application · Paid — модалка с pill PAID, виден receipt и история.
+ *   11. Application · Paid — модалка с pill PAID, виден receipt и история.
  *
  * Стили:
  *  - Scout — строго ч/б (#000/#fff/#666/#e5e5e5), один шрифт var(--ds-font-family-body).
@@ -35,8 +37,9 @@ import styles from "./CandidateInvoicePaymentScreen.module.css";
 
 type StepId =
   | "candidates_list"
-  | "application_new"
+  | "application_shortlisted"
   | "application_in_talks"
+  | "application_deal_settled_waiting"
   | "application_deal_settled"
   | "payment"
   | "sumsub_intro"
@@ -49,15 +52,16 @@ type StepGroup = "Scout" | "Mellow" | "Sumsub";
 
 const STEPS: { id: StepId; name: string; short: string; group: StepGroup }[] = [
   { id: "candidates_list", name: "01. Scout · Candidates list", short: "Candidates list", group: "Scout" },
-  { id: "application_new", name: "02. Scout · Application · New (modal)", short: "Application · New", group: "Scout" },
+  { id: "application_shortlisted", name: "02. Scout · Application · Shortlisted (modal)", short: "Application · Shortlisted", group: "Scout" },
   { id: "application_in_talks", name: "03. Scout · Application · In Talks (modal)", short: "Application · In Talks", group: "Scout" },
-  { id: "application_deal_settled", name: "04. Scout · Application · Deal settled (modal)", short: "Application · Deal settled", group: "Scout" },
-  { id: "payment", name: "05. my.mellow.io · Invoice page (verify required)", short: "Invoice (pre-verify)", group: "Mellow" },
-  { id: "sumsub_intro", name: "06. Sumsub · Let's get you verified", short: "Sumsub · intro", group: "Sumsub" },
-  { id: "sumsub_verifying", name: "07. Sumsub · We're verifying your data", short: "Sumsub · verifying", group: "Sumsub" },
-  { id: "sumsub_passed", name: "08. Sumsub · Verification passed", short: "Sumsub · passed", group: "Sumsub" },
-  { id: "payment_verified", name: "09. my.mellow.io · Invoice page (Pay enabled)", short: "Invoice (Pay)", group: "Mellow" },
-  { id: "application_paid", name: "10. Scout · Application · Paid (modal)", short: "Application · Paid", group: "Scout" },
+  { id: "application_deal_settled_waiting", name: "04. Scout · Application · Deal settled · awaiting invoice (modal)", short: "Deal settled · awaiting invoice", group: "Scout" },
+  { id: "application_deal_settled", name: "05. Scout · Application · Deal settled · invoice ready (modal)", short: "Deal settled · invoice ready", group: "Scout" },
+  { id: "payment", name: "06. my.mellow.io · Invoice page (verify required)", short: "Invoice (pre-verify)", group: "Mellow" },
+  { id: "sumsub_intro", name: "07. Sumsub · Let's get you verified", short: "Sumsub · intro", group: "Sumsub" },
+  { id: "sumsub_verifying", name: "08. Sumsub · We're verifying your data", short: "Sumsub · verifying", group: "Sumsub" },
+  { id: "sumsub_passed", name: "09. Sumsub · Verification passed", short: "Sumsub · passed", group: "Sumsub" },
+  { id: "payment_verified", name: "10. my.mellow.io · Invoice page (Pay enabled)", short: "Invoice (Pay)", group: "Mellow" },
+  { id: "application_paid", name: "11. Scout · Application · Paid (modal)", short: "Application · Paid", group: "Scout" },
 ];
 
 /* ============================================================
@@ -437,24 +441,26 @@ function StepCandidatesList({ openApplication }: { openApplication: () => void }
    action and the side block change.
    ============================================================ */
 
-type AppState = "new" | "in_talks" | "deal_settled" | "paid";
+type AppState = "shortlisted" | "in_talks" | "deal_settled_waiting" | "deal_settled" | "paid";
 
 const PILLS: Record<AppState, string> = {
-  new: "New",
+  shortlisted: "Shortlisted",
   in_talks: "In Talks",
+  deal_settled_waiting: "Deal settled",
   deal_settled: "Deal settled",
   paid: "Paid",
 };
 
 const PRIMARY_ACTIONS: Record<AppState, { label: string; hint?: string }> = {
-  new: { label: "Request proposal", hint: "We'll email Jessica and ask her to send a proposal." },
+  shortlisted: { label: "Request proposal", hint: "We'll email Jessica and ask her to send a proposal." },
   in_talks: { label: "Accept proposal", hint: "Accepting locks the deal — Jessica then drafts an invoice." },
+  deal_settled_waiting: { label: "Pay invoice", hint: "Available once Jessica sends the invoice." },
   deal_settled: { label: "Pay invoice — €1,260.00", hint: "Opens Mellow's secure invoice page." },
   paid: { label: "Download receipt" },
 };
 
 function StatusBlock({ state }: { state: AppState }) {
-  if (state === "new") return null;
+  if (state === "shortlisted") return null;
 
   if (state === "in_talks") {
     return (
@@ -468,6 +474,24 @@ function StatusBlock({ state }: { state: AppState }) {
           <li className={styles.modalStatusStepDone}>Proposal requested · Apr 14, 2026</li>
           <li className={styles.modalStatusStepActive}>Awaiting reply · usually under 3 days</li>
           <li className={styles.modalStatusStepPending}>Accept proposal → Mellow drafts an invoice</li>
+        </ul>
+      </div>
+    );
+  }
+
+  if (state === "deal_settled_waiting") {
+    return (
+      <div className={styles.modalStatusBlock}>
+        <div className={styles.modalStatusTitle}>Awaiting invoice from Jessica</div>
+        <div className={styles.modalStatusBody}>
+          Jessica accepted the deal and is preparing an invoice through Mellow. As soon as she
+          sends it, the amount appears here and Pay invoice unlocks — no email back-and-forth,
+          no chasing the freelancer for paperwork.
+        </div>
+        <ul className={styles.modalStatusSteps}>
+          <li className={styles.modalStatusStepDone}>Proposal accepted · Apr 26, 2026</li>
+          <li className={styles.modalStatusStepActive}>Awaiting invoice · usually within 1 business day</li>
+          <li className={styles.modalStatusStepPending}>Pay invoice → Mellow processes the payment</li>
         </ul>
       </div>
     );
@@ -582,7 +606,7 @@ function ApplicationCardModal({
                 <div className={styles.appMatchVal}>{CANDIDATE.match}%</div>
                 <div className={styles.appMatchLbl}>Match</div>
               </div>
-              {state === "new" && (
+              {state === "shortlisted" && (
                 <div className={styles.appMatchActions}>
                   <button
                     type="button"
@@ -595,10 +619,10 @@ function ApplicationCardModal({
                   <button
                     type="button"
                     className={styles.appIconBtn}
-                    aria-label="Add to shortlist"
-                    title="Add to shortlist"
+                    aria-label="Remove from shortlist"
+                    title="Remove from shortlist"
                   >
-                    ♡
+                    ♥
                   </button>
                 </div>
               )}
@@ -617,7 +641,7 @@ function ApplicationCardModal({
               type="button"
               className={styles.appInviteBtn}
               onClick={onPrimary}
-              disabled={state === "paid"}
+              disabled={state === "paid" || state === "deal_settled_waiting"}
             >
               {action.label}
             </button>
@@ -995,12 +1019,12 @@ export function CandidateInvoicePaymentScreen() {
   let content: React.ReactNode;
   switch (step) {
     case "candidates_list":
-      content = <StepCandidatesList openApplication={() => setStep("application_new")} />;
+      content = <StepCandidatesList openApplication={() => setStep("application_shortlisted")} />;
       break;
-    case "application_new":
+    case "application_shortlisted":
       content = (
         <StepApplication
-          state="new"
+          state="shortlisted"
           onPrimary={() => setStep("application_in_talks")}
           onClose={() => setStep("candidates_list")}
         />
@@ -1010,7 +1034,16 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="in_talks"
-          onPrimary={() => setStep("application_deal_settled")}
+          onPrimary={() => setStep("application_deal_settled_waiting")}
+          onClose={() => setStep("candidates_list")}
+        />
+      );
+      break;
+    case "application_deal_settled_waiting":
+      content = (
+        <StepApplication
+          state="deal_settled_waiting"
+          onPrimary={() => {}}
           onClose={() => setStep("candidates_list")}
         />
       );
