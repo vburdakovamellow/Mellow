@@ -9,25 +9,28 @@ import styles from "./CandidateInvoicePaymentScreen.module.css";
  * меняются только pill, кнопка и доп. блок. Модалка не закрывается между
  * переходами; фоном остаётся Candidates list.
  *
- * Сценарий (11 шагов, happy path · Verify):
+ * Сценарий (12 шагов, happy path · Verify):
  *  Scout (Candidates list + одна модалка карточки)
  *   01. Candidates list — раздел кабинета по реквесту, фильтры AI Match / Applied / Shortlisted.
  *   02. Application · Shortlisted — модалка с CV, кнопка Request proposal.
- *   03. Application · In Talks   — pill IN TALKS, ждём КП от фрилансера, кнопка Accept proposal.
- *   04. Application · Deal settled · awaiting invoice — pill DEAL SETTLED, фрил готовит инвойс,
+ *   03. Application · In Talks · waiting for proposal — pill IN TALKS, ждём КП,
+ *       Accept proposal неактивна.
+ *   04. Application · In Talks · proposal received — пропоузал от Jessica сверху
+ *       (short message + Scope/Period/Effort/Total), Accept proposal активна.
+ *   05. Application · Deal settled · awaiting invoice — pill DEAL SETTLED, фрил готовит инвойс,
  *       Pay invoice неактивна.
- *   05. Application · Deal settled · invoice ready — фрил прислал инвойс, кнопка Pay invoice активна.
+ *   06. Application · Deal settled · invoice ready — фрил прислал инвойс, кнопка Pay invoice активна.
  *  Mellow (my.mellow.io · branded · invoice page)
- *   06. Invoice page (pre-verify) — Confirm your company details + Bank/Card,
+ *   07. Invoice page (pre-verify) — Confirm your company details + Bank/Card,
  *       Pay disabled пока компания не верифицирована.
  *  Sumsub (modal over Mellow page · happy path only)
- *   07. Let's get you verified — 3 шага (identity, liveness, address).
- *   08. We're verifying your data — состояние ожидания.
- *   09. Verification passed — успех.
+ *   08. Let's get you verified — 3 шага (identity, liveness, address).
+ *   09. We're verifying your data — состояние ожидания.
+ *   10. Verification passed — успех.
  *  Mellow
- *   10. Invoice page (Pay enabled) — компания верифицирована, Pay активна.
+ *   11. Invoice page (Pay enabled) — компания верифицирована, Pay активна.
  *  Scout
- *   11. Application · Paid — модалка с pill PAID, виден receipt и история.
+ *   12. Application · Paid — модалка с pill PAID, виден receipt и история.
  *
  * Стили:
  *  - Scout — строго ч/б (#000/#fff/#666/#e5e5e5), один шрифт var(--ds-font-family-body).
@@ -38,7 +41,8 @@ import styles from "./CandidateInvoicePaymentScreen.module.css";
 type StepId =
   | "candidates_list"
   | "application_shortlisted"
-  | "application_in_talks"
+  | "application_in_talks_waiting"
+  | "application_in_talks_received"
   | "application_deal_settled_waiting"
   | "application_deal_settled"
   | "payment"
@@ -53,15 +57,16 @@ type StepGroup = "Scout" | "Mellow" | "Sumsub";
 const STEPS: { id: StepId; name: string; short: string; group: StepGroup }[] = [
   { id: "candidates_list", name: "01. Scout · Candidates list", short: "Candidates list", group: "Scout" },
   { id: "application_shortlisted", name: "02. Scout · Application · Shortlisted (modal)", short: "Application · Shortlisted", group: "Scout" },
-  { id: "application_in_talks", name: "03. Scout · Application · In Talks (modal)", short: "Application · In Talks", group: "Scout" },
-  { id: "application_deal_settled_waiting", name: "04. Scout · Application · Deal settled · awaiting invoice (modal)", short: "Deal settled · awaiting invoice", group: "Scout" },
-  { id: "application_deal_settled", name: "05. Scout · Application · Deal settled · invoice ready (modal)", short: "Deal settled · invoice ready", group: "Scout" },
-  { id: "payment", name: "06. my.mellow.io · Invoice page (verify required)", short: "Invoice (pre-verify)", group: "Mellow" },
-  { id: "sumsub_intro", name: "07. Sumsub · Let's get you verified", short: "Sumsub · intro", group: "Sumsub" },
-  { id: "sumsub_verifying", name: "08. Sumsub · We're verifying your data", short: "Sumsub · verifying", group: "Sumsub" },
-  { id: "sumsub_passed", name: "09. Sumsub · Verification passed", short: "Sumsub · passed", group: "Sumsub" },
-  { id: "payment_verified", name: "10. my.mellow.io · Invoice page (Pay enabled)", short: "Invoice (Pay)", group: "Mellow" },
-  { id: "application_paid", name: "11. Scout · Application · Paid (modal)", short: "Application · Paid", group: "Scout" },
+  { id: "application_in_talks_waiting", name: "03. Scout · Application · In Talks · waiting for proposal (modal)", short: "In Talks · waiting", group: "Scout" },
+  { id: "application_in_talks_received", name: "04. Scout · Application · In Talks · proposal received (modal)", short: "In Talks · proposal received", group: "Scout" },
+  { id: "application_deal_settled_waiting", name: "05. Scout · Application · Deal settled · awaiting invoice (modal)", short: "Deal settled · awaiting invoice", group: "Scout" },
+  { id: "application_deal_settled", name: "06. Scout · Application · Deal settled · invoice ready (modal)", short: "Deal settled · invoice ready", group: "Scout" },
+  { id: "payment", name: "07. my.mellow.io · Invoice page (verify required)", short: "Invoice (pre-verify)", group: "Mellow" },
+  { id: "sumsub_intro", name: "08. Sumsub · Let's get you verified", short: "Sumsub · intro", group: "Sumsub" },
+  { id: "sumsub_verifying", name: "09. Sumsub · We're verifying your data", short: "Sumsub · verifying", group: "Sumsub" },
+  { id: "sumsub_passed", name: "10. Sumsub · Verification passed", short: "Sumsub · passed", group: "Sumsub" },
+  { id: "payment_verified", name: "11. my.mellow.io · Invoice page (Pay enabled)", short: "Invoice (Pay)", group: "Mellow" },
+  { id: "application_paid", name: "12. Scout · Application · Paid (modal)", short: "Application · Paid", group: "Scout" },
 ];
 
 /* ============================================================
@@ -441,11 +446,18 @@ function StepCandidatesList({ openApplication }: { openApplication: () => void }
    action and the side block change.
    ============================================================ */
 
-type AppState = "shortlisted" | "in_talks" | "deal_settled_waiting" | "deal_settled" | "paid";
+type AppState =
+  | "shortlisted"
+  | "in_talks_waiting"
+  | "in_talks_received"
+  | "deal_settled_waiting"
+  | "deal_settled"
+  | "paid";
 
 const PILLS: Record<AppState, string> = {
   shortlisted: "Shortlisted",
-  in_talks: "In Talks",
+  in_talks_waiting: "In Talks",
+  in_talks_received: "In Talks",
   deal_settled_waiting: "Deal settled",
   deal_settled: "Deal settled",
   paid: "Paid",
@@ -453,7 +465,8 @@ const PILLS: Record<AppState, string> = {
 
 const PRIMARY_ACTIONS: Record<AppState, { label: string; hint?: string }> = {
   shortlisted: { label: "Request proposal", hint: "We'll email Jessica and ask her to send a proposal." },
-  in_talks: { label: "Accept proposal", hint: "Accepting locks the deal — Jessica then drafts an invoice." },
+  in_talks_waiting: { label: "Accept proposal", hint: "Available once Jessica sends a proposal." },
+  in_talks_received: { label: "Accept proposal", hint: "Accepting locks the deal — Jessica then drafts an invoice." },
   deal_settled_waiting: { label: "Pay invoice", hint: "Available once Jessica sends the invoice." },
   deal_settled: { label: "Pay invoice — €1,260.00", hint: "Opens Mellow's secure invoice page." },
   paid: { label: "Download receipt" },
@@ -462,7 +475,7 @@ const PRIMARY_ACTIONS: Record<AppState, { label: string; hint?: string }> = {
 function StatusBlock({ state }: { state: AppState }) {
   if (state === "shortlisted") return null;
 
-  if (state === "in_talks") {
+  if (state === "in_talks_waiting") {
     return (
       <div className={styles.modalStatusBlock}>
         <div className={styles.modalStatusTitle}>Waiting for proposal</div>
@@ -475,6 +488,37 @@ function StatusBlock({ state }: { state: AppState }) {
           <li className={styles.modalStatusStepActive}>Awaiting reply · usually under 3 days</li>
           <li className={styles.modalStatusStepPending}>Accept proposal → Mellow drafts an invoice</li>
         </ul>
+      </div>
+    );
+  }
+
+  if (state === "in_talks_received") {
+    return (
+      <div className={styles.modalStatusBlock}>
+        <div className={styles.modalStatusTitle}>Proposal from Jessica</div>
+        <div className={styles.modalStatusBody}>
+          "Thanks for the brief — here's what I'd suggest for your Q2 sprint. Two focused weeks:
+          moodboard and ad-set frames in week one, motion-ready layouts and a reusable template kit
+          in week two. Happy to tweak any of this before we lock it in."
+        </div>
+        <dl className={styles.modalKv}>
+          <div>
+            <dt>Scope</dt>
+            <dd>Social media visual kit — Q2 sprint</dd>
+          </div>
+          <div>
+            <dt>Period</dt>
+            <dd>Apr 14 — Apr 25, 2026</dd>
+          </div>
+          <div>
+            <dt>Effort</dt>
+            <dd>40 h × €30/hr</dd>
+          </div>
+          <div>
+            <dt>Total</dt>
+            <dd>€1,200.00</dd>
+          </div>
+        </dl>
       </div>
     );
   }
@@ -641,7 +685,11 @@ function ApplicationCardModal({
               type="button"
               className={styles.appInviteBtn}
               onClick={onPrimary}
-              disabled={state === "paid" || state === "deal_settled_waiting"}
+              disabled={
+                state === "paid" ||
+                state === "in_talks_waiting" ||
+                state === "deal_settled_waiting"
+              }
             >
               {action.label}
             </button>
@@ -1025,15 +1073,24 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="shortlisted"
-          onPrimary={() => setStep("application_in_talks")}
+          onPrimary={() => setStep("application_in_talks_waiting")}
           onClose={() => setStep("candidates_list")}
         />
       );
       break;
-    case "application_in_talks":
+    case "application_in_talks_waiting":
       content = (
         <StepApplication
-          state="in_talks"
+          state="in_talks_waiting"
+          onPrimary={() => {}}
+          onClose={() => setStep("candidates_list")}
+        />
+      );
+      break;
+    case "application_in_talks_received":
+      content = (
+        <StepApplication
+          state="in_talks_received"
           onPrimary={() => setStep("application_deal_settled_waiting")}
           onClose={() => setStep("candidates_list")}
         />
