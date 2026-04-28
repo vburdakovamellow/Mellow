@@ -1,32 +1,63 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import styles from "./CandidateInvoicePaymentScreen.module.css";
 
 /**
  * ВЕТКА: fm/candidate-invoice-payment-flow
  *
- * Прототип алгоритма оплаты Scout → F2B (Путь Б — Инвойс), стартующий со
- * статуса "Deal settled" (КП от фрилансера принято менеджером).
+ * Прототип всего пути от открытия реквеста до оплаты F2B-инвойса.
+ * Все статусы кандидата живут ВНУТРИ одной и той же модалки карточки —
+ * меняются только pill, кнопка и доп. блок. Модалка не закрывается между
+ * переходами; фоном остаётся Candidates list.
  *
- * Сценарий:
- *  1. Scout · Deal settled  — ждём, пока фрил создаст инвойс.
- *  2. Scout · Invoice received — фрил выставил счёт, появляется кнопка Pay.
- *  3. my.mellow.io · Invoice page — менеджер улетает на существующую страницу
- *     оплаты Mellow (брендовая, как в проде).
- *  4. Scout · Paid — после оплаты статус закрывается, виден весь timeline.
+ * Сценарий (10 шагов, happy path · Verify):
+ *  Scout (Candidates list + одна модалка карточки)
+ *   01. Candidates list — раздел кабинета по реквесту, фильтры AI Match / Applied / Shortlisted.
+ *   02. Application · New        — модалка с CV, кнопка Request proposal.
+ *   03. Application · In Talks   — pill IN TALKS, ждём КП от фрилансера, кнопка Accept proposal.
+ *   04. Application · Deal settled — pill DEAL SETTLED, фрил прислал инвойс, кнопка Pay invoice.
+ *  Mellow (my.mellow.io · branded · invoice page)
+ *   05. Invoice page (pre-verify) — Confirm your company details + Bank/Card,
+ *       Pay disabled пока компания не верифицирована.
+ *  Sumsub (modal over Mellow page · happy path only)
+ *   06. Let's get you verified — 3 шага (identity, liveness, address).
+ *   07. We're verifying your data — состояние ожидания.
+ *   08. Verification passed — успех.
+ *  Mellow
+ *   09. Invoice page (Pay enabled) — компания верифицирована, Pay активна.
+ *  Scout
+ *   10. Application · Paid — модалка с pill PAID, виден receipt и история.
  *
  * Стили:
- *  - Сторона Scout — строго ч/б (см. setup-checklist).
- *  - my.mellow.io — брендовая, повторяет существующую live-страницу
- *    (это уже работающий продукт, не мокап Scout).
+ *  - Scout — строго ч/б (#000/#fff/#666/#e5e5e5), один шрифт var(--ds-font-family-body).
+ *  - my.mellow.io — брендовая, повторяет live-страницу.
+ *  - Sumsub — модалка-оверлей над Mellow page, акцент #ff6f23.
  */
 
-type StepId = "awaiting" | "received" | "payment" | "paid";
+type StepId =
+  | "candidates_list"
+  | "application_new"
+  | "application_in_talks"
+  | "application_deal_settled"
+  | "payment"
+  | "sumsub_intro"
+  | "sumsub_verifying"
+  | "sumsub_passed"
+  | "payment_verified"
+  | "application_paid";
 
-const STEPS: { id: StepId; name: string }[] = [
-  { id: "awaiting", name: "1. Scout · Deal settled — awaiting invoice" },
-  { id: "received", name: "2. Scout · Invoice received — Pay appears" },
-  { id: "payment", name: "3. my.mellow.io · Invoice payment page" },
-  { id: "paid", name: "4. Scout · Paid" },
+type StepGroup = "Scout" | "Mellow" | "Sumsub";
+
+const STEPS: { id: StepId; name: string; short: string; group: StepGroup }[] = [
+  { id: "candidates_list", name: "01. Scout · Candidates list", short: "Candidates list", group: "Scout" },
+  { id: "application_new", name: "02. Scout · Application · New (modal)", short: "Application · New", group: "Scout" },
+  { id: "application_in_talks", name: "03. Scout · Application · In Talks (modal)", short: "Application · In Talks", group: "Scout" },
+  { id: "application_deal_settled", name: "04. Scout · Application · Deal settled (modal)", short: "Application · Deal settled", group: "Scout" },
+  { id: "payment", name: "05. my.mellow.io · Invoice page (verify required)", short: "Invoice (pre-verify)", group: "Mellow" },
+  { id: "sumsub_intro", name: "06. Sumsub · Let's get you verified", short: "Sumsub · intro", group: "Sumsub" },
+  { id: "sumsub_verifying", name: "07. Sumsub · We're verifying your data", short: "Sumsub · verifying", group: "Sumsub" },
+  { id: "sumsub_passed", name: "08. Sumsub · Verification passed", short: "Sumsub · passed", group: "Sumsub" },
+  { id: "payment_verified", name: "09. my.mellow.io · Invoice page (Pay enabled)", short: "Invoice (Pay)", group: "Mellow" },
+  { id: "application_paid", name: "10. Scout · Application · Paid (modal)", short: "Application · Paid", group: "Scout" },
 ];
 
 /* ============================================================
@@ -67,52 +98,100 @@ const INVOICE = {
   feePct: 5,
   fee: 60,
   total: 1260,
+  bank: { feePct: 5, fee: 60, total: 1260 },
+  card: { feePct: 7.5, fee: 90, total: 1290 },
 };
 
 const fmtEur = (v: number) =>
   `€${v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 /* ============================================================
-   Timeline data — отражает все этапы пути кандидата в Scout.
+   Candidates list — mock pool for the request
    ============================================================ */
 
-type TimelineEntry = {
-  id: string;
-  label: string;
-  hint?: string;
-  date: string;
-};
+type FilterId = "ai_match" | "applied" | "shortlisted";
 
-const BASE_TIMELINE: TimelineEntry[] = [
-  { id: "applied", label: "Applied", hint: "Inbound from request landing", date: "Apr 6, 2026" },
-  { id: "in_review", label: "In Review", hint: "Manager opened CV", date: "Apr 7, 2026" },
-  { id: "shortlist", label: "Shortlist", hint: "Added to shortlist", date: "Apr 9, 2026" },
-  { id: "invite", label: "Invite Freelancer", hint: "Email intro sent", date: "Apr 11, 2026" },
-  { id: "kp_requested", label: "Proposal requested", hint: "Manager asked for КП", date: "Apr 16, 2026" },
-  { id: "kp_received", label: "Proposal received", hint: "Drafted in Radar", date: "Apr 18, 2026" },
-  { id: "deal_settled", label: "Deal settled", hint: "Manager accepted КП", date: "Apr 19, 2026" },
+const FILTERS: { id: FilterId; title: string; sub: string; iconText: string }[] = [
+  { id: "ai_match", title: "AI Scout Match", sub: "Suggested contractors", iconText: "AI" },
+  { id: "applied", title: "Applied", sub: "Unsorted candidates", iconText: "✓" },
+  { id: "shortlisted", title: "Shortlisted", sub: "Selected candidates", iconText: "★" },
 ];
 
-const FUTURE_AWAITING_INVOICE: TimelineEntry = {
-  id: "awaiting_invoice",
-  label: "Awaiting invoice",
-  hint: "Freelancer is preparing it in Mellow",
-  date: "—",
+type CandidateRow = {
+  id: string;
+  initials: string;
+  name: string;
+  meta: string;
+  source: string;
+  match: number;
+  /** "open" — opens the application modal; "invite" — Invite-to-apply CTA. */
+  cta: "open" | "invite";
 };
 
-const RECEIVED_ENTRY: TimelineEntry = {
-  id: "invoice_received",
-  label: "Invoice received",
-  hint: "Ready to pay via Mellow",
-  date: "Apr 27, 2026",
+const APPLIED_CANDIDATES: CandidateRow[] = [
+  {
+    id: "jessica",
+    initials: "JM",
+    name: CANDIDATE.name,
+    meta: `${CANDIDATE.location} · Graphic Designer · 4 years of experience`,
+    source: "From Mellow",
+    match: 91,
+    cta: "open",
+  },
+];
+
+const APPLICATION_DETAIL = {
+  status: "New",
+  experienceYears: "4 years",
+  location: "Lisbon, Portugal",
+  appliedRelative: "Applied today",
+  appliedToRequest: REQUEST.title,
+  coverLetter:
+    "I'm a Lisbon-based graphic designer with 4 years of experience building social-first " +
+    "visuals for B2B and lifestyle brands. I've worked end-to-end on Q1/Q2 sprints — from mood " +
+    "boards and ad-set frames to motion-ready layouts and template kits the marketing team can " +
+    "reuse. I'd love to bring that rhythm to your Q2 sprint: tight turnaround, clean visual " +
+    "system, and assets that hold up across IG, TikTok and paid placements.\n\n" +
+    "Recent stack: Figma, Adobe CC, After Effects (light), and Canva for hand-off. Happy to " +
+    "share Figma files, raw layered sources, and the brand kit for ongoing use.",
+  portfolioLinks: [
+    { label: "jessicamartinez.work", href: "#" },
+    { label: "linkedin.com/in/jessicamtz", href: "#" },
+    { label: "behance.net/jessicamtz", href: "#" },
+    { label: "instagram.com/jm.studio", href: "#" },
+  ],
+  attachment: { name: "Jessica_Martinez_CV.pdf", size: "120 Kb" },
 };
 
-const PAID_ENTRY: TimelineEntry = {
-  id: "paid",
-  label: "Paid",
-  hint: "Bank transfer · €1,260.00",
-  date: "Apr 27, 2026",
-};
+const AI_MATCH_CANDIDATES: CandidateRow[] = [
+  {
+    id: "santiago",
+    initials: "SH",
+    name: "Santiago Herrera",
+    meta: "Hungary · UI/UX Designer · 5.5 years of experience",
+    source: "From X",
+    match: 100,
+    cta: "invite",
+  },
+  {
+    id: "daryna",
+    initials: "DS",
+    name: "Daryna Shevchenko",
+    meta: "Hungary · Graphic Designer · 2 years of experience",
+    source: "From LinkedIn",
+    match: 82,
+    cta: "invite",
+  },
+  {
+    id: "valentina",
+    initials: "VG",
+    name: "Valentina Gonzalez",
+    meta: "Hungary · Graphic Designer · 3.5 years of experience",
+    source: "From Mellow",
+    match: 81,
+    cta: "invite",
+  },
+];
 
 /* ============================================================
    Top prototype navigator
@@ -131,6 +210,10 @@ function PrototypeBar({
   goBack: () => void;
   jump: (id: StepId) => void;
 }) {
+  const current = STEPS[idx];
+  const grouped: Record<StepGroup, typeof STEPS> = { Scout: [], Mellow: [], Sumsub: [] };
+  STEPS.forEach((s) => grouped[s.group].push(s));
+
   return (
     <div className={styles.protoBar}>
       <div className={styles.protoLeft}>
@@ -145,7 +228,9 @@ function PrototypeBar({
         <span className={styles.protoStepIndex}>
           Step {idx + 1} / {STEPS.length}
         </span>
-        <span className={styles.protoStepName}>{STEPS[idx].name}</span>
+        <span className={styles.protoStepName}>
+          {current.group} · {current.short}
+        </span>
       </div>
       <div className={styles.protoRight}>
         <select
@@ -154,10 +239,14 @@ function PrototypeBar({
           onChange={(e) => jump(e.target.value as StepId)}
           className={styles.protoBtn}
         >
-          {STEPS.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
+          {(Object.keys(grouped) as StepGroup[]).map((g) => (
+            <optgroup key={g} label={g}>
+              {grouped[g].map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
         <button
@@ -175,318 +264,433 @@ function PrototypeBar({
 
 /* ============================================================
    Reusable: Scout app shell (B/W)
+   Sidebar with W-logo + nav icons; main area on the right.
    ============================================================ */
 
-function ScoutShell({ children }: { children: React.ReactNode }) {
+type SidebarKey = "dashboard" | "candidates" | "ai_match";
+
+function ScoutShell({
+  children,
+  active = "candidates",
+}: {
+  children: React.ReactNode;
+  active?: SidebarKey;
+}) {
   return (
     <div className={styles.scoutFrame}>
-      <header className={styles.scoutHeader}>
-        <div className={styles.scoutLogo}>Mellow Scout</div>
-        <nav className={styles.scoutNav}>
-          <span>Dashboard</span>
-          <span className={styles.scoutNavActive}>Candidates</span>
-          <span>Requests</span>
+      <aside className={styles.scoutSidebar}>
+        <div className={styles.scoutSidebarLogo}>W</div>
+        <nav className={styles.scoutSidebarNav} aria-label="Scout navigation">
+          <button
+            type="button"
+            className={`${styles.scoutSidebarBtn} ${active === "dashboard" ? styles.scoutSidebarBtnActive : ""}`}
+            aria-label="Dashboard"
+            title="Dashboard"
+          >
+            ▦
+          </button>
+          <button
+            type="button"
+            className={`${styles.scoutSidebarBtn} ${active === "candidates" ? styles.scoutSidebarBtnActive : ""}`}
+            aria-label="Candidates"
+            title="Candidates"
+          >
+            ⚲
+          </button>
+          <button
+            type="button"
+            className={`${styles.scoutSidebarBtn} ${active === "ai_match" ? styles.scoutSidebarBtnActive : ""}`}
+            aria-label="AI Match"
+            title="AI Match"
+          >
+            ✦
+          </button>
         </nav>
-        <div className={styles.scoutHeaderRight}>
-          <span>Studio M</span>
-          <span className={styles.avatarSm}>SM</span>
-        </div>
-      </header>
-
-      <div className={styles.breadcrumb}>
-        <span className={styles.crumb}>Candidates</span>
-        <span className={styles.crumbSep}>/</span>
-        <span className={styles.crumb}>{REQUEST.title}</span>
-        <span className={styles.crumbSep}>/</span>
-        <span className={styles.crumbActive}>{CANDIDATE.name}</span>
-      </div>
-
-      {children}
+      </aside>
+      <div className={styles.scoutMain}>{children}</div>
     </div>
   );
 }
 
 /* ============================================================
-   Reusable: Status banner
+   STEP 0 — Candidates list (request detail · Candidates tab)
+   Entry point. Manager opens the request, sees candidates, picks one.
    ============================================================ */
 
-function StatusBanner({
-  pill,
-  title,
-  subtitle,
-  tone = "default",
+function StepCandidatesList({ openApplication }: { openApplication: () => void }) {
+  const [filter, setFilter] = useState<FilterId>("applied");
+
+  const rows = filter === "ai_match" ? AI_MATCH_CANDIDATES : filter === "applied" ? APPLIED_CANDIDATES : [];
+
+  const counts: Record<FilterId, number> = {
+    ai_match: AI_MATCH_CANDIDATES.length,
+    applied: APPLIED_CANDIDATES.length,
+    shortlisted: 0,
+  };
+
+  return (
+    <ScoutShell active="candidates">
+      <div className={styles.scoutTopbar}>
+        <button type="button" className={styles.reqGenerateBtn}>Generate request</button>
+        <button type="button" className={styles.reqAIScout}>AI Scout</button>
+        <span className={styles.reqUserAvatar}>JM</span>
+      </div>
+      <main className={styles.scoutBody}>
+        <div className={styles.reqHeader}>
+          <div className={styles.reqTitleRow}>
+            <button type="button" className={styles.reqBack}>← Back</button>
+            <span className={styles.reqTitle}>{REQUEST.title}</span>
+            <span className={styles.reqActiveBadge}>Active</span>
+          </div>
+        </div>
+
+        <div className={styles.tabs}>
+          <button type="button" className={`${styles.tabBtn} ${styles.tabActive}`}>Candidates</button>
+          <button type="button" className={styles.tabBtn}>Promotion</button>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+            <button type="button" className={styles.reqEditBtn}>Edit request</button>
+            <button type="button" className={styles.reqMenuBtn} aria-label="More">⋯</button>
+          </div>
+        </div>
+
+        <div className={styles.filterRow}>
+          {FILTERS.map((f) => {
+            const active = f.id === filter;
+            const isUnseen = f.id === "ai_match" && counts.ai_match > 0;
+            return (
+              <button
+                key={f.id}
+                type="button"
+                className={`${styles.filterCard} ${active ? styles.filterCardActive : ""}`}
+                onClick={() => setFilter(f.id)}
+              >
+                <span className={styles.filterIcon} aria-hidden>{f.iconText}</span>
+                <span className={styles.filterMain}>
+                  <span className={styles.filterTitle}>{f.title}</span>
+                  <span className={styles.filterSub}>{f.sub}</span>
+                </span>
+                <span className={styles.filterCount}>{counts[f.id]}</span>
+                {isUnseen && !active && <span className={styles.filterDot} aria-hidden />}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className={styles.sortRow}>
+          <span className={styles.sortLabel}>
+            {filter === "applied" ? "New applications" : filter === "ai_match" ? "Suggested by AI Scout" : "Your shortlist"}
+          </span>
+          <div className={styles.sortGroup}>
+            <span className={styles.sortLabel}>Sort</span>
+            <select className={styles.sortSelect} defaultValue="match">
+              <option value="match">Match score</option>
+              <option value="recent">Most recent</option>
+              <option value="experience">Experience</option>
+            </select>
+          </div>
+        </div>
+
+        {rows.length === 0 ? (
+          <div className={styles.candEmpty}>
+            {filter === "shortlisted"
+              ? "No one in the shortlist yet. Open an application and click the heart icon to add it here."
+              : "Nothing here yet."}
+          </div>
+        ) : (
+          <div className={styles.candList}>
+            {rows.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                className={styles.candRow}
+                onClick={c.cta === "open" ? openApplication : undefined}
+              >
+                <span className={styles.candRowAvatar}>{c.initials}</span>
+                <span className={styles.candRowInfo}>
+                  <span className={styles.candRowName}>{c.name}</span>
+                  <span className={styles.candRowMeta}>{c.meta}</span>
+                </span>
+                <span className={styles.candRowRight}>
+                  <span className={styles.candRowSource}>{c.source}</span>
+                  <span className={styles.candRowMatch}>✦ {c.match}%</span>
+                  <span
+                    className={`${styles.candRowAction} ${
+                      c.cta === "invite" ? styles.candRowActionGhost : ""
+                    }`}
+                  >
+                    {c.cta === "open" ? "Review application" : "Invite to apply"}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+      </main>
+    </ScoutShell>
+  );
+}
+
+/* ============================================================
+   Application card — modal opened on top of Candidates list.
+   Lives across 4 statuses: NEW → IN TALKS → DEAL SETTLED → PAID.
+   Modal NEVER closes between transitions — only pill, primary
+   action and the side block change.
+   ============================================================ */
+
+type AppState = "new" | "in_talks" | "deal_settled" | "paid";
+
+const PILLS: Record<AppState, string> = {
+  new: "New",
+  in_talks: "In Talks",
+  deal_settled: "Deal settled",
+  paid: "Paid",
+};
+
+const PRIMARY_ACTIONS: Record<AppState, { label: string; hint?: string }> = {
+  new: { label: "Request proposal", hint: "We'll email Jessica and ask her to send a proposal." },
+  in_talks: { label: "Accept proposal", hint: "Accepting locks the deal — Jessica then drafts an invoice." },
+  deal_settled: { label: "Pay invoice — €1,260.00", hint: "Opens Mellow's secure invoice page." },
+  paid: { label: "Download receipt" },
+};
+
+function StatusBlock({ state }: { state: AppState }) {
+  if (state === "new") return null;
+
+  if (state === "in_talks") {
+    return (
+      <div className={styles.modalStatusBlock}>
+        <div className={styles.modalStatusTitle}>Waiting for proposal</div>
+        <div className={styles.modalStatusBody}>
+          We've emailed Jessica and asked her to send a proposal. Sync over email on scope, timeline
+          and rate. As soon as she replies with terms — accept here, and Mellow drafts the invoice.
+        </div>
+        <ul className={styles.modalStatusSteps}>
+          <li className={styles.modalStatusStepDone}>Proposal requested · Apr 14, 2026</li>
+          <li className={styles.modalStatusStepActive}>Awaiting reply · usually under 3 days</li>
+          <li className={styles.modalStatusStepPending}>Accept proposal → Mellow drafts an invoice</li>
+        </ul>
+      </div>
+    );
+  }
+
+  if (state === "deal_settled") {
+    return (
+      <div className={styles.modalStatusBlock}>
+        <div className={styles.modalStatusTitle}>Invoice ready — €1,260.00</div>
+        <div className={styles.modalStatusBody}>
+          Jessica accepted the deal and sent an invoice via Mellow. Pay it through Mellow's secure
+          page — Scout updates the status here once payment is captured.
+        </div>
+        <dl className={styles.modalKv}>
+          <div>
+            <dt>Scope</dt>
+            <dd>Social media visual kit — Q2 sprint</dd>
+          </div>
+          <div>
+            <dt>Period</dt>
+            <dd>Apr 14 — Apr 25, 2026</dd>
+          </div>
+          <div>
+            <dt>Effort</dt>
+            <dd>40 h × €30/hr</dd>
+          </div>
+          <div>
+            <dt>Total (incl. 5% bank fee)</dt>
+            <dd>€1,260.00</dd>
+          </div>
+        </dl>
+      </div>
+    );
+  }
+
+  // paid
+  return (
+    <div className={styles.modalStatusBlock}>
+      <div className={styles.modalStatusTitle}>Paid · €1,260.00</div>
+      <div className={styles.modalStatusBody}>
+        Bank transfer settled via Mellow on Apr 27, 2026. Receipt synced to this card.
+      </div>
+      <dl className={styles.modalKv}>
+        <div>
+          <dt>Invoice</dt>
+          <dd>No {INVOICE.number}</dd>
+        </div>
+        <div>
+          <dt>Method</dt>
+          <dd>Bank transfer (SEPA)</dd>
+        </div>
+        <div>
+          <dt>Amount</dt>
+          <dd>{fmtEur(INVOICE.amount)}</dd>
+        </div>
+        <div>
+          <dt>Mellow fee (5%)</dt>
+          <dd>{fmtEur(INVOICE.fee)}</dd>
+        </div>
+      </dl>
+    </div>
+  );
+}
+
+function ApplicationCardModal({
+  state,
+  onPrimary,
+  onClose,
 }: {
-  pill: string;
-  title: string;
-  subtitle: string;
-  tone?: "default" | "active" | "done";
+  state: AppState;
+  onPrimary: () => void;
+  onClose: () => void;
 }) {
-  const cls =
-    tone === "active"
-      ? styles.bannerActive
-      : tone === "done"
-        ? styles.bannerDone
-        : styles.bannerDefault;
+  const action = PRIMARY_ACTIONS[state];
+
   return (
-    <div className={`${styles.banner} ${cls}`}>
-      <span className={styles.bannerPill}>{pill}</span>
-      <div>
-        <div className={styles.bannerTitle}>{title}</div>
-        <div className={styles.bannerSub}>{subtitle}</div>
-      </div>
-    </div>
-  );
-}
+    <div className={styles.appOverlay} role="dialog" aria-modal="true" onClick={onClose}>
+      <div className={styles.appCard} onClick={(e) => e.stopPropagation()}>
+        <button type="button" className={styles.appClose} onClick={onClose} aria-label="Close">
+          ×
+        </button>
 
-/* ============================================================
-   Reusable: Candidate header card
-   ============================================================ */
+        <div className={styles.appHeader}>
+          <div className={styles.appIdent}>
+            <div className={styles.appAvatar}>{CANDIDATE.initials}</div>
+            <div>
+              <div className={styles.appNameRow}>
+                <span className={styles.appName}>{CANDIDATE.name}</span>
+                <span className={styles.appStatusPill}>{PILLS[state]}</span>
+              </div>
+              <ul className={styles.appMetaList}>
+                <li>
+                  <span className={styles.appMetaIcon} aria-hidden>◐</span>
+                  <span>{CANDIDATE.role}</span>
+                </li>
+                <li>
+                  <span className={styles.appMetaIcon} aria-hidden>✉</span>
+                  <span>{CANDIDATE.email}</span>
+                </li>
+              </ul>
+              <div className={styles.appAppliedRow}>
+                <span>{APPLICATION_DETAIL.appliedRelative}</span>
+                <span aria-hidden>·</span>
+                <strong>{APPLICATION_DETAIL.appliedToRequest}</strong>
+              </div>
+            </div>
+          </div>
 
-function CandidateHeader() {
-  return (
-    <div className={styles.candCard}>
-      <div className={styles.candAvatar}>{CANDIDATE.initials}</div>
-      <div className={styles.candMain}>
-        <div className={styles.candName}>{CANDIDATE.name}</div>
-        <div className={styles.candRole}>{CANDIDATE.role}</div>
-        <div className={styles.candMetaRow}>
-          <span>{CANDIDATE.location}</span>
-          <span className={styles.dot}>·</span>
-          <span>{CANDIDATE.rate}</span>
-          <span className={styles.dot}>·</span>
-          <span>{CANDIDATE.email}</span>
-        </div>
-      </div>
-      <div className={styles.candMatch}>
-        <div className={styles.candMatchVal}>{CANDIDATE.match}%</div>
-        <div className={styles.candMatchLbl}>Match Score</div>
-      </div>
-    </div>
-  );
-}
+          <div className={styles.appRight}>
+            <div className={styles.appMatchRow}>
+              <div>
+                <div className={styles.appMatchVal}>{CANDIDATE.match}%</div>
+                <div className={styles.appMatchLbl}>Match</div>
+              </div>
+              {state === "new" && (
+                <div className={styles.appMatchActions}>
+                  <button
+                    type="button"
+                    className={`${styles.appIconBtn} ${styles.appIconBtnReject}`}
+                    aria-label="Reject"
+                    title="Reject"
+                  >
+                    ×
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.appIconBtn}
+                    aria-label="Add to shortlist"
+                    title="Add to shortlist"
+                  >
+                    ♡
+                  </button>
+                </div>
+              )}
+            </div>
 
-/* ============================================================
-   Reusable: Activity timeline
-   ============================================================ */
+            <div className={styles.appKv}>
+              <div className={styles.appKvLbl}>Experience</div>
+              <div className={styles.appKvVal}>{APPLICATION_DETAIL.experienceYears}</div>
+              <div className={styles.appKvLbl}>Location</div>
+              <div className={styles.appKvVal}>{APPLICATION_DETAIL.location}</div>
+              <div className={styles.appKvLbl}>Rate</div>
+              <div className={styles.appKvVal}>{CANDIDATE.rate}</div>
+            </div>
 
-function Timeline({ entries, activeId }: { entries: TimelineEntry[]; activeId: string }) {
-  return (
-    <aside className={styles.timeline}>
-      <div className={styles.timelineTitle}>Activity</div>
-      <ol className={styles.timelineList}>
-        {entries.map((e, i) => {
-          const isActive = e.id === activeId;
-          const isFuture = e.date === "—";
-          return (
-            <li
-              key={e.id}
-              className={`${styles.tlItem} ${isActive ? styles.tlActive : ""} ${
-                isFuture ? styles.tlFuture : ""
-              }`}
+            <button
+              type="button"
+              className={styles.appInviteBtn}
+              onClick={onPrimary}
+              disabled={state === "paid"}
             >
-              <span className={styles.tlDot} aria-hidden />
-              {i < entries.length - 1 && <span className={styles.tlLine} aria-hidden />}
-              <div className={styles.tlBody}>
-                <div className={styles.tlLabel}>{e.label}</div>
-                {e.hint && <div className={styles.tlHint}>{e.hint}</div>}
-                <div className={styles.tlDate}>{e.date}</div>
-              </div>
-            </li>
-          );
-        })}
-      </ol>
-    </aside>
-  );
-}
-
-/* ============================================================
-   STEP 1 — Deal settled, awaiting invoice
-   ============================================================ */
-
-function StepAwaiting() {
-  const entries = useMemo(() => [...BASE_TIMELINE, FUTURE_AWAITING_INVOICE], []);
-  return (
-    <ScoutShell>
-      <main className={styles.scoutBody}>
-        <CandidateHeader />
-
-        <StatusBanner
-          pill="Deal settled"
-          title="Awaiting invoice from freelancer"
-          subtitle="Jessica is creating the invoice in Mellow. You'll get an email and a Pay button right here when it's ready."
-          tone="default"
-        />
-
-        <div className={styles.bodyGrid}>
-          <section className={styles.mainCol}>
-            <div className={styles.panel}>
-              <div className={styles.panelHead}>
-                <div className={styles.panelTitle}>What's happening now</div>
-                <div className={styles.panelHint}>Step 1 of 2 in payment flow</div>
-              </div>
-              <ol className={styles.checklist}>
-                <li className={styles.checkDone}>
-                  <span className={styles.checkBox} aria-hidden>✓</span>
-                  <div>
-                    <div className={styles.checkLabel}>Proposal accepted</div>
-                    <div className={styles.checkSub}>Apr 19, 2026 — €1,200 for 40 h, Apr 14–25</div>
-                  </div>
-                </li>
-                <li className={styles.checkActive}>
-                  <span className={styles.checkBox} aria-hidden>•</span>
-                  <div>
-                    <div className={styles.checkLabel}>Freelancer creates invoice</div>
-                    <div className={styles.checkSub}>
-                      Jessica got an email with a pre-filled link. KYC is handled in Mellow if she
-                      hasn't done it before.
-                    </div>
-                  </div>
-                </li>
-                <li className={styles.checkPending}>
-                  <span className={styles.checkBox} aria-hidden>·</span>
-                  <div>
-                    <div className={styles.checkLabel}>Pay invoice</div>
-                    <div className={styles.checkSub}>You'll see the Pay button here.</div>
-                  </div>
-                </li>
-              </ol>
-
-              <div className={styles.panelFooterMuted}>
-                No action required from you right now. Average wait — under 24h.
-              </div>
-            </div>
-
-            <div className={styles.panelGhost}>
-              <div className={styles.panelGhostTitle}>Accepted proposal</div>
-              <dl className={styles.kvList}>
-                <div>
-                  <dt>Scope</dt>
-                  <dd>Social media visual kit — Q2 sprint</dd>
-                </div>
-                <div>
-                  <dt>Period</dt>
-                  <dd>Apr 14 — Apr 25, 2026</dd>
-                </div>
-                <div>
-                  <dt>Effort</dt>
-                  <dd>40 h × €30/hr</dd>
-                </div>
-                <div>
-                  <dt>Subtotal</dt>
-                  <dd>€1,200.00</dd>
-                </div>
-              </dl>
-            </div>
-          </section>
-
-          <Timeline entries={entries} activeId="awaiting_invoice" />
+              {action.label}
+            </button>
+            {action.hint && <div className={styles.appInviteFootnote}>{action.hint}</div>}
+          </div>
         </div>
-      </main>
-    </ScoutShell>
-  );
-}
 
-/* ============================================================
-   STEP 2 — Invoice received, Pay button visible
-   ============================================================ */
+        <StatusBlock state={state} />
 
-function StepReceived({ goPay }: { goPay: () => void }) {
-  const entries = useMemo(() => [...BASE_TIMELINE, RECEIVED_ENTRY], []);
-  return (
-    <ScoutShell>
-      <main className={styles.scoutBody}>
-        <CandidateHeader />
-
-        <StatusBanner
-          pill="Invoice received"
-          title="Jessica sent an invoice for €1,260.00"
-          subtitle="Pay it through Mellow to release work and keep this candidate active in your pipeline."
-          tone="active"
-        />
-
-        <div className={styles.bodyGrid}>
-          <section className={styles.mainCol}>
-            <div className={styles.invoiceCardScout}>
-              <div className={styles.invHead}>
-                <div>
-                  <div className={styles.invKicker}>Invoice from Jessica Martinez</div>
-                  <div className={styles.invNo}>No {INVOICE.number} · Issued {INVOICE.issuedAt}</div>
-                </div>
-                <div className={styles.invTotalBlock}>
-                  <div className={styles.invTotalLbl}>Total</div>
-                  <div className={styles.invTotalVal}>{fmtEur(INVOICE.total)}</div>
-                </div>
-              </div>
-
-              <div className={styles.invTable}>
-                <div className={styles.invRowHead}>
-                  <span>Description</span>
-                  <span className={styles.right}>Quantity</span>
-                  <span className={styles.right}>Price</span>
-                  <span className={styles.right}>Amount</span>
-                </div>
-                <div className={styles.invRow}>
-                  <span>{INVOICE.description}</span>
-                  <span className={styles.right}>{INVOICE.quantity}</span>
-                  <span className={styles.right}>{fmtEur(INVOICE.unitPrice)}</span>
-                  <span className={styles.right}>{fmtEur(INVOICE.amount)}</span>
-                </div>
-              </div>
-
-              <div className={styles.invMetaGrid}>
-                <div>
-                  <div className={styles.invMetaLbl}>Service category</div>
-                  <div className={styles.invMetaVal}>{INVOICE.serviceCategory}</div>
-                </div>
-                <div>
-                  <div className={styles.invMetaLbl}>Work period</div>
-                  <div className={styles.invMetaVal}>
-                    {INVOICE.workPeriodStart} — {INVOICE.workPeriodEnd}
-                  </div>
-                </div>
-                <div>
-                  <div className={styles.invMetaLbl}>Mellow fee</div>
-                  <div className={styles.invMetaVal}>
-                    {INVOICE.feePct}% ({fmtEur(INVOICE.fee)})
-                  </div>
-                </div>
-                <div>
-                  <div className={styles.invMetaLbl}>Payment method</div>
-                  <div className={styles.invMetaVal}>Bank transfer (SEPA)</div>
-                </div>
-              </div>
-
-              <div className={styles.invActions}>
-                <button type="button" className={styles.btnPrimary} onClick={goPay}>
-                  Pay invoice — {fmtEur(INVOICE.total)}
-                </button>
-                <button type="button" className={styles.btnGhost}>
-                  View as PDF
-                </button>
-                <button type="button" className={styles.btnGhost}>
-                  Message freelancer
-                </button>
-              </div>
-
-              <div className={styles.invFootnote}>
-                Pay opens Mellow's secure invoice page. Your company KYB and payment instructions
-                stay there — Scout just hands off and updates the status when payment is captured.
-              </div>
-            </div>
-          </section>
-
-          <Timeline entries={entries} activeId="invoice_received" />
+        <div className={styles.appSection}>
+          <div className={styles.appSectionTitle}>Cover letter</div>
+          <div className={styles.appCover}>{APPLICATION_DETAIL.coverLetter}</div>
         </div>
-      </main>
-    </ScoutShell>
+
+        <div className={styles.appSection}>
+          <div className={styles.appSectionTitle}>Portfolio or profile links</div>
+          <div className={styles.appLinks}>
+            {APPLICATION_DETAIL.portfolioLinks.map((l) => (
+              <a key={l.label} className={styles.appLink} href={l.href} onClick={(e) => e.preventDefault()}>
+                {l.label}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.appSection}>
+          <div className={styles.appSectionTitle}>Attached CV</div>
+          <div className={styles.appAttach}>
+            <div>
+              <span className={styles.appAttachName}>{APPLICATION_DETAIL.attachment.name}</span>
+              <span className={styles.appAttachSize}>{APPLICATION_DETAIL.attachment.size}</span>
+            </div>
+            <button type="button" className={styles.appAttachDownload} aria-label="Download">
+              ↓
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
+
+function StepApplication({
+  state,
+  onPrimary,
+  onClose,
+}: {
+  state: AppState;
+  onPrimary: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <>
+      <StepCandidatesList openApplication={() => {}} />
+      <ApplicationCardModal state={state} onPrimary={onPrimary} onClose={onClose} />
+    </>
+  );
+}
+
 
 /* ============================================================
    STEP 3 — my.mellow.io invoice page (branded, replicates live page)
    ============================================================ */
 
-function StepPaymentPage({ onPaid }: { onPaid: () => void }) {
+function StepPaymentPage({
+  verified,
+  onVerify,
+  onPaid,
+}: {
+  verified: boolean;
+  onVerify: () => void;
+  onPaid: () => void;
+}) {
   return (
     <div className={styles.mellowFrame}>
       <div className={styles.mellowTopbar}>my.mellow.io</div>
@@ -494,6 +698,7 @@ function StepPaymentPage({ onPaid }: { onPaid: () => void }) {
       <header className={styles.mellowHeader}>
         <div className={styles.mellowLogo}>mellow</div>
         <span className={styles.mellowGradient} aria-hidden />
+        <button type="button" className={styles.mellowHowtoBtn}>How to pay invoice</button>
       </header>
 
       <main className={styles.mellowMain}>
@@ -548,23 +753,67 @@ function StepPaymentPage({ onPaid }: { onPaid: () => void }) {
         </div>
 
         <div className={styles.mellowPayCard}>
-          <div className={styles.mellowPayTitle}>Payment Method</div>
-          <div className={styles.mellowPayRow}>
-            <div className={styles.mellowPayMethod}>
-              <div className={styles.mellowPayMethodName}>Bank transfer</div>
-              <div className={styles.mellowPayMethodFee}>
-                {INVOICE.feePct}% fee ({fmtEur(INVOICE.fee)})
+          <div className={styles.mellowPayTitle}>Payment options</div>
+
+          <div className={styles.mellowConfirmCard}>
+            <div className={styles.mellowConfirmTitle}>
+              {verified ? "Company verified" : "Confirm your company details to continue"}
+            </div>
+            <div className={styles.mellowConfirmSub}>
+              {verified
+                ? "Studio M is verified with Mellow. You can pay this invoice with any method below."
+                : "You only need to verify once. If you've paid with Mellow before, you can confirm your saved company details and continue from there."}
+            </div>
+            <div className={styles.mellowConfirmActions}>
+              {verified ? (
+                <span className={styles.mellowConfirmDone}>Verification passed</span>
+              ) : (
+                <>
+                  <button type="button" className={styles.mellowConfirmPrimary} onClick={onVerify}>
+                    Verify company
+                  </button>
+                  <button type="button" className={styles.mellowConfirmGhost} disabled title="Out of scope for this prototype">
+                    Use saved details
+                  </button>
+                </>
+              )}
+            </div>
+            <div className={styles.mellowConfirmFootnote}>
+              By continuing, you agree to Mellow's{" "}
+              <a href="#" onClick={(e) => e.preventDefault()}>Terms of Service</a>,{" "}
+              <a href="#" onClick={(e) => e.preventDefault()}>Acceptable Use</a> and{" "}
+              <a href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</a>. You'll only see
+              important payment updates and notes (no marketing).
+            </div>
+          </div>
+
+          <div className={styles.mellowPayGrid}>
+            <div className={styles.mellowPayOption}>
+              <div className={styles.mellowPayOptionName}>Bank transfer</div>
+              <div className={styles.mellowPayOptionFee}>
+                Includes {INVOICE.bank.feePct}% fee ({fmtEur(INVOICE.bank.fee)})
               </div>
-              <button type="button" className={styles.mellowDownload}>
+              <div className={styles.mellowPayOptionTotal}>{fmtEur(INVOICE.bank.total)}</div>
+              <button type="button" className={styles.mellowPayOptionDownload}>
                 Download invoice
               </button>
             </div>
-            <div className={styles.mellowPayTotal}>{fmtEur(INVOICE.total)}</div>
+            <div className={styles.mellowPayOption}>
+              <div className={styles.mellowPayOptionName}>Card payment</div>
+              <div className={styles.mellowPayOptionFee}>
+                Includes {INVOICE.card.feePct}% fee ({fmtEur(INVOICE.card.fee)})
+              </div>
+              <div className={styles.mellowPayOptionTotal}>{fmtEur(INVOICE.card.total)}</div>
+              <button
+                type="button"
+                className={styles.mellowPayOptionBtn}
+                onClick={verified ? onPaid : undefined}
+                disabled={!verified}
+              >
+                Pay {fmtEur(INVOICE.card.total)}
+              </button>
+            </div>
           </div>
-
-          <button type="button" className={styles.mellowPayBtn} onClick={onPaid}>
-            Pay {fmtEur(INVOICE.total)}
-          </button>
         </div>
 
         <button type="button" className={styles.mellowSupportBtn} aria-label="Support">
@@ -576,88 +825,163 @@ function StepPaymentPage({ onPaid }: { onPaid: () => void }) {
 }
 
 /* ============================================================
-   STEP 4 — Paid (back inside Scout)
+   Sumsub verification modal — sits on top of Mellow invoice page
+   Happy path only: Intro → Verifying → Passed.
    ============================================================ */
 
-function StepPaid() {
-  const entries = useMemo(() => [...BASE_TIMELINE, RECEIVED_ENTRY, PAID_ENTRY], []);
+function SumsubBackdrop({
+  children,
+  onClose,
+}: {
+  children: React.ReactNode;
+  onClose: () => void;
+}) {
   return (
-    <ScoutShell>
-      <main className={styles.scoutBody}>
-        <CandidateHeader />
-
-        <StatusBanner
-          pill="Paid"
-          title="Invoice settled — €1,260.00"
-          subtitle="Jessica's invoice was paid via Mellow. Scout will keep the assignment open while work continues."
-          tone="done"
-        />
-
-        <div className={styles.bodyGrid}>
-          <section className={styles.mainCol}>
-            <div className={styles.panelDone}>
-              <div className={styles.panelHead}>
-                <div className={styles.panelTitle}>Payment receipt</div>
-                <div className={styles.panelHint}>Synced from Mellow · Apr 27, 2026</div>
-              </div>
-              <dl className={styles.kvList}>
-                <div>
-                  <dt>Invoice</dt>
-                  <dd>No {INVOICE.number}</dd>
-                </div>
-                <div>
-                  <dt>Amount</dt>
-                  <dd>{fmtEur(INVOICE.amount)}</dd>
-                </div>
-                <div>
-                  <dt>Mellow fee ({INVOICE.feePct}%)</dt>
-                  <dd>{fmtEur(INVOICE.fee)}</dd>
-                </div>
-                <div>
-                  <dt>Total charged</dt>
-                  <dd>{fmtEur(INVOICE.total)}</dd>
-                </div>
-                <div>
-                  <dt>Method</dt>
-                  <dd>Bank transfer (SEPA)</dd>
-                </div>
-              </dl>
-
-              <div className={styles.invActions}>
-                <button type="button" className={styles.btnGhost}>
-                  Download receipt
-                </button>
-                <button type="button" className={styles.btnGhost}>
-                  Request next invoice
-                </button>
-                <button type="button" className={styles.btnGhost}>
-                  Message freelancer
-                </button>
-              </div>
+    <>
+      <StepPaymentPage verified={false} onVerify={() => {}} onPaid={() => {}} />
+      <div className={styles.sumsubBackdrop} role="dialog" aria-modal="true" onClick={onClose}>
+        <div className={styles.sumsubFrame} onClick={(e) => e.stopPropagation()}>
+          <div className={styles.sumsubBar}>
+            <span className={styles.sumsubBarTitle}>Verification</span>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <button type="button" className={styles.sumsubLang}>En</button>
+              <button
+                type="button"
+                className={styles.sumsubClose}
+                aria-label="Close"
+                onClick={onClose}
+              >
+                ×
+              </button>
             </div>
-
-            <div className={styles.panelGhost}>
-              <div className={styles.panelGhostTitle}>What happens next</div>
-              <p className={styles.panelGhostText}>
-                Jessica continues the engagement. When the next milestone is ready, request a new
-                invoice from this card — Mellow remembers the parties so you skip KYC/KYB next time.
-              </p>
-            </div>
-          </section>
-
-          <Timeline entries={entries} activeId="paid" />
+          </div>
+          {children}
         </div>
-      </main>
-    </ScoutShell>
+      </div>
+    </>
   );
 }
+
+function StepSumsubIntro({ goNext, onClose }: { goNext: () => void; onClose: () => void }) {
+  return (
+    <SumsubBackdrop onClose={onClose}>
+      <div className={styles.sumsubBody}>
+        <h2 className={styles.sumsubTitle}>Let's get you verified</h2>
+        <ol className={styles.sumsubSteps}>
+          <li className={styles.sumsubStep}>
+            <span className={styles.sumsubStepIcon}>🪪</span>
+            <span>
+              <span className={styles.sumsubStepName}>Step 1</span>
+              <div className={styles.sumsubStepLabel}>Provide identity document</div>
+            </span>
+          </li>
+          <li className={styles.sumsubStep}>
+            <span className={styles.sumsubStepIcon}>👁</span>
+            <span>
+              <span className={styles.sumsubStepName}>Step 2</span>
+              <div className={styles.sumsubStepLabel}>Perform a liveness check</div>
+            </span>
+          </li>
+          <li className={styles.sumsubStep}>
+            <span className={styles.sumsubStepIcon}>🏠</span>
+            <span>
+              <span className={styles.sumsubStepName}>Step 3</span>
+              <div className={styles.sumsubStepLabel}>Provide proof of address</div>
+            </span>
+          </li>
+        </ol>
+
+        <div className={styles.sumsubBoost}>
+          <span className={styles.sumsubBoostIcon} aria-hidden>⚡</span>
+          <span>
+            <span className={styles.sumsubBoostStrong}>Speed up your verification with Sumsub ID</span>
+            <br />
+            Sumsub ID stores your previously verified data to speed up the verification process.
+          </span>
+        </div>
+      </div>
+      <div className={styles.sumsubFlowFooter}>
+        <button type="button" className={styles.sumsubPrimaryBtn} onClick={goNext}>
+          Start verification
+        </button>
+        <div className={styles.sumsubFooter}>
+          Powered by <strong>sumsub</strong>
+        </div>
+      </div>
+    </SumsubBackdrop>
+  );
+}
+
+function StepSumsubVerifying({ goNext, onClose }: { goNext: () => void; onClose: () => void }) {
+  return (
+    <SumsubBackdrop onClose={onClose}>
+      <div className={styles.sumsubBody}>
+        <div className={styles.sumsubCenter}>
+          <span className={styles.sumsubBigIconWait} aria-hidden>⌛</span>
+          <div className={styles.sumsubCenterTitle}>We're verifying your data</div>
+          <div className={styles.sumsubCenterSub}>
+            This may take up to one business day. We'll email you as soon as it's done — feel free
+            to close this window.
+          </div>
+          <ul className={styles.sumsubProgressList}>
+            <li className={`${styles.sumsubProgressItem} ${styles.sumsubProgressItemDone}`}>
+              Company info
+            </li>
+            <li className={`${styles.sumsubProgressItem} ${styles.sumsubProgressItemDone}`}>
+              Connected parties
+            </li>
+            <li className={`${styles.sumsubProgressItem} ${styles.sumsubProgressItemActive}`}>
+              Verification in progress
+            </li>
+            <li className={`${styles.sumsubProgressItem} ${styles.sumsubProgressItemPending}`}>
+              Documents on hand
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className={styles.sumsubFlowFooter}>
+        <button type="button" className={styles.sumsubPrimaryBtn} onClick={goNext}>
+          Skip wait — see result (demo)
+        </button>
+        <div className={styles.sumsubFooter}>
+          Powered by <strong>sumsub</strong>
+        </div>
+      </div>
+    </SumsubBackdrop>
+  );
+}
+
+function StepSumsubPassed({ goNext, onClose }: { goNext: () => void; onClose: () => void }) {
+  return (
+    <SumsubBackdrop onClose={onClose}>
+      <div className={styles.sumsubBody}>
+        <div className={styles.sumsubCenter}>
+          <span className={styles.sumsubBigIconOk} aria-hidden>✓</span>
+          <div className={styles.sumsubCenterTitle}>Verification passed</div>
+          <div className={styles.sumsubCenterSub}>
+            Your company has been verified. You can now pay this invoice with any method.
+          </div>
+        </div>
+      </div>
+      <div className={styles.sumsubFlowFooter}>
+        <button type="button" className={styles.sumsubPrimaryBtn} onClick={goNext}>
+          Continue to payment
+        </button>
+        <div className={styles.sumsubFooter}>
+          Powered by <strong>sumsub</strong>
+        </div>
+      </div>
+    </SumsubBackdrop>
+  );
+}
+
 
 /* ============================================================
    Root
    ============================================================ */
 
 export function CandidateInvoicePaymentScreen() {
-  const [step, setStep] = useState<StepId>("awaiting");
+  const [step, setStep] = useState<StepId>("candidates_list");
   const idx = STEPS.findIndex((s) => s.id === step);
 
   const goNext = () => {
@@ -670,17 +994,86 @@ export function CandidateInvoicePaymentScreen() {
 
   let content: React.ReactNode;
   switch (step) {
-    case "awaiting":
-      content = <StepAwaiting />;
+    case "candidates_list":
+      content = <StepCandidatesList openApplication={() => setStep("application_new")} />;
       break;
-    case "received":
-      content = <StepReceived goPay={() => setStep("payment")} />;
+    case "application_new":
+      content = (
+        <StepApplication
+          state="new"
+          onPrimary={() => setStep("application_in_talks")}
+          onClose={() => setStep("candidates_list")}
+        />
+      );
+      break;
+    case "application_in_talks":
+      content = (
+        <StepApplication
+          state="in_talks"
+          onPrimary={() => setStep("application_deal_settled")}
+          onClose={() => setStep("candidates_list")}
+        />
+      );
+      break;
+    case "application_deal_settled":
+      content = (
+        <StepApplication
+          state="deal_settled"
+          onPrimary={() => setStep("payment")}
+          onClose={() => setStep("candidates_list")}
+        />
+      );
       break;
     case "payment":
-      content = <StepPaymentPage onPaid={() => setStep("paid")} />;
+      content = (
+        <StepPaymentPage
+          verified={false}
+          onVerify={() => setStep("sumsub_intro")}
+          onPaid={() => {}}
+        />
+      );
       break;
-    case "paid":
-      content = <StepPaid />;
+    case "sumsub_intro":
+      content = (
+        <StepSumsubIntro
+          goNext={() => setStep("sumsub_verifying")}
+          onClose={() => setStep("payment")}
+        />
+      );
+      break;
+    case "sumsub_verifying":
+      content = (
+        <StepSumsubVerifying
+          goNext={() => setStep("sumsub_passed")}
+          onClose={() => setStep("payment")}
+        />
+      );
+      break;
+    case "sumsub_passed":
+      content = (
+        <StepSumsubPassed
+          goNext={() => setStep("payment_verified")}
+          onClose={() => setStep("payment_verified")}
+        />
+      );
+      break;
+    case "payment_verified":
+      content = (
+        <StepPaymentPage
+          verified={true}
+          onVerify={() => {}}
+          onPaid={() => setStep("application_paid")}
+        />
+      );
+      break;
+    case "application_paid":
+      content = (
+        <StepApplication
+          state="paid"
+          onPrimary={() => {}}
+          onClose={() => setStep("candidates_list")}
+        />
+      );
       break;
   }
 
