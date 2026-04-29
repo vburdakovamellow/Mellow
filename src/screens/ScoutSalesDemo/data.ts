@@ -26,8 +26,7 @@ export type DemoStep =
   | "ultra-briefing"
   | "ultra-ready"
   | "application-modal"
-  | "shortlisted"
-  | "invitation-modal";
+  | "shortlisted";
 
 export const DEMO_STEPS: DemoStep[] = [
   "landing",
@@ -46,7 +45,6 @@ export const DEMO_STEPS: DemoStep[] = [
   "ultra-ready",
   "application-modal",
   "shortlisted",
-  "invitation-modal",
 ];
 
 export const STEP_LABELS: Record<DemoStep, string> = {
@@ -66,7 +64,6 @@ export const STEP_LABELS: Record<DemoStep, string> = {
   "ultra-ready": "Applied · Ready",
   "application-modal": "Application · Viewed",
   shortlisted: "Shortlisted · Proposal",
-  "invitation-modal": "Invitation",
 };
 
 export const MANAGER = {

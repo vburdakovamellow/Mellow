@@ -427,17 +427,16 @@ export default function ScoutSalesDemo() {
   const ensureCandidatesTab = () => setActiveTab("candidates");
 
   /* Sync bucket pill with the current step when jumping around the demo.
-     scout-match → "scout"; candidates-empty/ultra-ready/application-modal/
-     invitation-modal/shortlisted → "applied". Useful when the salesperson
-     uses the dot navigation to skip ahead/back. */
+     scout-match → "scout"; shortlisted → "shortlisted"; the rest of the
+     candidates surfaces sit on the Applied bucket. Useful when the
+     salesperson uses the dot navigation to skip ahead/back. */
   const bucketForStep = (s: DemoStep): BucketKey => {
     if (s === "scout-match") return "scout";
     if (s === "shortlisted") return "shortlisted";
     if (
       s === "candidates-empty" ||
       s === "ultra-ready" ||
-      s === "application-modal" ||
-      s === "invitation-modal"
+      s === "application-modal"
     )
       return "applied";
     return bucket;
@@ -490,19 +489,19 @@ export default function ScoutSalesDemo() {
       return <PublicRequest onApply={() => setStep("ultra-ready")} />;
     }
     /* The candidates surface is reused under scout-match, candidates-empty,
-       ultra-ready, application-modal & invitation-modal — only the active
-       bucket changes between them. */
+       ultra-ready, application-modal & shortlisted — only the active bucket
+       (and the empty-state flag) changes between them. */
     if (
       step === "scout-match" ||
       step === "candidates-empty" ||
       step === "ultra-ready" ||
       step === "application-modal" ||
-      step === "invitation-modal" ||
       step === "shortlisted"
     ) {
       return (
         <AppShell currentSection="requests">
           <RequestCandidates
+            step={step}
             activeTab={activeTab}
             onTabChange={setActiveTab}
             promoOption={promoOption}
@@ -548,11 +547,8 @@ export default function ScoutSalesDemo() {
       {step === "application-modal" && (
         <ApplicationModal
           onClose={() => setStep("ultra-ready")}
-          onShortlist={() => setStep("invitation-modal")}
+          onRequestProposal={() => setStep("shortlisted")}
         />
-      )}
-      {step === "invitation-modal" && (
-        <InvitationModal onClose={() => setStep("ultra-ready")} />
       )}
     </div>
   );
@@ -1219,6 +1215,8 @@ const PublicRequest: React.FC<{ onApply: () => void }> = ({ onApply }) => {
    7. REQUEST CANDIDATES (Ultra Ready) + Promotion tab
    ========================================================================== */
 type RequestCandidatesProps = {
+  /** Current demo step — drives the candidates-empty empty-state hero. */
+  step: DemoStep;
   activeTab: "candidates" | "promotion";
   onTabChange: (t: "candidates" | "promotion") => void;
   promoOption: "oneOnOne" | "network" | "communities" | "boost";
@@ -1231,6 +1229,7 @@ type RequestCandidatesProps = {
   onInvite: () => void;
 };
 const RequestCandidates: React.FC<RequestCandidatesProps> = ({
+  step,
   activeTab,
   onTabChange,
   promoOption,
@@ -1286,6 +1285,7 @@ const RequestCandidates: React.FC<RequestCandidatesProps> = ({
 
       {activeTab === "candidates" ? (
         <CandidatesTab
+          step={step}
           sorted={sorted}
           bucket={bucket}
           onBucketChange={onBucketChange}
@@ -1306,15 +1306,25 @@ const RequestCandidates: React.FC<RequestCandidatesProps> = ({
  *  Three buckets: AI Scout Match (suggested contractors not yet applied),
  *  Applied (people who hit Apply on the public page) and Shortlisted.
  *  Bucket pills are clickable and the candidate list switches accordingly.
+ *
+ *  When step === "candidates-empty" we override the contents with the
+ *  "Need a Pro to Step In?" upsell + the "Candidates Will Appear Here"
+ *  empty hero — bucket counts are forced to 0 and no rows are rendered.
  */
 const CandidatesTab: React.FC<{
+  step: DemoStep;
   sorted: typeof CANDIDATES;
   bucket: BucketKey;
   onBucketChange: (b: BucketKey) => void;
   onOpenApplication: () => void;
   onInvite: () => void;
-}> = ({ sorted, bucket, onBucketChange, onOpenApplication, onInvite }) => {
-  const applied = sorted.filter((c) => c.source === "applied").length;
+}> = ({ step, sorted, bucket, onBucketChange, onOpenApplication, onInvite }) => {
+  const isEmptyStage = step === "candidates-empty";
+  const appliedCount = isEmptyStage
+    ? 0
+    : sorted.filter((c) => c.source === "applied").length;
+  const scoutCount = isEmptyStage ? 0 : SCOUT_MATCH_CANDIDATES.length;
+  const shortlistedCount = step === "shortlisted" ? 1 : 0;
   return (
     <>
       <div className={styles.bucketRow}>
@@ -1345,7 +1355,7 @@ const CandidatesTab: React.FC<{
                 : undefined
             }
           >
-            {SCOUT_MATCH_CANDIDATES.length}
+            {scoutCount}
           </div>
           {bucket === "scout" && <span className={styles.bucketDot} />}
         </button>
@@ -1377,7 +1387,7 @@ const CandidatesTab: React.FC<{
                 : undefined
             }
           >
-            {applied}
+            {appliedCount}
           </div>
         </button>
 
@@ -1408,16 +1418,18 @@ const CandidatesTab: React.FC<{
                 : undefined
             }
           >
-            0
+            {shortlistedCount}
           </div>
         </button>
       </div>
 
-      {bucket === "scout" && (
+      {isEmptyStage && <CandidatesEmptyState />}
+
+      {!isEmptyStage && bucket === "scout" && (
         <ScoutMatchList onInvite={onInvite} />
       )}
 
-      {bucket === "applied" && (
+      {!isEmptyStage && bucket === "applied" && (
         <>
           <div className={styles.sortBar}>
             <button className={styles.sortChip}>
@@ -1484,16 +1496,250 @@ const CandidatesTab: React.FC<{
         </>
       )}
 
-      {bucket === "shortlisted" && (
-        <div className={styles.emptyHero}>
-          <Icon.Bookmark size={28} color="#E25B15" />
-          <h3>No shortlisted candidates yet</h3>
-          <p>
-            Open an application from the Applied tab and tap “Add to Shortlist”
-            to bring your top picks here.
-          </p>
-        </div>
+      {!isEmptyStage && bucket === "shortlisted" && (
+        step === "shortlisted" ? (
+          <ShortlistedReadyList />
+        ) : (
+          <div className={styles.emptyHero}>
+            <Icon.Bookmark size={28} color="#E25B15" />
+            <h3>No shortlisted candidates yet</h3>
+            <p>
+              Open an application from the Applied tab and tap “Add to Shortlist”
+              to bring your top picks here.
+            </p>
+          </div>
+        )
       )}
+    </>
+  );
+};
+
+/* --------------------------------------------------------------------------
+   "Need a Pro to Step In?" upsell illustration — a stylised reviewer
+   holding two résumés against a warm orange backdrop. Hand-rolled SVG so
+   it's pixel-stable across browsers and works offline during demos.
+   -------------------------------------------------------------------------- */
+const ProReviewerIllustration: React.FC = () => (
+  <svg
+    viewBox="0 0 280 180"
+    width="100%"
+    height="100%"
+    aria-hidden
+    style={{ display: "block" }}
+  >
+    {/* Soft orange backdrop circle */}
+    <defs>
+      <radialGradient id="proGlow" cx="55%" cy="55%" r="60%">
+        <stop offset="0%" stopColor="#FFD09F" stopOpacity="0.95" />
+        <stop offset="100%" stopColor="#FFD09F" stopOpacity="0" />
+      </radialGradient>
+    </defs>
+    <circle cx="170" cy="92" r="78" fill="url(#proGlow)" />
+    <circle cx="170" cy="92" r="60" fill="#FFB988" opacity="0.55" />
+
+    {/* Sparkles */}
+    <g fill="#1A1716">
+      <path d="M82 70 l3 6 6 3 -6 3 -3 6 -3 -6 -6 -3 6 -3z" />
+      <path d="M250 60 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2z" />
+      <path d="M242 130 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2z" />
+    </g>
+
+    {/* Body */}
+    <g>
+      {/* Torso (sweater) */}
+      <path
+        d="M120 165 C120 130 130 118 165 118 C200 118 210 130 210 165 Z"
+        fill="#9DB6B0"
+        stroke="#1A1716"
+        strokeWidth="1.6"
+      />
+      {/* White collar */}
+      <path
+        d="M150 118 L165 132 L180 118 L178 124 L165 138 L152 124 Z"
+        fill="#fff"
+        stroke="#1A1716"
+        strokeWidth="1.4"
+      />
+      {/* Neck */}
+      <rect x="158" y="110" width="14" height="12" fill="#E8C4A0" stroke="#1A1716" strokeWidth="1.4" />
+      {/* Head */}
+      <circle cx="166" cy="92" r="21" fill="#EFCDA9" stroke="#1A1716" strokeWidth="1.6" />
+      {/* Hair */}
+      <path
+        d="M147 90 C145 70 158 60 174 62 C188 64 192 78 188 92 C186 86 182 80 175 80 C170 80 168 84 165 86 C160 88 153 90 147 90 Z"
+        fill="#1A1716"
+      />
+      {/* Hair lock */}
+      <path
+        d="M147 92 C148 100 152 108 158 110 C156 104 154 98 153 92 Z"
+        fill="#1A1716"
+      />
+      {/* Glasses */}
+      <circle cx="160" cy="94" r="4" fill="#fff" stroke="#1A1716" strokeWidth="1.4" />
+      <circle cx="172" cy="94" r="4" fill="#fff" stroke="#1A1716" strokeWidth="1.4" />
+      <path d="M164 94 L168 94" stroke="#1A1716" strokeWidth="1.4" />
+      {/* Earring */}
+      <circle cx="148" cy="98" r="1.6" fill="#1A1716" />
+
+      {/* Right arm holding résumé up */}
+      <path
+        d="M205 138 L228 110 L232 113 L210 142 Z"
+        fill="#9DB6B0"
+        stroke="#1A1716"
+        strokeWidth="1.4"
+      />
+      {/* Hand */}
+      <circle cx="232" cy="110" r="4" fill="#EFCDA9" stroke="#1A1716" strokeWidth="1.2" />
+      {/* Résumé 1 */}
+      <g transform="rotate(12 240 80)">
+        <rect x="222" y="58" width="34" height="44" rx="2" fill="#fff" stroke="#1A1716" strokeWidth="1.4" />
+        <circle cx="232" cy="70" r="3" fill="#FFB988" stroke="#1A1716" strokeWidth="1" />
+        <line x1="240" y1="68" x2="252" y2="68" stroke="#1A1716" strokeWidth="1" />
+        <line x1="240" y1="73" x2="248" y2="73" stroke="#1A1716" strokeWidth="1" />
+        <line x1="226" y1="84" x2="252" y2="84" stroke="#1A1716" strokeWidth="0.9" />
+        <line x1="226" y1="89" x2="248" y2="89" stroke="#1A1716" strokeWidth="0.9" />
+        <line x1="226" y1="94" x2="252" y2="94" stroke="#1A1716" strokeWidth="0.9" />
+      </g>
+
+      {/* Left arm holding résumé in lap */}
+      <path
+        d="M132 142 L116 158 L122 162 L138 150 Z"
+        fill="#9DB6B0"
+        stroke="#1A1716"
+        strokeWidth="1.4"
+      />
+      <circle cx="118" cy="160" r="4" fill="#EFCDA9" stroke="#1A1716" strokeWidth="1.2" />
+      {/* Résumé 2 */}
+      <g transform="rotate(-8 130 156)">
+        <rect x="108" y="138" width="32" height="40" rx="2" fill="#fff" stroke="#1A1716" strokeWidth="1.4" />
+        <line x1="112" y1="146" x2="135" y2="146" stroke="#1A1716" strokeWidth="0.9" />
+        <line x1="112" y1="151" x2="132" y2="151" stroke="#1A1716" strokeWidth="0.9" />
+        <line x1="112" y1="158" x2="135" y2="158" stroke="#1A1716" strokeWidth="0.9" />
+        <line x1="112" y1="163" x2="128" y2="163" stroke="#1A1716" strokeWidth="0.9" />
+        <line x1="112" y1="168" x2="135" y2="168" stroke="#1A1716" strokeWidth="0.9" />
+      </g>
+    </g>
+  </svg>
+);
+
+/* --------------------------------------------------------------------------
+   "Candidates Will Appear Here" empty-state illustration — magnifying
+   glass over a candidate avatar card, mirrors the warmth of the brand.
+   -------------------------------------------------------------------------- */
+const MagnifyingGlassIllustration: React.FC = () => (
+  <svg viewBox="0 0 140 130" width="140" height="130" aria-hidden style={{ display: "block" }}>
+    {/* warm shadow */}
+    <ellipse cx="60" cy="68" rx="38" ry="6" fill="#FFD09F" opacity="0.5" />
+    {/* candidate card */}
+    <rect x="32" y="22" width="50" height="58" rx="8" fill="#fff" stroke="#1A1716" strokeWidth="1.6" />
+    {/* avatar circle on card */}
+    <circle cx="57" cy="44" r="9" fill="#1A1716" />
+    <path d="M48 60 C48 54 52 50 57 50 C62 50 66 54 66 60 Z" fill="#FF6F23" />
+    {/* sparkles */}
+    <g fill="#1A1716">
+      <path d="M28 30 l1.6 3 3 1.6 -3 1.6 -1.6 3 -1.6 -3 -3 -1.6 3 -1.6z" />
+      <path d="M104 70 l1.6 3 3 1.6 -3 1.6 -1.6 3 -1.6 -3 -3 -1.6 3 -1.6z" />
+    </g>
+    {/* magnifier glass */}
+    <circle cx="86" cy="72" r="22" fill="#D8E6E2" stroke="#1A1716" strokeWidth="2" />
+    <circle cx="86" cy="72" r="22" fill="#fff" opacity="0.35" />
+    {/* glass highlight */}
+    <path d="M76 64 C78 62 82 60 86 60" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+    {/* handle */}
+    <rect
+      x="100"
+      y="86"
+      width="22"
+      height="7"
+      rx="3"
+      transform="rotate(35 100 86)"
+      fill="#3F4D49"
+      stroke="#1A1716"
+      strokeWidth="1.6"
+    />
+  </svg>
+);
+
+/* ---- "Need a Pro" upsell + "Candidates Will Appear Here" empty hero ----
+ *  Composed empty state shown on the candidates-empty step. Mirrors the
+ *  marketing-tuned mockup: warm orange banner upselling Mellow Ultra,
+ *  followed by a neutral hero with a "Share your request" prompt.
+ */
+const CandidatesEmptyState: React.FC = () => {
+  return (
+    <>
+      <div className={styles.proUpsell}>
+        <button className={styles.proUpsellClose} aria-label="Dismiss">
+          <Icon.X size={14} />
+        </button>
+        <div className={styles.proUpsellCopy}>
+          <h3>Need a Pro to Step In?</h3>
+          <ul>
+            <li>
+              <Icon.Check size={12} color="#E25B15" />
+              Your request is reviewed and refined by a real person
+            </li>
+            <li>
+              <Icon.Check size={12} color="#E25B15" />
+              3+ carefully selected candidates within 48 hours
+            </li>
+            <li>
+              <Icon.Check size={12} color="#E25B15" />
+              You&apos;ll be notified as soon as your shortlist is ready
+            </li>
+          </ul>
+          <button className={styles.proUpsellCta} type="button">
+            Try Ultra for free
+          </button>
+        </div>
+        <div className={styles.proUpsellArt}>
+          <ProReviewerIllustration />
+        </div>
+      </div>
+
+      <div className={styles.candidatesEmptyHero}>
+        <MagnifyingGlassIllustration />
+        <h3>Candidates Will Appear Here</h3>
+        <p>
+          Want to speed things up? Use our sharing kit to reach even more
+          people.
+        </p>
+        <button className={styles.candidatesEmptyCta} type="button">
+          Share your request
+        </button>
+      </div>
+    </>
+  );
+};
+
+/* ---- Shortlisted bucket with an actual proposal-ready candidate ----
+ *  Renders the featured candidate (Taylor Cook) as a green "Proposal
+ *  requested" row so the dot-nav step "Shortlisted · Proposal" feels
+ *  alive after the inline shortlist action in the Application modal.
+ */
+const ShortlistedReadyList: React.FC = () => {
+  return (
+    <>
+      <div className={styles.sortBar}>
+        <button className={styles.sortChip}>
+          Best match first <Icon.Chevron size={12} />
+        </button>
+        <span className={styles.smallMute}>1 candidate · proposal requested</span>
+      </div>
+      <div className={`${styles.candidateRow} ${styles.ultra}`}>
+        <Avatar initials="TC" color="#FF6F23" />
+        <div>
+          <div className={styles.candidateName}>{FEATURED_CANDIDATE.name}</div>
+          <div className={styles.candidateMeta}>
+            {FEATURED_CANDIDATE.location} · {FEATURED_CANDIDATE.role} ·{" "}
+            {FEATURED_CANDIDATE.experience} of experience
+          </div>
+        </div>
+        <span className={styles.successPill}>
+          <Icon.Check size={11} color="#2e7d32" /> Proposal requested
+        </span>
+        <MatchPill score={FEATURED_CANDIDATE.match} />
+      </div>
     </>
   );
 };
@@ -1660,11 +1906,11 @@ const PromotionTab: React.FC<{
               </div>
               <div className={styles.promoMessage}>
                 <div className={styles.promoMessageActions}>
-                  <button className={styles.iconBtn} aria-label="Edit">
+                  <button className={styles.iconBtn} aria-label="Copy link">
                     <Icon.Link size={12} />
                   </button>
-                  <button className={styles.iconBtn} aria-label="Copy">
-                    <Icon.Copy size={12} />
+                  <button className={styles.iconBtnDark} aria-label="Copy message">
+                    <Icon.Copy size={12} color="#fff" />
                   </button>
                 </div>
                 {ONE_ON_ONE_MESSAGE}
@@ -1732,11 +1978,19 @@ const PromotionTab: React.FC<{
 
 /* ==========================================================================
    8. APPLICATION MODAL (candidate detail with CV preview)
+
+   Inline-shortlist behaviour: clicking "Add to Shortlist" doesn't open a
+   second modal anymore. The card stays open, the CTA flips to a green
+   "Shortlisted" state and a "Request proposal" button appears underneath —
+   that's the action that hands the candidate over to Mellow Ops to start
+   the contract flow. The previous "Invitation Preview" modal has been
+   retired; the proposal hand-off is implicit.
    ========================================================================== */
 const ApplicationModal: React.FC<{
   onClose: () => void;
-  onShortlist: () => void;
-}> = ({ onClose, onShortlist }) => {
+  onRequestProposal: () => void;
+}> = ({ onClose, onRequestProposal }) => {
+  const [shortlisted, setShortlisted] = useState(false);
   return (
     <div className={styles.modalBackdrop} onClick={onClose}>
       <div
@@ -1824,130 +2078,50 @@ const ApplicationModal: React.FC<{
               <strong>{FEATURED_CANDIDATE.spent}</strong>
             </div>
 
-            <button
-              className={`${styles.primaryBtn} ${styles.primaryBtnAlt}`}
-              style={{ marginTop: 18 }}
-              onClick={onShortlist}
-            >
-              <Icon.Bookmark size={12} color="#fff" /> Add to Shortlist
-            </button>
-            <button
-              className={styles.primaryBtn}
-              style={{ background: "transparent", color: "var(--sd-ink)", border: "1px solid var(--sd-line)" }}
-              onClick={onClose}
-            >
-              Reject
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* ==========================================================================
-   9. INVITATION MODAL ("Invitation Preview" — Work Together email)
-   ========================================================================== */
-const InvitationModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const [sent, setSent] = useState(false);
-  return (
-    <div className={styles.modalBackdrop} onClick={onClose}>
-      <div
-        className={styles.inviteModal}
-        onClick={(e) => e.stopPropagation()}
-        style={{ width: "min(460px, 92vw)" }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "14px 18px 0",
-          }}
-        >
-          <span className={styles.demoNote}>Invitation Preview</span>
-          <button className={styles.modalClose} onClick={onClose}>
-            <Icon.X />
-          </button>
-        </div>
-        <div className={styles.inviteHero}>
-          <div className={styles.inviteAvatars}>
-            <Avatar initials="TC" color="#FF6F23" size={44} />
-            <Avatar initials={MANAGER.initials} color="#1A1716" size={44} />
-          </div>
-          <h3>Work Together on {MANAGER.company}</h3>
-          <p>
-            We&apos;d love to have your help on the<br />
-            <strong>{REQUEST.title}</strong>.
-          </p>
-
-          <div
-            style={{
-              background: "#fff",
-              border: "1px solid var(--sd-line-soft)",
-              borderRadius: 12,
-              padding: 14,
-              fontSize: 13,
-              lineHeight: 1.5,
-              textAlign: "left",
-              marginTop: 14,
-            }}
-          >
-            Now is a great time to lock in a contractor — your shortlist is
-            ready, the rate matches the market, and the Mellow team will set up
-            the contract for you in a single click once you say go.
-          </div>
-
-          <button
-            className={styles.inviteSendBtn}
-            onClick={() => setSent(true)}
-            disabled={sent}
-            style={sent ? { background: "#2e7d32", cursor: "default" } : undefined}
-          >
-            {sent ? (
+            {!shortlisted ? (
               <>
-                <Icon.Check size={14} color="#fff" /> Invitation sent
+                <button
+                  className={`${styles.primaryBtn} ${styles.primaryBtnAlt}`}
+                  style={{ marginTop: 18 }}
+                  onClick={() => setShortlisted(true)}
+                >
+                  <Icon.Bookmark size={12} color="#fff" /> Add to Shortlist
+                </button>
+                <button
+                  className={styles.primaryBtn}
+                  style={{ background: "transparent", color: "var(--sd-ink)", border: "1px solid var(--sd-line)" }}
+                  onClick={onClose}
+                >
+                  Reject
+                </button>
               </>
             ) : (
-              "Send invitation"
+              <>
+                <div
+                  className={styles.shortlistedPill}
+                  aria-live="polite"
+                  style={{ marginTop: 18 }}
+                >
+                  <Icon.Check size={12} color="#fff" />
+                  Shortlisted
+                </div>
+                <button
+                  className={`${styles.primaryBtn} ${styles.primaryBtnAlt}`}
+                  style={{ marginTop: 10 }}
+                  onClick={onRequestProposal}
+                >
+                  <Icon.Sparkles size={12} color="#fff" /> Request proposal
+                </button>
+                <div
+                  className={styles.smallMute}
+                  style={{ marginTop: 10, lineHeight: 1.5 }}
+                >
+                  Mellow will draft the Service Agreement using the project
+                  details you&apos;ve already approved — no manual invoicing.
+                </div>
+              </>
             )}
-          </button>
-          {sent && (
-            <div
-              style={{
-                marginTop: 12,
-                padding: "10px 12px",
-                background: "#fff",
-                border: "1px dashed var(--sd-line)",
-                borderRadius: 10,
-                fontSize: 12,
-                color: "var(--sd-ink-soft)",
-                textAlign: "left",
-              }}
-            >
-              <strong style={{ fontSize: 12 }}>What&apos;s next:</strong> once
-              Taylor accepts, Mellow will draft the contract and route the first
-              milestone payment via MoR. <em>(Payment screen — next iteration.)</em>
-            </div>
-          )}
-        </div>
-
-        <div className={styles.inviteFaq}>
-          <h4>Ready to start working together?</h4>
-          <ol>
-            <li>
-              Mellow will draft a <strong>Service Agreement</strong> using the
-              project details you&apos;ve already approved.
-            </li>
-            <li>
-              Taylor signs and gets a <strong>secure work area</strong> for
-              files, status and milestones.
-            </li>
-            <li>
-              You release payment via Mellow Merchant of Record once each
-              milestone is signed off — no manual invoicing.
-            </li>
-          </ol>
+          </div>
         </div>
       </div>
     </div>

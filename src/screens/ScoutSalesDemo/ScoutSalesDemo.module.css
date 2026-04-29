@@ -1399,6 +1399,147 @@
   margin: 0 auto;
 }
 
+/* ---------- "Need a Pro to Step In?" upsell banner ---------- */
+.proUpsell {
+  position: relative;
+  background: linear-gradient(135deg, #ffe1c1 0%, #ffd09f 100%);
+  border-radius: 18px;
+  padding: 28px 32px;
+  display: grid;
+  grid-template-columns: 1fr minmax(220px, 320px);
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 18px;
+  border: 1px solid #f4c8a0;
+  overflow: hidden;
+}
+
+.proUpsellClose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--sd-orange-deep);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.proUpsellClose:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.proUpsellCopy h3 {
+  font-family: var(--ds-font-family-accent, "PP Neue World", Georgia, serif);
+  font-weight: 500;
+  font-size: 26px;
+  margin: 0 0 14px;
+  color: var(--sd-ink);
+  letter-spacing: -0.01em;
+}
+
+.proUpsellCopy ul {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.proUpsellCopy li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--sd-ink-soft);
+  line-height: 1.4;
+}
+
+.proUpsellCopy li :global(svg) {
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 999px;
+  padding: 3px;
+  width: 18px;
+  height: 18px;
+}
+
+.proUpsellCta {
+  background: var(--sd-orange);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.proUpsellCta:hover {
+  background: var(--sd-orange-deep);
+}
+
+.proUpsellArt {
+  width: 100%;
+  max-width: 320px;
+  height: 160px;
+  display: grid;
+  place-items: center;
+  justify-self: end;
+}
+
+/* ---------- "Candidates Will Appear Here" hero (empty stage) ---------- */
+.candidatesEmptyHero {
+  background: var(--sd-cream-soft);
+  border: 1px solid var(--sd-line-soft);
+  border-radius: 18px;
+  padding: 64px 24px 56px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.candidatesEmptyHero h3 {
+  font-family: var(--ds-font-family-accent, "PP Neue World", Georgia, serif);
+  font-weight: 500;
+  font-size: 28px;
+  margin: 14px 0 4px;
+  color: var(--sd-ink);
+}
+
+.candidatesEmptyHero p {
+  color: var(--sd-mute);
+  font-size: 14px;
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.45;
+}
+
+.candidatesEmptyCta {
+  margin-top: 16px;
+  background: var(--sd-cream-deep);
+  color: var(--sd-ink);
+  border: none;
+  border-radius: 999px;
+  padding: 11px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.candidatesEmptyCta:hover {
+  background: var(--sd-line);
+}
+
 .ultraPromo {
   background: linear-gradient(135deg, #ffe6c9 0%, #ffcfaa 100%);
   border-radius: 18px;
@@ -1693,60 +1834,79 @@
   color: var(--sd-mute);
 }
 
-/* ---------- Promotion tab ---------- */
+/* ---------- Promotion tab ----------
+   Two-column accordion (left = option list, right = detail). The active
+   option lifts to a solid white card with a soft border + subtle shadow
+   so it reads as "selected" against the cream stage. */
 .promotionWrap {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 340px 1fr;
   gap: 24px;
+  align-items: start;
 }
 
 .promotionList {
-  background: #fff;
+  background: transparent;
   border-radius: 18px;
-  border: 1px solid var(--sd-line-soft);
-  padding: 8px;
+  padding: 0;
   display: flex;
   flex-direction: column;
+  gap: 8px;
 }
 
 .promoOption {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   padding: 14px 16px;
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: background 120ms ease, border-color 120ms ease;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease;
 }
 
 .promoOption:hover {
-  background: var(--sd-cream-soft);
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .promoOptionActive {
-  background: var(--sd-cream-soft);
-  border-color: var(--sd-line);
+  background: #fff;
+  border-color: var(--sd-line-soft);
+  box-shadow: 0 4px 18px rgba(35, 27, 22, 0.06);
 }
 
 .promoIcon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
   background: var(--sd-cream-deep);
+  color: var(--sd-ink);
   display: grid;
   place-items: center;
   flex-shrink: 0;
 }
 
+.promoOptionActive .promoIcon {
+  background: var(--sd-cream);
+  color: var(--sd-orange-deep);
+}
+
 .promoLabel {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 600;
+  color: var(--sd-ink);
 }
 
 .promoSub {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--sd-mute);
+  margin-top: 2px;
 }
 
 .promoStatus {
@@ -1770,34 +1930,54 @@
   background: #fff;
   border-radius: 18px;
   border: 1px solid var(--sd-line-soft);
-  padding: 24px 28px;
+  padding: 26px 28px 28px;
 }
 
 .promotionDetail h4 {
   margin: 0 0 6px;
   font-family: var(--ds-font-family-accent, "PP Neue World", Georgia, serif);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 500;
+  letter-spacing: -0.005em;
 }
 
 .promoMessage {
-  background: var(--sd-cream-soft);
+  background: var(--sd-cream);
   border: 1px solid var(--sd-line-soft);
-  border-radius: 12px;
-  padding: 16px;
-  font-size: 13px;
-  line-height: 1.55;
+  border-radius: 14px;
+  padding: 18px 18px 16px;
+  font-size: 13.5px;
+  line-height: 1.6;
   white-space: pre-wrap;
   position: relative;
-  margin-top: 14px;
+  margin-top: 16px;
+  color: var(--sd-ink);
 }
 
 .promoMessageActions {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 12px;
+  right: 12px;
   display: flex;
   gap: 6px;
+}
+
+/* The "link" button stays light (secondary), the "copy" button flips to a
+   dark filled style to read as the primary action — mirrors the mockup. */
+.iconBtnDark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--sd-ink);
+  background: var(--sd-ink);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.iconBtnDark:hover {
+  background: #2a2421;
 }
 
 .networkChips {
@@ -2026,86 +2206,21 @@
   background: var(--sd-cream-soft);
 }
 
-.inviteModal {
-  background: var(--sd-cream-soft);
-  border-radius: 16px;
-  width: min(420px, 92vw);
-  border: 1px solid var(--sd-line);
-  box-shadow: 0 20px 60px rgba(35, 27, 22, 0.2);
-  overflow: hidden;
-}
-
-.inviteHero {
-  text-align: center;
-  padding: 28px 24px 16px;
-}
-
-.inviteHero h3 {
-  font-family: var(--ds-font-family-accent, "PP Neue World", Georgia, serif);
-  font-weight: 500;
-  font-size: 24px;
-  margin: 8px 0 4px;
-}
-
-.inviteHero p {
-  font-size: 13px;
-  color: var(--sd-mute);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.inviteAvatars {
+/* Inline shortlisted state inside the application modal — replaces the
+   old "Invitation Preview" modal. Green pill confirms the shortlist
+   action; the orange "Request proposal" button continues the flow. */
+.shortlistedPill {
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-bottom: 14px;
-}
-
-.inviteAvatars .candidateAvatar {
-  margin-left: -8px;
-  border: 3px solid var(--sd-cream-soft);
-}
-
-.inviteAvatars .candidateAvatar:first-child {
-  margin-left: 0;
-}
-
-.inviteSendBtn {
-  background: var(--sd-orange);
+  gap: 8px;
+  background: #2e7d32;
   color: #fff;
-  width: 100%;
-  border: none;
   border-radius: 10px;
   padding: 12px;
   font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
-  margin: 18px 0 0;
-}
-
-.inviteFaq {
-  background: #fff;
-  border-radius: 14px;
-  margin: 16px;
-  padding: 18px;
-  border: 1px solid var(--sd-line-soft);
-}
-
-.inviteFaq h4 {
-  margin: 0 0 10px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.inviteFaq ol {
-  margin: 0;
-  padding-left: 18px;
-  font-size: 13px;
-  color: var(--sd-ink-soft);
-  line-height: 1.5;
-}
-
-.inviteFaq ol li {
-  margin-bottom: 6px;
+  width: 100%;
 }
 
 .flex {
