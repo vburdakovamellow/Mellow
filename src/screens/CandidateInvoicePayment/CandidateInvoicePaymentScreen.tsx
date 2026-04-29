@@ -643,7 +643,7 @@ const PRIMARY_ACTIONS: Record<AppState, { label: string; hint?: string }> = {
   offer_paid: { label: "Download receipt" },
 };
 
-function StatusBlock({ state }: { state: AppState }) {
+function StatusBlock({ state, flow }: { state: AppState; flow: FlowId }) {
   if (state === "shortlisted") return null;
 
   if (state === "in_talks_waiting") {
@@ -684,6 +684,14 @@ function StatusBlock({ state }: { state: AppState }) {
           <div>
             <dt>Effort</dt>
             <dd>40 h × €30/hr</dd>
+          </div>
+          <div>
+            <dt>Payment format</dt>
+            <dd>
+              {flow === "verify"
+                ? "Invoice — Mellow issues an invoice on Jessica's behalf, you pay it after work is delivered."
+                : "Secure deal · Offer — Mellow holds your payment in escrow and releases it to Jessica on delivery."}
+            </dd>
           </div>
           <div>
             <dt>Total</dt>
@@ -845,10 +853,12 @@ function StatusBlock({ state }: { state: AppState }) {
 
 function ApplicationCardModal({
   state,
+  flow,
   onPrimary,
   onClose,
 }: {
   state: AppState;
+  flow: FlowId;
   onPrimary: () => void;
   onClose: () => void;
 }) {
@@ -942,7 +952,7 @@ function ApplicationCardModal({
           </div>
         </div>
 
-        <StatusBlock state={state} />
+        <StatusBlock state={state} flow={flow} />
 
         <div className={styles.appSection}>
           <div className={styles.appSectionTitle}>Cover letter</div>
@@ -979,17 +989,19 @@ function ApplicationCardModal({
 
 function StepApplication({
   state,
+  flow,
   onPrimary,
   onClose,
 }: {
   state: AppState;
+  flow: FlowId;
   onPrimary: () => void;
   onClose: () => void;
 }) {
   return (
     <>
       <StepCandidatesList openApplication={() => {}} />
-      <ApplicationCardModal state={state} onPrimary={onPrimary} onClose={onClose} />
+      <ApplicationCardModal state={state} flow={flow} onPrimary={onPrimary} onClose={onClose} />
     </>
   );
 }
@@ -1969,6 +1981,7 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="shortlisted"
+          flow={flow}
           onPrimary={() => setStep("application_in_talks_waiting")}
           onClose={() => setStep("candidates_list")}
         />
@@ -1978,6 +1991,7 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="in_talks_waiting"
+          flow={flow}
           onPrimary={() => {}}
           onClose={() => setStep("candidates_list")}
         />
@@ -1987,6 +2001,7 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="in_talks_received"
+          flow={flow}
           onPrimary={() => setStep(afterProposalAccepted)}
           onClose={() => setStep("candidates_list")}
         />
@@ -1998,6 +2013,7 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="deal_settled_waiting"
+          flow={flow}
           onPrimary={() => {}}
           onClose={() => setStep("candidates_list")}
         />
@@ -2007,6 +2023,7 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="deal_settled"
+          flow={flow}
           onPrimary={() => setStep("payment")}
           onClose={() => setStep("candidates_list")}
         />
@@ -2058,6 +2075,7 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="paid"
+          flow={flow}
           onPrimary={() => {}}
           onClose={() => setStep("candidates_list")}
         />
@@ -2069,6 +2087,7 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="deal_settled_onboarding"
+          flow={flow}
           onPrimary={() => setStep("cor_company_unverified")}
           onClose={() => setStep("candidates_list")}
         />
@@ -2094,6 +2113,7 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="deal_settled_awaiting_offer"
+          flow={flow}
           onPrimary={() => {}}
           onClose={() => setStep("candidates_list")}
         />
@@ -2140,6 +2160,7 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="offer_paid"
+          flow={flow}
           onPrimary={() => {}}
           onClose={() => setStep("candidates_list")}
         />
