@@ -2,47 +2,79 @@ import { useState } from "react";
 import styles from "./CandidateInvoicePaymentScreen.module.css";
 
 /**
- * ВЕТКА: fm/candidate-invoice-payment-flow
+ * ВЕТКА: fm/candidate-invoice-payment-flow (+ escrow split)
  *
- * Прототип всего пути от открытия реквеста до оплаты F2B-инвойса.
+ * Прототип всего пути от открытия реквеста до оплаты подрядчику.
+ * Один файл, две гипотезы пути — переключатель сверху:
+ *
+ *  • Pay-on-delivery (Verify) — фрил выбрал в КП «оплата по факту работы».
+ *    Mellow выпускает инвойс, заказчик оплачивает с my.mellow.io. 12 шагов.
+ *  • Secure deal (Escrow / Offer) — фрил выбрал «безопасную сделку».
+ *    Заказчик принимает КП → онбординг в CoR → ждёт оффер от фрила →
+ *    принимает оффер → оплачивает через баланс CoR. 14 шагов.
+ *
  * Все статусы кандидата живут ВНУТРИ одной и той же модалки карточки —
  * меняются только pill, кнопка и доп. блок. Модалка не закрывается между
- * переходами; фоном остаётся Candidates list.
+ * переходами; фоном остаётся Candidates list. Это правило справедливо для
+ * обоих флоу.
  *
- * Сценарий (12 шагов, happy path · Verify):
- *  Scout (Candidates list + одна модалка карточки)
+ * Verify (12 шагов, happy path):
+ *  Scout
  *   01. Candidates list — раздел кабинета по реквесту, фильтры AI Match / Applied / Shortlisted.
  *   02. Application · Shortlisted — модалка с CV, кнопка Request proposal.
- *   03. Application · In Talks · waiting for proposal — pill IN TALKS, ждём КП,
- *       Accept proposal неактивна.
- *   04. Application · In Talks · proposal received — пропоузал от Jessica сверху
- *       (short message + Scope/Period/Effort/Total), Accept proposal активна.
- *   05. Application · Deal settled · awaiting invoice — pill DEAL SETTLED, фрил готовит инвойс,
- *       Pay invoice неактивна.
- *   06. Application · Deal settled · invoice ready — фрил прислал инвойс, кнопка Pay invoice активна.
- *  Mellow (my.mellow.io · branded · invoice page)
- *   07. Invoice page (pre-verify) — Confirm your company details + Bank/Card,
- *       Pay disabled пока компания не верифицирована.
- *  Sumsub (modal over Mellow page · happy path only)
+ *   03. Application · In Talks · waiting for proposal — Accept proposal disabled.
+ *   04. Application · In Talks · proposal received — пропоузал от Jessica.
+ *   05. Application · Deal settled · awaiting invoice — фрил готовит инвойс.
+ *   06. Application · Deal settled · invoice ready — кнопка Pay invoice активна.
+ *  Mellow (my.mellow.io · branded)
+ *   07. Invoice page (pre-verify) — Confirm your company details, Pay disabled.
+ *  Sumsub (modal над Mellow)
  *   08. Let's get you verified — 3 шага (identity, liveness, address).
- *   09. We're verifying your data — состояние ожидания.
- *   10. Verification passed — успех.
+ *   09. We're verifying your data.
+ *   10. Verification passed.
  *  Mellow
- *   11. Invoice page (Pay enabled) — компания верифицирована, Pay активна.
+ *   11. Invoice page (Pay enabled).
  *  Scout
- *   12. Application · Paid — модалка с pill PAID, виден receipt и история.
+ *   12. Application · Paid — pill PAID, receipt, история.
+ *
+ * Escrow / Offer (14 шагов, customer side, happy path):
+ *  Шаги 01–04 общие с Verify.
+ *  Scout
+ *   05e. Application · Deal settled · onboarding required — фрил выбрал escrow,
+ *        мы зовём заказчика настроить компанию в CoR. CTA "Continue in CoR".
+ *  Mellow CoR (my.mellow.io · CoR section)
+ *   06e. CoR Company · Verification required — empty company details + плашка
+ *        "What to do next" с тремя действиями (Verify / W-9 / Offer Agreement).
+ *   07e. CoR Company · Verified — данные заполнены, Verified, плашка свёрнута.
+ *  Scout
+ *   08e. Application · Deal settled · awaiting offer — pill DEAL SETTLED, ждём оффер.
+ *  Mellow CoR
+ *   09e. CoR Offers · empty — empty state с illustration + текстом про скоро прибудет.
+ *   10e. CoR Offers · list — оффер от Jessica прилетел, статус NEW.
+ *   11e. CoR Offer detail · New — Accept / Decline.
+ *   12e. CoR Offer detail · Pending payment — Use your balance / Download invoice.
+ *   13e. CoR Offer detail · Paid — статус-степпер залит, "Contractor has received the money".
+ *  Scout
+ *   14e. Application · Paid (offer) — финальный pill PAID, описание escrow-сделки.
  *
  * Стили:
  *  - Scout — строго ч/б (#000/#fff/#666/#e5e5e5), один шрифт var(--ds-font-family-body).
- *  - my.mellow.io — брендовая, повторяет live-страницу.
- *  - Sumsub — модалка-оверлей над Mellow page, акцент #ff6f23.
+ *  - my.mellow.io (Verify invoice) — брендовая, повторяет live-страницу.
+ *  - my.mellow.io (CoR) — брендовая CoR-страница: бежевый фон #f6efe2, левый
+ *    сайдбар с балансом, основная зона с карточками, мелкие orange-акценты
+ *    для статусов и primary CTA (как в реальном продукте).
+ *  - Sumsub — модалка-оверлей над Mellow page.
  */
 
+type FlowId = "verify" | "escrow";
+
 type StepId =
+  // Shared (01–04)
   | "candidates_list"
   | "application_shortlisted"
   | "application_in_talks_waiting"
   | "application_in_talks_received"
+  // Verify-only (05–12)
   | "application_deal_settled_waiting"
   | "application_deal_settled"
   | "payment"
@@ -50,11 +82,24 @@ type StepId =
   | "sumsub_verifying"
   | "sumsub_passed"
   | "payment_verified"
-  | "application_paid";
+  | "application_paid"
+  // Escrow-only (05e–14e)
+  | "application_deal_settled_onboarding"
+  | "cor_company_unverified"
+  | "cor_company_verified"
+  | "application_deal_settled_awaiting_offer"
+  | "cor_offers_empty"
+  | "cor_offers_list"
+  | "cor_offer_new"
+  | "cor_offer_pending_payment"
+  | "cor_offer_paid"
+  | "application_offer_paid";
 
-type StepGroup = "Scout" | "Mellow" | "Sumsub";
+type StepGroup = "Scout" | "Mellow" | "Sumsub" | "CoR";
 
-const STEPS: { id: StepId; name: string; short: string; group: StepGroup }[] = [
+type StepDef = { id: StepId; name: string; short: string; group: StepGroup };
+
+const STEPS_VERIFY: StepDef[] = [
   { id: "candidates_list", name: "01. Scout · Candidates list", short: "Candidates list", group: "Scout" },
   { id: "application_shortlisted", name: "02. Scout · Application · Shortlisted (modal)", short: "Application · Shortlisted", group: "Scout" },
   { id: "application_in_talks_waiting", name: "03. Scout · Application · In Talks · waiting for proposal (modal)", short: "In Talks · waiting", group: "Scout" },
@@ -68,6 +113,33 @@ const STEPS: { id: StepId; name: string; short: string; group: StepGroup }[] = [
   { id: "payment_verified", name: "11. my.mellow.io · Invoice page (Pay enabled)", short: "Invoice (Pay)", group: "Mellow" },
   { id: "application_paid", name: "12. Scout · Application · Paid (modal)", short: "Application · Paid", group: "Scout" },
 ];
+
+const STEPS_ESCROW: StepDef[] = [
+  // 01–04 shared with Verify
+  { id: "candidates_list", name: "01. Scout · Candidates list", short: "Candidates list", group: "Scout" },
+  { id: "application_shortlisted", name: "02. Scout · Application · Shortlisted (modal)", short: "Application · Shortlisted", group: "Scout" },
+  { id: "application_in_talks_waiting", name: "03. Scout · Application · In Talks · waiting for proposal (modal)", short: "In Talks · waiting", group: "Scout" },
+  { id: "application_in_talks_received", name: "04. Scout · Application · In Talks · proposal received (modal)", short: "In Talks · proposal received", group: "Scout" },
+  // 05e–14e escrow
+  { id: "application_deal_settled_onboarding", name: "05. Scout · Application · Deal settled · onboarding required (modal)", short: "Deal settled · CoR onboarding", group: "Scout" },
+  { id: "cor_company_unverified", name: "06. my.mellow.io · CoR · Company (Verification required)", short: "CoR · Company (unverified)", group: "CoR" },
+  { id: "cor_company_verified", name: "07. my.mellow.io · CoR · Company (Verified)", short: "CoR · Company (verified)", group: "CoR" },
+  { id: "application_deal_settled_awaiting_offer", name: "08. Scout · Application · Deal settled · awaiting offer (modal)", short: "Deal settled · awaiting offer", group: "Scout" },
+  { id: "cor_offers_empty", name: "09. my.mellow.io · CoR · Offers (empty state)", short: "CoR · Offers (empty)", group: "CoR" },
+  { id: "cor_offers_list", name: "10. my.mellow.io · CoR · Offers (offer received)", short: "CoR · Offers (list)", group: "CoR" },
+  { id: "cor_offer_new", name: "11. my.mellow.io · CoR · Offer detail · New", short: "CoR · Offer · New", group: "CoR" },
+  { id: "cor_offer_pending_payment", name: "12. my.mellow.io · CoR · Offer detail · Pending payment", short: "CoR · Offer · Pending payment", group: "CoR" },
+  { id: "cor_offer_paid", name: "13. my.mellow.io · CoR · Offer detail · Paid", short: "CoR · Offer · Paid", group: "CoR" },
+  { id: "application_offer_paid", name: "14. Scout · Application · Paid via escrow (modal)", short: "Application · Paid (escrow)", group: "Scout" },
+];
+
+const FLOW_LABEL: Record<FlowId, string> = {
+  verify: "Pay-on-delivery (invoice)",
+  escrow: "Secure deal (escrow / offer)",
+};
+
+const getStepsForFlow = (flow: FlowId): StepDef[] =>
+  flow === "verify" ? STEPS_VERIFY : STEPS_ESCROW;
 
 /* ============================================================
    Demo data (snapshot — NOT real customer data)
@@ -113,6 +185,65 @@ const INVOICE = {
 
 const fmtEur = (v: number) =>
   `€${v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+/* ============================================================
+   Demo data (escrow flow · CoR side)
+   ============================================================ */
+
+/**
+ * The proposal price is the same €1,200 quote, but the fee model differs:
+ * client pays the gross, Mellow's fee is taken from contractor's payout.
+ * So the customer is charged €1,200 flat (matches what they agreed in КП),
+ * the contractor receives €1,200 minus 5% Mellow fee = €1,140 net.
+ */
+const OFFER = {
+  number: "OFR-21988",
+  receivedAt: "Apr 27, 2026",
+  deadline: "Apr 30, 2026, 14:00",
+  description: "Social media visual kit — Q2 sprint",
+  contractorName: "Jessica Martinez",
+  contractorLocation: "Lisbon, Portugal",
+  service: "Graphic design / Social media visuals",
+  attributes: [
+    { label: "Quantity", value: "40 h" },
+    { label: "Language", value: "English" },
+    { label: "Brand", value: "Studio M" },
+  ],
+  clientPays: 1200,
+  contractorReceives: 1200,
+  feePct: 5,
+  fee: 60,
+  contractorNet: 1140,
+  paidAt: "Apr 27, 2026",
+};
+
+/**
+ * Studio M company shell created in CoR after the proposal is accepted.
+ * Modeled US-based to demonstrate the W-9 step (it only appears for US
+ * incorporations). The offer itself is still priced in EUR — Mellow CoR
+ * is multi-currency.
+ */
+const COR_COMPANY = {
+  name: "Studio M LLC",
+  contactName: "Doe Jane",
+  contactEmail: "billing@studio-m.com",
+  size: "Under 50",
+  country: "United States",
+  countryCode: "🇺🇸",
+  currency: "USD ($)",
+  isUS: true, // controls whether the W-9 step is shown in the checklist
+  registrationNumber: "0429641",
+  taxId: "EIN 35-6456003",
+  address: {
+    line: "1209 Orange Street",
+    city: "Wilmington",
+    zip: "19801",
+    region: "DE",
+    country: "United States",
+  },
+  // Customer balance after a top-up — used on the Offer · Pending payment step.
+  balanceTopUp: 1200,
+};
 
 /* ============================================================
    Candidates list — mock pool for the request
@@ -207,21 +338,28 @@ const AI_MATCH_CANDIDATES: CandidateRow[] = [
    ============================================================ */
 
 function PrototypeBar({
+  flow,
+  onFlowChange,
+  steps,
   step,
   idx,
   goNext,
   goBack,
   jump,
 }: {
+  flow: FlowId;
+  onFlowChange: (next: FlowId) => void;
+  steps: StepDef[];
   step: StepId;
   idx: number;
   goNext: () => void;
   goBack: () => void;
   jump: (id: StepId) => void;
 }) {
-  const current = STEPS[idx];
-  const grouped: Record<StepGroup, typeof STEPS> = { Scout: [], Mellow: [], Sumsub: [] };
-  STEPS.forEach((s) => grouped[s.group].push(s));
+  const current = steps[idx];
+  const grouped: Record<StepGroup, StepDef[]> = { Scout: [], Mellow: [], CoR: [], Sumsub: [] };
+  steps.forEach((s) => grouped[s.group].push(s));
+  const groupOrder: StepGroup[] = ["Scout", "Mellow", "CoR", "Sumsub"];
 
   return (
     <div className={styles.protoBar}>
@@ -235,11 +373,25 @@ function PrototypeBar({
           ← Back
         </button>
         <span className={styles.protoStepIndex}>
-          Step {idx + 1} / {STEPS.length}
+          Step {idx + 1} / {steps.length}
         </span>
         <span className={styles.protoStepName}>
           {current.group} · {current.short}
         </span>
+      </div>
+      <div className={styles.protoCenter} role="tablist" aria-label="Flow">
+        {(Object.keys(FLOW_LABEL) as FlowId[]).map((f) => (
+          <button
+            key={f}
+            type="button"
+            role="tab"
+            aria-selected={flow === f}
+            className={`${styles.protoFlowTab} ${flow === f ? styles.protoFlowTabActive : ""}`}
+            onClick={() => onFlowChange(f)}
+          >
+            {FLOW_LABEL[f]}
+          </button>
+        ))}
       </div>
       <div className={styles.protoRight}>
         <select
@@ -248,21 +400,23 @@ function PrototypeBar({
           onChange={(e) => jump(e.target.value as StepId)}
           className={styles.protoBtn}
         >
-          {(Object.keys(grouped) as StepGroup[]).map((g) => (
-            <optgroup key={g} label={g}>
-              {grouped[g].map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </optgroup>
-          ))}
+          {groupOrder
+            .filter((g) => grouped[g].length > 0)
+            .map((g) => (
+              <optgroup key={g} label={g}>
+                {grouped[g].map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
         </select>
         <button
           type="button"
           className={styles.protoBtn}
           onClick={goNext}
-          disabled={idx === STEPS.length - 1}
+          disabled={idx === steps.length - 1}
         >
           Next →
         </button>
@@ -450,9 +604,14 @@ type AppState =
   | "shortlisted"
   | "in_talks_waiting"
   | "in_talks_received"
+  // verify flow
   | "deal_settled_waiting"
   | "deal_settled"
-  | "paid";
+  | "paid"
+  // escrow flow
+  | "deal_settled_onboarding"
+  | "deal_settled_awaiting_offer"
+  | "offer_paid";
 
 const PILLS: Record<AppState, string> = {
   shortlisted: "Shortlisted",
@@ -461,6 +620,9 @@ const PILLS: Record<AppState, string> = {
   deal_settled_waiting: "Deal settled",
   deal_settled: "Deal settled",
   paid: "Paid",
+  deal_settled_onboarding: "Deal settled",
+  deal_settled_awaiting_offer: "Deal settled",
+  offer_paid: "Paid",
 };
 
 const PRIMARY_ACTIONS: Record<AppState, { label: string; hint?: string }> = {
@@ -470,6 +632,15 @@ const PRIMARY_ACTIONS: Record<AppState, { label: string; hint?: string }> = {
   deal_settled_waiting: { label: "Pay invoice", hint: "Available once Jessica sends the invoice." },
   deal_settled: { label: "Pay invoice — €1,260.00", hint: "Opens Mellow's secure invoice page." },
   paid: { label: "Download receipt" },
+  deal_settled_onboarding: {
+    label: "Continue in CoR",
+    hint: "Set up Studio M in Contractor of Record so Jessica can send a secure offer.",
+  },
+  deal_settled_awaiting_offer: {
+    label: "Open offer",
+    hint: "Available once Jessica sends a secure offer through CoR.",
+  },
+  offer_paid: { label: "Download receipt" },
 };
 
 function StatusBlock({ state }: { state: AppState }) {
@@ -571,7 +742,79 @@ function StatusBlock({ state }: { state: AppState }) {
     );
   }
 
-  // paid
+  if (state === "deal_settled_onboarding") {
+    return (
+      <div className={styles.modalStatusBlock}>
+        <div className={styles.modalStatusTitle}>Continue in CoR to receive Jessica's offer</div>
+        <div className={styles.modalStatusBody}>
+          Jessica accepted the deal and will issue a secure offer — Mellow holds your payment in
+          escrow and releases it to her on delivery. To unlock the offer, finish setting up Studio M
+          in Contractor of Record (CoR): verify the company, accept the Offer Agreement, and submit
+          the W-9.
+        </div>
+        <ul className={styles.modalStatusSteps}>
+          <li className={styles.modalStatusStepDone}>Proposal accepted · Apr 26, 2026</li>
+          <li className={styles.modalStatusStepActive}>CoR onboarding · Studio M not verified yet</li>
+          <li className={styles.modalStatusStepPending}>Awaiting offer from Jessica</li>
+          <li className={styles.modalStatusStepPending}>Pay offer → Mellow releases funds on delivery</li>
+        </ul>
+      </div>
+    );
+  }
+
+  if (state === "deal_settled_awaiting_offer") {
+    return (
+      <div className={styles.modalStatusBlock}>
+        <div className={styles.modalStatusTitle}>Awaiting offer from Jessica</div>
+        <div className={styles.modalStatusBody}>
+          Studio M is verified in CoR and ready to receive offers. Jessica is preparing a secure
+          offer through Mellow — as soon as she sends it, you'll see it under CoR · Offers and can
+          pay it with your balance. No paperwork chase, no separate bank transfer.
+        </div>
+        <ul className={styles.modalStatusSteps}>
+          <li className={styles.modalStatusStepDone}>Proposal accepted · Apr 26, 2026</li>
+          <li className={styles.modalStatusStepDone}>CoR onboarding · Studio M verified</li>
+          <li className={styles.modalStatusStepActive}>Awaiting offer · usually within 1 business day</li>
+          <li className={styles.modalStatusStepPending}>Pay offer → Mellow releases funds on delivery</li>
+        </ul>
+      </div>
+    );
+  }
+
+  if (state === "offer_paid") {
+    return (
+      <div className={styles.modalStatusBlock}>
+        <div className={styles.modalStatusTitle}>Paid via Mellow escrow · {fmtEur(OFFER.clientPays)}</div>
+        <div className={styles.modalStatusBody}>
+          Funds are held by Mellow and released to Jessica when she marks the work delivered. Receipt
+          and offer documents are synced to this card and to CoR · Offers.
+        </div>
+        <dl className={styles.modalKv}>
+          <div>
+            <dt>Offer</dt>
+            <dd>No {OFFER.number}</dd>
+          </div>
+          <div>
+            <dt>Method</dt>
+            <dd>Mellow balance (escrow)</dd>
+          </div>
+          <div>
+            <dt>You paid</dt>
+            <dd>{fmtEur(OFFER.clientPays)}</dd>
+          </div>
+          <div>
+            <dt>Contractor receives</dt>
+            <dd>
+              {fmtEur(OFFER.contractorNet)}
+              <span className={styles.modalKvFootnote}> (5% Mellow fee covered by Jessica)</span>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    );
+  }
+
+  // paid (verify flow)
   return (
     <div className={styles.modalStatusBlock}>
       <div className={styles.modalStatusTitle}>Paid · €1,260.00</div>
@@ -687,8 +930,10 @@ function ApplicationCardModal({
               onClick={onPrimary}
               disabled={
                 state === "paid" ||
+                state === "offer_paid" ||
                 state === "in_talks_waiting" ||
-                state === "deal_settled_waiting"
+                state === "deal_settled_waiting" ||
+                state === "deal_settled_awaiting_offer"
               }
             >
               {action.label}
@@ -1049,23 +1294,674 @@ function StepSumsubPassed({ goNext, onClose }: { goNext: () => void; onClose: ()
 
 
 /* ============================================================
+   CoR (Contractor of Record) shell + screens — escrow flow
+   my.mellow.io brand · cream surface · soft orange accents
+   ============================================================ */
+
+type CorNavKey = "tasks" | "team" | "company" | "analytics" | "documents" | "offers" | "services" | "profile";
+
+function CorShell({
+  children,
+  active,
+  showBalance,
+  onNavCompany,
+  onNavOffers,
+}: {
+  children: React.ReactNode;
+  active: CorNavKey;
+  showBalance: boolean;
+  onNavCompany?: () => void;
+  onNavOffers?: () => void;
+}) {
+  const NAV: { key: CorNavKey; label: string; available: boolean }[] = [
+    { key: "tasks", label: "Tasks", available: showBalance },
+    { key: "team", label: "Team", available: true },
+    { key: "company", label: "Company", available: true },
+    { key: "analytics", label: "Analytics", available: showBalance },
+    { key: "documents", label: "Documents", available: true },
+    { key: "offers", label: "Offers", available: true },
+    { key: "services", label: "Services list", available: true },
+    { key: "profile", label: "Profile", available: true },
+  ];
+
+  return (
+    <div className={styles.corFrame}>
+      <aside className={styles.corSidebar}>
+        <div className={styles.corSidebarHead}>
+          <div className={styles.corLogo}>mellow</div>
+          <button type="button" className={styles.corBell} aria-label="Notifications">
+            <span aria-hidden>♪</span>
+          </button>
+        </div>
+        <div className={styles.corUserBlock}>
+          <div className={styles.corUserName}>{COR_COMPANY.contactName}</div>
+          <div className={styles.corUserEmail}>{COR_COMPANY.contactEmail}</div>
+        </div>
+        <button type="button" className={styles.corCompanyChip}>
+          <span>{COR_COMPANY.name}</span>
+          <span aria-hidden>→</span>
+        </button>
+
+        {showBalance && (
+          <div className={styles.corBalance}>
+            <div className={styles.corBalanceMain}>$0.00</div>
+            <div className={styles.corBalanceRow}>
+              <span>On hold</span>
+              <span>$0.00</span>
+            </div>
+            <div className={styles.corBalanceRow}>
+              <span>Tasks to pay</span>
+              <span>$0.00</span>
+            </div>
+            <button type="button" className={styles.corAddFunds}>Add funds</button>
+          </div>
+        )}
+
+        <nav className={styles.corNav} aria-label="CoR navigation">
+          {NAV.filter((n) => n.available).map((n) => {
+            const isActive = n.key === active;
+            const onClick =
+              n.key === "company" ? onNavCompany : n.key === "offers" ? onNavOffers : undefined;
+            return (
+              <button
+                key={n.key}
+                type="button"
+                className={`${styles.corNavItem} ${isActive ? styles.corNavItemActive : ""}`}
+                onClick={onClick}
+              >
+                <span className={styles.corNavIcon} aria-hidden>•</span>
+                <span>{n.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className={styles.corSidebarFoot}>
+          <button type="button" className={styles.corRateUs}>Rate us &amp; Get $25</button>
+          <button type="button" className={styles.corLogOut}>Log out  ↪</button>
+        </div>
+      </aside>
+
+      <div className={styles.corMain}>
+        <div className={styles.corMainTopbar}>
+          <button type="button" className={styles.corLangBtn}>🌐 EN</button>
+          <button type="button" className={styles.corProductBtn}>
+            <span>Contractor of Record</span>
+            <span aria-hidden>▾</span>
+          </button>
+        </div>
+        <div className={styles.corMainBody}>{children}</div>
+        <footer className={styles.corMainFooter}>
+          <div className={styles.corFooterLinks}>
+            <a href="#" onClick={(e) => e.preventDefault()}>Help center</a>
+            <a href="#" onClick={(e) => e.preventDefault()}>General Terms</a>
+            <a href="#" onClick={(e) => e.preventDefault()}>CoR Product Terms</a>
+            <a href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</a>
+          </div>
+          <div className={styles.corFooterRates}>
+            <span>Conversion rates</span>
+            <span>€→₽ 79.401</span>
+            <span>$→₽ 74.329</span>
+            <span>€→$ 1.0576</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+  );
+}
+
+/* ----- CoR · Company page · shared layout ----- */
+
+function CorCompanyPage({ verified }: { verified: boolean }) {
+  const dash = "—";
+  return (
+    <>
+      <h1 className={styles.corPageTitle}>Company</h1>
+
+      <div className={styles.corTabs}>
+        <button type="button" className={`${styles.corTab} ${styles.corTabActive}`}>Company details</button>
+        <button type="button" className={styles.corTab}>Users</button>
+        <button type="button" className={styles.corTab}>Integration</button>
+        <button type="button" className={styles.corTab}>Taxes</button>
+      </div>
+
+      <div className={styles.corCompanyGrid}>
+        <section className={styles.corCard}>
+          <header className={styles.corCardHead}>
+            <span className={styles.corCardIcon} aria-hidden>▣</span>
+            <span className={styles.corCardTitle}>Company Details</span>
+            <button type="button" className={styles.corCardEdit} aria-label="Edit">✎</button>
+          </header>
+          <dl className={styles.corDl}>
+            <div><dt>Company name</dt><dd>{COR_COMPANY.name}</dd></div>
+            <div><dt>Brand name</dt><dd className={verified ? "" : styles.corDdMuted}>{verified ? "Studio M" : dash}</dd></div>
+            <div><dt>Company size</dt><dd>{COR_COMPANY.size}</dd></div>
+            <div>
+              <dt>Country of incorporation</dt>
+              <dd>
+                <span aria-hidden>{COR_COMPANY.countryCode}</span> {COR_COMPANY.country}
+              </dd>
+            </div>
+            <div><dt>Currency</dt><dd>{COR_COMPANY.currency}</dd></div>
+            <div><dt>Registration number</dt><dd className={verified ? "" : styles.corDdMuted}>{verified ? COR_COMPANY.registrationNumber : dash}</dd></div>
+            <div><dt>EIN</dt><dd className={verified ? "" : styles.corDdMuted}>{verified ? COR_COMPANY.taxId : dash}</dd></div>
+          </dl>
+        </section>
+
+        <section className={styles.corCard}>
+          <header className={styles.corCardHead}>
+            <span className={styles.corCardIcon} aria-hidden>W</span>
+            <span className={styles.corCardTitle}>Contractor of Record Service</span>
+          </header>
+          <dl className={styles.corDl}>
+            <div>
+              <dt>Verification status</dt>
+              <dd>
+                {verified ? (
+                  <span className={styles.corPillVerified}>✓ Verified</span>
+                ) : (
+                  <span className={styles.corPillNeedsAction}>Verification required</span>
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt>Contract</dt>
+              <dd className={verified ? "" : styles.corDdMuted}>
+                {verified ? "Mellow CoR · Master Service Agreement" : "Available after acceptance"}
+              </dd>
+            </div>
+            <div>
+              <dt>Service fee</dt>
+              <dd className={verified ? "" : styles.corDdMuted}>
+                {verified ? "5% on each offer · paid by contractor" : "Confirmed after activation"}
+              </dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+
+      <section className={styles.corCard} style={{ marginTop: 16 }}>
+        <header className={styles.corCardHead}>
+          <span className={styles.corCardIcon} aria-hidden>◉</span>
+          <span className={styles.corCardTitle}>Legal Address</span>
+          <button type="button" className={styles.corCardEdit} aria-label="Edit">✎</button>
+        </header>
+        <dl className={styles.corDl}>
+          <div><dt>Address</dt><dd className={verified ? "" : styles.corDdMuted}>{verified ? COR_COMPANY.address.line : dash}</dd></div>
+          <div><dt>City</dt><dd className={verified ? "" : styles.corDdMuted}>{verified ? COR_COMPANY.address.city : dash}</dd></div>
+          <div><dt>ZIP code</dt><dd className={verified ? "" : styles.corDdMuted}>{verified ? COR_COMPANY.address.zip : dash}</dd></div>
+          <div><dt>State</dt><dd className={verified ? "" : styles.corDdMuted}>{verified ? COR_COMPANY.address.region : dash}</dd></div>
+          <div><dt>Country</dt><dd className={verified ? "" : styles.corDdMuted}>{verified ? COR_COMPANY.address.country : dash}</dd></div>
+        </dl>
+      </section>
+    </>
+  );
+}
+
+/* ----- CoR · Onboarding panel (overlay) — shown on unverified company step ----- */
+
+function CorOnboardingPanel({ onVerify }: { onVerify: () => void }) {
+  return (
+    <>
+      <aside className={styles.corOnboardPanel}>
+        <header className={styles.corOnboardHead}>
+          <div>
+            <div className={styles.corOnboardTitle}>What to do next</div>
+            <div className={styles.corOnboardSub}>Actions to keep things moving</div>
+          </div>
+          <button type="button" className={styles.corOnboardClose} aria-label="Hide">×</button>
+        </header>
+        <ul className={styles.corOnboardList}>
+          <li className={styles.corOnboardItemActive}>
+            <button type="button" className={styles.corOnboardItemBtn} onClick={onVerify}>
+              <span className={styles.corOnboardItemIcon} aria-hidden>🛡</span>
+              <span className={styles.corOnboardItemBody}>
+                <span className={styles.corOnboardItemName}>Verify your company</span>
+                <span className={styles.corOnboardItemHint}>
+                  Verify your company details through our trusted partner
+                </span>
+              </span>
+              <span className={styles.corOnboardItemChev} aria-hidden>›</span>
+            </button>
+          </li>
+          {COR_COMPANY.isUS && (
+            <li className={styles.corOnboardItem}>
+              <span className={styles.corOnboardItemIcon} aria-hidden>📄</span>
+              <span className={styles.corOnboardItemBody}>
+                <span className={styles.corOnboardItemName}>Complete the W-9 tax form for the US</span>
+                <span className={styles.corOnboardItemHint}>
+                  Required for companies in the United States
+                </span>
+              </span>
+            </li>
+          )}
+          <li className={styles.corOnboardItem}>
+            <span className={styles.corOnboardItemIcon} aria-hidden>✒</span>
+            <span className={styles.corOnboardItemBody}>
+              <span className={styles.corOnboardItemName}>Accept our Offer Agreement</span>
+              <span className={styles.corOnboardItemHint}>
+                Please review the agreement so we can move forward together
+              </span>
+            </span>
+          </li>
+        </ul>
+      </aside>
+      <button type="button" className={styles.corFinishSetup} onClick={onVerify}>
+        <span aria-hidden>★</span> Finish setup
+      </button>
+    </>
+  );
+}
+
+/* ----- 06e: CoR · Company unverified ----- */
+
+function StepCorCompanyUnverified({
+  goNext,
+  onNavOffers,
+}: {
+  goNext: () => void;
+  onNavOffers: () => void;
+}) {
+  return (
+    <CorShell active="company" showBalance={false} onNavCompany={() => {}} onNavOffers={onNavOffers}>
+      <CorCompanyPage verified={false} />
+      <CorOnboardingPanel onVerify={goNext} />
+    </CorShell>
+  );
+}
+
+/* ----- 07e: CoR · Company verified (with success popup) ----- */
+
+function StepCorCompanyVerified({
+  goNext,
+  onNavOffers,
+}: {
+  goNext: () => void;
+  onNavOffers: () => void;
+}) {
+  const [popup, setPopup] = useState(true);
+  return (
+    <CorShell active="company" showBalance={true} onNavCompany={() => {}} onNavOffers={onNavOffers}>
+      <CorCompanyPage verified={true} />
+      {popup && (
+        <div className={styles.corPopupBackdrop} role="dialog" aria-modal="true">
+          <div className={styles.corPopup}>
+            <button
+              type="button"
+              className={styles.corPopupClose}
+              aria-label="Close"
+              onClick={() => setPopup(false)}
+            >
+              ×
+            </button>
+            <div className={styles.corPopupArt} aria-hidden>
+              <svg viewBox="0 0 200 140" width="200" height="140">
+                <rect x="40" y="50" width="120" height="76" rx="4" fill="#ffffff" stroke="#000000" />
+                <rect x="56" y="40" width="88" height="14" fill="#ffffff" stroke="#000000" />
+                <rect x="68" y="64" width="6" height="50" fill="#000000" />
+                <rect x="84" y="64" width="6" height="50" fill="#000000" />
+                <rect x="100" y="64" width="6" height="50" fill="#000000" />
+                <rect x="116" y="64" width="6" height="50" fill="#000000" />
+                <polygon points="100,12 100,28 110,28 100,44" fill="#ed7a3a" />
+              </svg>
+            </div>
+            <div className={styles.corPopupTitle}>You're all set!</div>
+            <div className={styles.corPopupBody}>
+              {COR_COMPANY.name} is verified, the Offer Agreement is signed, and your W-9 is on file.
+              Mellow has activated your CoR account — Jessica can now send you a secure offer.
+            </div>
+            <button
+              type="button"
+              className={styles.corPopupPrimary}
+              onClick={() => {
+                setPopup(false);
+                goNext();
+              }}
+            >
+              Back to candidate
+            </button>
+          </div>
+        </div>
+      )}
+    </CorShell>
+  );
+}
+
+/* ----- 09e: CoR · Offers · empty state ----- */
+
+function StepCorOffersEmpty({ onNavCompany }: { onNavCompany: () => void }) {
+  return (
+    <CorShell active="offers" showBalance={true} onNavCompany={onNavCompany} onNavOffers={() => {}}>
+      <h1 className={styles.corPageTitle}>Offers</h1>
+      <div className={styles.corOffersTable}>
+        <div className={styles.corOffersHead}>
+          <span>All</span>
+          <span>Name</span>
+          <span className={styles.right}>Deadline</span>
+          <span className={styles.right}>Price</span>
+          <span className={styles.right}>Status</span>
+        </div>
+        <div className={styles.corOffersEmptyRow}>
+          <div className={styles.corOffersEmptyArt} aria-hidden>
+            <svg viewBox="0 0 240 160" width="200" height="130">
+              <rect x="40" y="48" width="160" height="96" rx="10" fill="#ffffff" stroke="#000000" />
+              <rect x="40" y="48" width="160" height="22" rx="10" fill="#000000" />
+              <rect x="58" y="84" width="124" height="8" rx="2" fill="#e5e5e5" />
+              <rect x="58" y="100" width="84" height="8" rx="2" fill="#e5e5e5" />
+              <rect x="58" y="116" width="100" height="8" rx="2" fill="#e5e5e5" />
+              <circle cx="180" cy="56" r="14" fill="#ed7a3a" />
+              <text x="180" y="62" textAnchor="middle" fill="#ffffff" fontSize="16" fontWeight="700" fontFamily="serif">!</text>
+            </svg>
+          </div>
+          <div className={styles.corOffersEmptyTitle}>Your offer will appear here</div>
+          <div className={styles.corOffersEmptyBody}>
+            Once Jessica issues a secure offer through Mellow, it shows up in this list. You'll get
+            an email and a notification — open the offer, accept it, and pay from your balance.
+            Mellow holds the funds in escrow and releases them when Jessica delivers.
+          </div>
+        </div>
+      </div>
+    </CorShell>
+  );
+}
+
+/* ----- 10e: CoR · Offers · list with Jessica's offer ----- */
+
+function StepCorOffersList({
+  openOffer,
+  onNavCompany,
+}: {
+  openOffer: () => void;
+  onNavCompany: () => void;
+}) {
+  return (
+    <CorShell active="offers" showBalance={true} onNavCompany={onNavCompany} onNavOffers={() => {}}>
+      <h1 className={styles.corPageTitle}>Offers</h1>
+      <div className={styles.corOffersTable}>
+        <div className={styles.corOffersHead}>
+          <span>All</span>
+          <span>Name</span>
+          <span className={styles.right}>Deadline</span>
+          <span className={styles.right}>Price</span>
+          <span className={styles.right}>Status</span>
+        </div>
+        <button type="button" className={styles.corOffersRow} onClick={openOffer}>
+          <span className={styles.corOffersRowId}>{OFFER.number.replace("OFR-", "")}</span>
+          <span className={styles.corOffersRowName}>
+            <span aria-hidden>＋</span> {OFFER.description}
+          </span>
+          <span className={styles.right}>{OFFER.deadline}</span>
+          <span className={styles.right}>{fmtEur(OFFER.clientPays)}</span>
+          <span className={styles.right}>
+            <span className={styles.corStatusNew}>New</span>
+          </span>
+        </button>
+      </div>
+    </CorShell>
+  );
+}
+
+/* ----- Offer detail · stepper helper ----- */
+
+type OfferStage = "new" | "pending" | "paid";
+
+function OfferStatusStepper({ stage }: { stage: OfferStage }) {
+  // 5-stage stepper: New → Accepted → Funded → In escrow → Released
+  const labels = ["New", "Accepted", "Funded", "In escrow", "Released"];
+  const filledUpto = stage === "new" ? 1 : stage === "pending" ? 3 : 5;
+  const activeIdx = stage === "pending" ? 3 : stage === "paid" ? 4 : 0;
+  return (
+    <div className={styles.offerStepper}>
+      {labels.map((_, i) => {
+        const cls =
+          i < filledUpto - 1
+            ? styles.offerStepDone
+            : i === activeIdx
+            ? styles.offerStepActive
+            : styles.offerStepPending;
+        return (
+          <div key={i} className={`${styles.offerStepDot} ${cls}`} aria-label={labels[i]}>
+            {i < filledUpto - 1 ? "✓" : i === activeIdx ? "•" : ""}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ----- Offer detail · shared layout ----- */
+
+function CorOfferDetail({
+  stage,
+  onAccept,
+  onPay,
+}: {
+  stage: OfferStage;
+  onAccept?: () => void;
+  onPay?: () => void;
+}) {
+  const stagePill =
+    stage === "new" ? "New" : stage === "pending" ? "Pending payment" : "Paid";
+
+  return (
+    <>
+      <button type="button" className={styles.corBackBtn}>← Back</button>
+
+      <div className={styles.corOfferGrid}>
+        <section className={styles.corCardWide}>
+          <div className={styles.corOfferKicker}>№{OFFER.number.replace("OFR-", "")}</div>
+          <h2 className={styles.corOfferTitle}>{OFFER.description}</h2>
+
+          <div className={styles.corOfferBlocks}>
+            <div className={styles.corOfferBlock}>
+              <div className={styles.corOfferBlockLbl}>Status</div>
+              <OfferStatusStepper stage={stage} />
+              {stage === "new" && (
+                <>
+                  <div className={styles.corOfferStatusName}>New</div>
+                </>
+              )}
+              {stage === "pending" && (
+                <>
+                  <div className={`${styles.corOfferStatusName} ${styles.corOfferStatusOrange}`}>
+                    Pending payment
+                  </div>
+                  <p className={styles.corOfferStatusBody}>
+                    Pay {fmtEur(OFFER.clientPays)} from your Mellow balance — we hold the funds in
+                    escrow and release them to Jessica when she marks the work delivered.
+                  </p>
+                </>
+              )}
+              {stage === "paid" && (
+                <>
+                  <div className={`${styles.corOfferStatusName} ${styles.corOfferStatusGreen}`}>
+                    Paid
+                  </div>
+                  <p className={styles.corOfferStatusBody}>
+                    The contractor has received the money.
+                  </p>
+                </>
+              )}
+            </div>
+
+            <div className={styles.corOfferBlock}>
+              <div className={styles.corOfferBlockLbl}>Price</div>
+              <div className={styles.corOfferKvRow}>
+                <span>Client pays</span>
+                <strong>{fmtEur(OFFER.clientPays)}</strong>
+              </div>
+              <div className={styles.corOfferKvRow}>
+                <span>Contractor receives</span>
+                <strong>{fmtEur(OFFER.contractorReceives)}</strong>
+              </div>
+              <div className={styles.corOfferKvRow}>
+                <span>5% Mellow fee · paid by contractor</span>
+                <strong>{fmtEur(OFFER.fee)}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.corOfferActionsRow}>
+            <div className={styles.corOfferBlock} style={{ flex: 1 }}>
+              <div className={styles.corOfferBlockLbl}>Actions</div>
+              <div className={styles.corOfferKvRow}>
+                <span>Contractor</span>
+                <strong>{OFFER.contractorName}</strong>
+              </div>
+              <div className={styles.corOfferKvRow}>
+                <span>Deadline</span>
+                <strong>{OFFER.deadline}</strong>
+              </div>
+              <div className={styles.corOfferKvRow}>
+                <span>Completed</span>
+                <strong>{stage === "paid" ? OFFER.paidAt : "—"}</strong>
+              </div>
+              <div className={styles.corOfferKvRow}>
+                <span>Paid</span>
+                <strong>{stage === "paid" ? OFFER.paidAt : "—"}</strong>
+              </div>
+            </div>
+          </div>
+
+          {stage === "new" && (
+            <div className={styles.corOfferCta}>
+              <button type="button" className={styles.corPrimaryBtn} onClick={onAccept}>
+                Accept
+              </button>
+              <button type="button" className={styles.corGhostBtn}>Decline</button>
+            </div>
+          )}
+          {stage === "pending" && (
+            <div className={styles.corOfferCta}>
+              <button type="button" className={styles.corGhostBtn}>↓ Download invoice</button>
+              <button type="button" className={styles.corPrimaryBtn} onClick={onPay}>
+                Use your balance — {fmtEur(OFFER.clientPays)}
+              </button>
+            </div>
+          )}
+          {stage === "paid" && (
+            <div className={styles.corOfferCta}>
+              <button type="button" className={styles.corGhostBtn}>↓ Download receipt</button>
+            </div>
+          )}
+        </section>
+
+        <aside className={styles.corCard}>
+          <div className={styles.corOfferDetailsHead}>
+            <span>Details</span>
+            <span className={styles.corOfferDetailsPill}>{stagePill}</span>
+          </div>
+          <dl className={styles.corDl}>
+            <div><dt>Name</dt><dd>{OFFER.description}</dd></div>
+            <div><dt>Price</dt><dd>{fmtEur(OFFER.clientPays)}</dd></div>
+            <div><dt>Description</dt><dd>{OFFER.description}</dd></div>
+            <div><dt>Contractor</dt><dd>{OFFER.contractorName}</dd></div>
+            <div><dt>Service</dt><dd>{OFFER.service}</dd></div>
+          </dl>
+          <div className={styles.corOfferAttrs}>
+            <div className={styles.corOfferAttrsTitle}>Attributes</div>
+            {OFFER.attributes.map((a) => (
+              <div key={a.label} className={styles.corOfferAttrRow}>
+                <span>{a.label}:</span>
+                <strong>{a.value}</strong>
+              </div>
+            ))}
+          </div>
+        </aside>
+      </div>
+    </>
+  );
+}
+
+/* ----- 11e: Offer · New ----- */
+
+function StepCorOfferNew({
+  goNext,
+  onNavCompany,
+  onNavOffers,
+}: {
+  goNext: () => void;
+  onNavCompany: () => void;
+  onNavOffers: () => void;
+}) {
+  return (
+    <CorShell active="offers" showBalance={true} onNavCompany={onNavCompany} onNavOffers={onNavOffers}>
+      <CorOfferDetail stage="new" onAccept={goNext} />
+    </CorShell>
+  );
+}
+
+/* ----- 12e: Offer · Pending payment ----- */
+
+function StepCorOfferPendingPayment({
+  goNext,
+  onNavCompany,
+  onNavOffers,
+}: {
+  goNext: () => void;
+  onNavCompany: () => void;
+  onNavOffers: () => void;
+}) {
+  return (
+    <CorShell active="offers" showBalance={true} onNavCompany={onNavCompany} onNavOffers={onNavOffers}>
+      <CorOfferDetail stage="pending" onPay={goNext} />
+    </CorShell>
+  );
+}
+
+/* ----- 13e: Offer · Paid ----- */
+
+function StepCorOfferPaid({
+  onNavCompany,
+  onNavOffers,
+}: {
+  onNavCompany: () => void;
+  onNavOffers: () => void;
+}) {
+  return (
+    <CorShell active="offers" showBalance={true} onNavCompany={onNavCompany} onNavOffers={onNavOffers}>
+      <CorOfferDetail stage="paid" />
+    </CorShell>
+  );
+}
+
+/* ============================================================
    Root
    ============================================================ */
 
 export function CandidateInvoicePaymentScreen() {
+  const [flow, setFlow] = useState<FlowId>("verify");
   const [step, setStep] = useState<StepId>("candidates_list");
-  const idx = STEPS.findIndex((s) => s.id === step);
+
+  const steps = getStepsForFlow(flow);
+  const idx = steps.findIndex((s) => s.id === step);
+  const safeIdx = idx === -1 ? 0 : idx;
 
   const goNext = () => {
-    if (idx < STEPS.length - 1) setStep(STEPS[idx + 1].id);
+    if (safeIdx < steps.length - 1) setStep(steps[safeIdx + 1].id);
   };
   const goBack = () => {
-    if (idx > 0) setStep(STEPS[idx - 1].id);
+    if (safeIdx > 0) setStep(steps[safeIdx - 1].id);
   };
   const jumpTo = (id: StepId) => setStep(id);
 
+  // When the user toggles flows, keep them on a shared step if possible,
+  // otherwise reset to the first step of the new flow.
+  const onFlowChange = (next: FlowId) => {
+    setFlow(next);
+    const nextSteps = getStepsForFlow(next);
+    if (!nextSteps.some((s) => s.id === step)) {
+      setStep(nextSteps[0].id);
+    }
+  };
+
+  // After step 04, the primary action diverges by flow.
+  const afterProposalAccepted: StepId =
+    flow === "verify" ? "application_deal_settled_waiting" : "application_deal_settled_onboarding";
+
   let content: React.ReactNode;
   switch (step) {
+    /* -------- Shared steps 01–04 -------- */
     case "candidates_list":
       content = <StepCandidatesList openApplication={() => setStep("application_shortlisted")} />;
       break;
@@ -1091,11 +1987,13 @@ export function CandidateInvoicePaymentScreen() {
       content = (
         <StepApplication
           state="in_talks_received"
-          onPrimary={() => setStep("application_deal_settled_waiting")}
+          onPrimary={() => setStep(afterProposalAccepted)}
           onClose={() => setStep("candidates_list")}
         />
       );
       break;
+
+    /* -------- Verify-only steps 05–12 -------- */
     case "application_deal_settled_waiting":
       content = (
         <StepApplication
@@ -1165,11 +2063,102 @@ export function CandidateInvoicePaymentScreen() {
         />
       );
       break;
+
+    /* -------- Escrow-only steps 05e–14e -------- */
+    case "application_deal_settled_onboarding":
+      content = (
+        <StepApplication
+          state="deal_settled_onboarding"
+          onPrimary={() => setStep("cor_company_unverified")}
+          onClose={() => setStep("candidates_list")}
+        />
+      );
+      break;
+    case "cor_company_unverified":
+      content = (
+        <StepCorCompanyUnverified
+          goNext={() => setStep("cor_company_verified")}
+          onNavOffers={() => setStep("cor_offers_empty")}
+        />
+      );
+      break;
+    case "cor_company_verified":
+      content = (
+        <StepCorCompanyVerified
+          goNext={() => setStep("application_deal_settled_awaiting_offer")}
+          onNavOffers={() => setStep("cor_offers_empty")}
+        />
+      );
+      break;
+    case "application_deal_settled_awaiting_offer":
+      content = (
+        <StepApplication
+          state="deal_settled_awaiting_offer"
+          onPrimary={() => {}}
+          onClose={() => setStep("candidates_list")}
+        />
+      );
+      break;
+    case "cor_offers_empty":
+      content = <StepCorOffersEmpty onNavCompany={() => setStep("cor_company_verified")} />;
+      break;
+    case "cor_offers_list":
+      content = (
+        <StepCorOffersList
+          openOffer={() => setStep("cor_offer_new")}
+          onNavCompany={() => setStep("cor_company_verified")}
+        />
+      );
+      break;
+    case "cor_offer_new":
+      content = (
+        <StepCorOfferNew
+          goNext={() => setStep("cor_offer_pending_payment")}
+          onNavCompany={() => setStep("cor_company_verified")}
+          onNavOffers={() => setStep("cor_offers_list")}
+        />
+      );
+      break;
+    case "cor_offer_pending_payment":
+      content = (
+        <StepCorOfferPendingPayment
+          goNext={() => setStep("cor_offer_paid")}
+          onNavCompany={() => setStep("cor_company_verified")}
+          onNavOffers={() => setStep("cor_offers_list")}
+        />
+      );
+      break;
+    case "cor_offer_paid":
+      content = (
+        <StepCorOfferPaid
+          onNavCompany={() => setStep("cor_company_verified")}
+          onNavOffers={() => setStep("cor_offers_list")}
+        />
+      );
+      break;
+    case "application_offer_paid":
+      content = (
+        <StepApplication
+          state="offer_paid"
+          onPrimary={() => {}}
+          onClose={() => setStep("candidates_list")}
+        />
+      );
+      break;
   }
 
   return (
     <div className={styles.root}>
-      <PrototypeBar step={step} idx={idx} goNext={goNext} goBack={goBack} jump={jumpTo} />
+      <PrototypeBar
+        flow={flow}
+        onFlowChange={onFlowChange}
+        steps={steps}
+        step={step}
+        idx={safeIdx}
+        goNext={goNext}
+        goBack={goBack}
+        jump={jumpTo}
+      />
       <div className={styles.canvas}>{content}</div>
     </div>
   );

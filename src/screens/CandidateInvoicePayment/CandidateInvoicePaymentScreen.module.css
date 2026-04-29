@@ -30,6 +30,35 @@
   align-items: center;
   gap: 8px;
 }
+.protoCenter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  padding: 3px;
+  border-radius: 999px;
+}
+.protoFlowTab {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.protoFlowTab:hover { color: #ffffff; }
+.protoFlowTabActive {
+  background: #ffffff;
+  color: #000000;
+}
+.protoFlowTabActive:hover { color: #000000; }
 
 .protoBtn {
   appearance: none;
@@ -1733,6 +1762,7 @@
   margin: 0;
 }
 .modalKv dd { margin: 0; font-size: 13px; font-weight: 500; }
+.modalKvFootnote { font-weight: 400; color: #666666; font-size: 12px; }
 
 .appInviteBtn:disabled {
   background: #e5e5e5;
@@ -1843,3 +1873,832 @@
   color: #000000;
 }
 .appAttachPreview > main p { margin: 4px 0 0; font-size: 13px; color: #666666; line-height: 1.5; }
+
+/* ============================================================
+   COR (Contractor of Record) — escrow flow
+   Branded my.mellow.io · cream surface, soft orange accents
+   ============================================================ */
+.corFrame {
+  width: 1280px;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  background: #f6ecde;
+  color: #000000;
+  font-family: var(--ds-font-family-body);
+  min-height: calc(100vh - 44px);
+}
+
+/* ----- Sidebar ----- */
+.corSidebar {
+  background: #f9f1e4;
+  border-right: 1px solid #ead9bf;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.corSidebarHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+}
+.corLogo {
+  font-family: var(--ds-font-family-accent, var(--ds-font-family-body));
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #000000;
+}
+.corBell {
+  appearance: none;
+  background: transparent;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #000000;
+  cursor: pointer;
+  font-size: 14px;
+}
+.corBell:hover { background: #f1e3c8; }
+
+.corUserBlock {
+  padding: 0 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.corUserName { font-size: 13px; font-weight: 500; color: #000000; }
+.corUserEmail { font-size: 12px; color: #888888; }
+
+.corCompanyChip {
+  appearance: none;
+  margin: 4px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #f1e3c8;
+  color: #ed7a3a;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+.corCompanyChip:hover { background: #ecd9b6; }
+
+.corBalance {
+  background: transparent;
+  padding: 8px 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.corBalanceMain {
+  font-size: 22px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.1;
+}
+.corBalanceRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #888888;
+}
+.corAddFunds {
+  appearance: none;
+  margin-top: 8px;
+  background: #ed7a3a;
+  color: #ffffff;
+  border: none;
+  height: 36px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.corAddFunds:hover { background: #d96a2a; }
+
+.corNav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 12px;
+  flex-grow: 1;
+}
+.corNavItem {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: #444444;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+}
+.corNavItem:hover { background: #f1e3c8; color: #000000; }
+.corNavItemActive { background: #f1e3c8; color: #000000; font-weight: 600; }
+.corNavIcon { font-size: 14px; opacity: 0.6; }
+
+.corSidebarFoot {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
+}
+.corRateUs {
+  appearance: none;
+  background: #f1e3c8;
+  color: #000000;
+  border: none;
+  height: 32px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.corRateUs:hover { background: #ecd9b6; }
+.corLogOut {
+  appearance: none;
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 12px;
+  color: #666666;
+  cursor: pointer;
+}
+
+/* ----- Main area ----- */
+.corMain {
+  background: #f6ecde;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-width: 0;
+}
+.corMainTopbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 32px 0;
+}
+.corLangBtn,
+.corProductBtn {
+  appearance: none;
+  background: #f1e3c8;
+  color: #000000;
+  border: none;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.corLangBtn:hover,
+.corProductBtn:hover { background: #ecd9b6; }
+
+.corMainBody {
+  padding: 18px 32px 32px;
+  flex-grow: 1;
+  position: relative;
+}
+.corMainFooter {
+  padding: 18px 32px 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 12px;
+  color: #888888;
+  flex-wrap: wrap;
+}
+.corFooterLinks { display: flex; gap: 18px; }
+.corFooterLinks a { color: #ed7a3a; text-decoration: none; font-weight: 500; }
+.corFooterLinks a:hover { text-decoration: underline; }
+.corFooterRates { display: flex; gap: 12px; align-items: center; }
+
+/* ----- Page title + tabs ----- */
+.corPageTitle {
+  font-family: var(--ds-font-family-accent, var(--ds-font-family-body));
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+  color: #000000;
+}
+.corTabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+.corTab {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: #666666;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.corTab:hover { color: #000000; }
+.corTabActive { background: #2a2a2a; color: #ffffff; }
+.corTabActive:hover { color: #ffffff; }
+
+/* ----- Cards ----- */
+.corCard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 24px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+.corCardHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.corCardIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #f6ecde;
+  color: #000000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+.corCardTitle { font-size: 15px; font-weight: 600; color: #000000; flex-grow: 1; }
+.corCardEdit {
+  appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #888888;
+  font-size: 14px;
+}
+.corCardEdit:hover { color: #000000; }
+
+.corDl {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.corDl > div {
+  display: grid;
+  grid-template-columns: minmax(160px, 38%) 1fr;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #ead9bf;
+  align-items: center;
+}
+.corDl > div:last-child { border-bottom: none; }
+.corDl dt { font-size: 13px; color: #888888; margin: 0; }
+.corDl dd { margin: 0; font-size: 13px; font-weight: 500; color: #000000; text-align: right; }
+.corDdMuted { color: #b8b8b8; font-weight: 400; }
+
+.corPillVerified {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: #e9f5ec;
+  color: #2a8c4a;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.corPillNeedsAction {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: #fdf0e6;
+  color: #c25c1a;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.corCompanyGrid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* ----- Onboarding panel (overlay) ----- */
+.corOnboardPanel {
+  position: fixed;
+  bottom: 90px;
+  right: 32px;
+  width: 360px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 18px 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+  z-index: 30;
+}
+.corOnboardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.corOnboardTitle {
+  font-family: var(--ds-font-family-accent, var(--ds-font-family-body));
+  font-size: 18px;
+  font-weight: 500;
+  color: #000000;
+}
+.corOnboardSub { font-size: 12px; color: #888888; margin-top: 2px; }
+.corOnboardClose {
+  appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #888888;
+  width: 24px;
+  height: 24px;
+}
+.corOnboardClose:hover { color: #000000; }
+.corOnboardList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.corOnboardItem,
+.corOnboardItemActive {
+  background: #faf3e6;
+  border-radius: 10px;
+}
+.corOnboardItemActive { background: #f1e3c8; }
+.corOnboardItem {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 12px;
+  padding: 10px 12px;
+  align-items: center;
+}
+.corOnboardItemBtn {
+  appearance: none;
+  display: grid;
+  grid-template-columns: 36px 1fr 16px;
+  gap: 12px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  align-items: center;
+  font: inherit;
+  color: inherit;
+}
+.corOnboardItemIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+.corOnboardItemBody { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.corOnboardItemName { font-size: 13px; font-weight: 600; color: #000000; line-height: 1.3; }
+.corOnboardItemHint { font-size: 12px; color: #888888; line-height: 1.4; }
+.corOnboardItemChev { color: #888888; font-size: 16px; }
+
+.corFinishSetup {
+  position: fixed;
+  bottom: 24px;
+  right: 32px;
+  appearance: none;
+  background: #fceede;
+  color: #ed7a3a;
+  border: none;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(237, 122, 58, 0.18);
+  z-index: 31;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.corFinishSetup:hover { background: #fbe1cc; }
+
+/* ----- Verification success popup ----- */
+.corPopupBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.corPopup {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px 28px 24px;
+  position: relative;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.corPopupClose {
+  appearance: none;
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #888888;
+  cursor: pointer;
+}
+.corPopupClose:hover { color: #000000; }
+.corPopupArt { display: flex; align-items: center; justify-content: center; }
+.corPopupTitle {
+  font-family: var(--ds-font-family-accent, var(--ds-font-family-body));
+  font-size: 22px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: -0.01em;
+}
+.corPopupBody {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #555555;
+}
+.corPopupPrimary {
+  appearance: none;
+  width: 100%;
+  margin-top: 6px;
+  height: 48px;
+  border-radius: 12px;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.corPopupPrimary:hover { background: #1a1a1a; }
+
+/* ----- Offers · empty state ----- */
+.corOffersEmpty {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 56px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 720px;
+  margin: 24px auto;
+}
+.corOffersEmptyArt { margin-bottom: 4px; }
+.corOffersEmptyTitle {
+  font-family: var(--ds-font-family-accent, var(--ds-font-family-body));
+  font-size: 24px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: -0.01em;
+}
+.corOffersEmptyBody {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #666666;
+  max-width: 540px;
+}
+.corOffersEmptyActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.corPrimaryBtn {
+  appearance: none;
+  background: #ed7a3a;
+  color: #ffffff;
+  border: none;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.corPrimaryBtn:hover { background: #d96a2a; }
+.corGhostBtn {
+  appearance: none;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #e8d8b8;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.corGhostBtn:hover { background: #f6ecde; }
+
+/* ----- Offers · table list ----- */
+.corOffersTable {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.corOffersHead {
+  display: grid;
+  grid-template-columns: 64px 1fr 200px 140px 140px;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 22px;
+  background: #f9eedc;
+  font-size: 12px;
+  font-weight: 600;
+  color: #c25c1a;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.corOffersHead .right { text-align: right; }
+.corOffersRow {
+  display: grid;
+  grid-template-columns: 64px 1fr 200px 140px 140px;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 22px;
+  border: none;
+  background: #ffffff;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  border-top: 1px solid #f1e3c8;
+}
+.corOffersRow:hover { background: #fdf6ea; }
+.corOffersRowId { color: #ed7a3a; font-weight: 600; font-size: 14px; }
+.corOffersRowName { font-size: 14px; font-weight: 500; color: #000000; }
+.corOffersRowName span[aria-hidden] { color: #888888; margin-right: 6px; }
+.corOffersRow .right { text-align: right; font-size: 14px; font-weight: 500; }
+
+/* Empty placeholder rendered inside the offers table where a row would be. */
+.corOffersEmptyRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 56px 32px;
+  border-top: 1px solid #f1e3c8;
+  background: #ffffff;
+}
+.corOffersEmptyRow .corOffersEmptyArt { margin-bottom: 4px; }
+.corOffersEmptyRow .corOffersEmptyTitle {
+  font-family: var(--ds-font-family-accent, var(--ds-font-family-body));
+  font-size: 22px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: -0.01em;
+}
+.corOffersEmptyRow .corOffersEmptyBody {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #666666;
+  max-width: 560px;
+}
+
+.corStatusNew {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ed7a3a;
+  color: #ffffff;
+  height: 30px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ----- Offer detail ----- */
+.corBackBtn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  color: #444444;
+  padding: 0 0 12px;
+}
+.corBackBtn:hover { color: #000000; }
+
+.corOfferGrid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.corCardWide {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+.corOfferKicker { font-size: 13px; color: #888888; }
+.corOfferTitle {
+  margin: 4px 0 20px;
+  font-family: var(--ds-font-family-accent, var(--ds-font-family-body));
+  font-size: 24px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: -0.01em;
+}
+
+.corOfferBlocks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.corOfferBlock {
+  background: #f9f1e4;
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.corOfferBlockLbl {
+  font-size: 12px;
+  color: #888888;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.corOfferStatusName { font-size: 18px; font-weight: 600; color: #000000; }
+.corOfferStatusOrange { color: #ed7a3a; }
+.corOfferStatusGreen { color: #2a8c4a; }
+.corOfferStatusBody { font-size: 13px; color: #555555; line-height: 1.5; margin: 0; }
+
+.offerStepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 4px;
+}
+.offerStepDot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  position: relative;
+}
+.offerStepDot:not(:last-child)::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: calc(100% + 2px);
+  top: 50%;
+  width: 8px;
+  height: 1px;
+  background: #d4c0a0;
+}
+.offerStepDone {
+  background: #ed7a3a;
+  color: #ffffff;
+}
+.offerStepActive {
+  background: #ed7a3a;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(237, 122, 58, 0.2);
+}
+.offerStepPending {
+  background: #ffffff;
+  color: #cccccc;
+  border: 1px solid #d4c0a0;
+}
+
+.corOfferKvRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #444444;
+  padding: 4px 0;
+}
+.corOfferKvRow strong { color: #000000; font-weight: 600; }
+
+.corOfferActionsRow {
+  margin-top: 6px;
+  display: flex;
+  gap: 12px;
+}
+.corOfferCta {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.corOfferDetailsHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.corOfferDetailsHead > span:first-child {
+  font-size: 12px;
+  color: #888888;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.corOfferDetailsPill {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #f9eedc;
+  color: #c25c1a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.corOfferAttrs {
+  margin-top: 14px;
+  border-top: 1px dashed #ead9bf;
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.corOfferAttrsTitle {
+  font-size: 12px;
+  color: #888888;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.corOfferAttrRow {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  color: #444444;
+}
+.corOfferAttrRow strong { color: #000000; font-weight: 500; }
