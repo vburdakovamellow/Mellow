@@ -20,11 +20,13 @@ export type DemoStep =
   | "edit-request"
   | "public-request"
   | "dashboard-active"
+  | "scout-match"
   | "candidates-empty"
   | "candidates-first"
   | "ultra-briefing"
   | "ultra-ready"
   | "application-modal"
+  | "shortlisted"
   | "invitation-modal";
 
 export const DEMO_STEPS: DemoStep[] = [
@@ -37,11 +39,13 @@ export const DEMO_STEPS: DemoStep[] = [
   "edit-request",
   "public-request",
   "dashboard-active",
+  "scout-match",
   "candidates-empty",
   "candidates-first",
   "ultra-briefing",
   "ultra-ready",
   "application-modal",
+  "shortlisted",
   "invitation-modal",
 ];
 
@@ -55,11 +59,13 @@ export const STEP_LABELS: Record<DemoStep, string> = {
   "edit-request": "Edit request",
   "public-request": "Public request page",
   "dashboard-active": "Dashboard · Active",
-  "candidates-empty": "Candidates · No match yet",
+  "scout-match": "AI Scout · Match",
+  "candidates-empty": "Applied · Empty",
   "candidates-first": "Candidates · First application",
   "ultra-briefing": "Ultra · Briefing",
-  "ultra-ready": "Ultra · Ready",
+  "ultra-ready": "Applied · Ready",
   "application-modal": "Application · Viewed",
+  shortlisted: "Shortlisted · Proposal",
   "invitation-modal": "Invitation",
 };
 
@@ -124,6 +130,59 @@ export type Candidate = {
   highlights?: string[];
   shortPitch?: string;
 };
+
+/** Candidates surfaced by AI Scout Match (people *not* yet applied,
+ *  found across user's network — X / LinkedIn / Mellow pool). */
+export type ScoutMatchCandidate = {
+  id: string;
+  name: string;
+  initials: string;
+  country: string;
+  role: string;
+  experience: string;
+  match: number;
+  scoutSource: "X" | "LinkedIn" | "Mellow";
+  avatarTone: string;
+  /** When true, render an avatar photo placeholder instead of initials block.  */
+  hasPhoto?: boolean;
+};
+
+export const SCOUT_MATCH_CANDIDATES: ScoutMatchCandidate[] = [
+  {
+    id: "santiago",
+    name: "Santiago Herrera",
+    initials: "SH",
+    country: "Located in Hungary",
+    role: "UI/UX Designer",
+    experience: "5.5 years of experience",
+    match: 100,
+    scoutSource: "X",
+    avatarTone: "#E5E0DA",
+  },
+  {
+    id: "daryna-scout",
+    name: "Daryna Shevchenko",
+    initials: "DS",
+    country: "Located in Hungary",
+    role: "Graphic Designer",
+    experience: "2 years of experience",
+    match: 82,
+    scoutSource: "LinkedIn",
+    avatarTone: "#C28E6E",
+    hasPhoto: true,
+  },
+  {
+    id: "valentina",
+    name: "Valentina Gonzalez",
+    initials: "VG",
+    country: "Located in Hungary",
+    role: "Graphic Designer",
+    experience: "3.5 years of experience",
+    match: 81,
+    scoutSource: "Mellow",
+    avatarTone: "#E5E0DA",
+  },
+];
 
 export const CANDIDATES: Candidate[] = [
   {

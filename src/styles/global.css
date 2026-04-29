@@ -1,3 +1,6 @@
+/* PP Neue World fallback — closest free serif italic match for the mellow wordmark */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&display=swap");
+
 :root {
   /* Colors (from Figma variables) */
   --ds-color-text-primary: #232222;
@@ -23,7 +26,7 @@
   /* Typography */
   --ds-font-family-body: "Suisse Int'l", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
     "Apple Color Emoji", "Segoe UI Emoji";
-  --ds-font-family-accent: "PP Neue World", ui-serif, Georgia, "Times New Roman", Times, serif;
+  --ds-font-family-accent: "PP Neue World", "Fraunces", ui-serif, Georgia, "Times New Roman", Times, serif;
 
   --ds-font-size-12: 12px;
   --ds-font-size-14: 14px;

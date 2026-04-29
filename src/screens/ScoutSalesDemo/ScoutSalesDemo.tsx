@@ -1,10 +1,10 @@
 /**
  * Scout Sales Demo — colored clickable prototype for screen-share sales demos.
  *
- * Linear happy path (sales-critical minimum + light entry):
- *   landing → signup → generate-filled → loader → edit-request →
- *   public-request → ultra-ready (with Promotion tab) →
- *   application-modal → invitation-modal
+ * Linear happy path (sales-critical minimum):
+ *   landing → generate-filled → loader → edit-request →
+ *   scout-match (AI Scout Match — suggested contractors) →
+ *   ultra-ready (Applied) → application-modal → shortlisted
  *
  * Demo mode: everything pre-filled, every primary CTA advances to the next step.
  * Step-nav (top dark bar) lets you jump anywhere for free clicks during a call.
@@ -19,27 +19,34 @@ import {
   MANAGER,
   ONE_ON_ONE_MESSAGE,
   REQUEST,
+  SCOUT_MATCH_CANDIDATES,
   STEP_LABELS,
   type DemoStep,
 } from "./data";
 
 /* --------------------------------------------------------------------------
-   Visible step list. We intentionally narrow the full DEMO_STEPS to a
-   linear sales path: landing → ... → invitation. The skipped steps
-   (dashboard-empty/active, generate-empty, candidates-empty / first /
-   ultra-briefing) live in data.ts and can be wired in next iteration.
+   Visible step list. We intentionally narrow the full DEMO_STEPS to the
+   sales-critical happy path:
+     landing → generate-filled → loader → edit-request →
+     scout-match → candidates-empty → ultra-ready → application-modal →
+     shortlisted
+   Sign-up + public-request are skipped (sales prospects don't need them) —
+   after Save we jump straight to the AI Scout Match candidates view.
    -------------------------------------------------------------------------- */
 const VISIBLE_STEPS: DemoStep[] = [
   "landing",
-  "signup",
   "generate-filled",
   "loader",
   "edit-request",
-  "public-request",
+  "scout-match",
+  "candidates-empty",
   "ultra-ready",
   "application-modal",
-  "invitation-modal",
+  "shortlisted",
 ];
+
+/** Bucket pill states inside the Candidates tab */
+type BucketKey = "scout" | "applied" | "shortlisted";
 
 /* --------------------------------------------------------------------------
    Inline icon set (no external icon dep, keep prototype self-contained).
@@ -253,6 +260,86 @@ const Icon = {
 };
 
 /* --------------------------------------------------------------------------
+   Mellow word-logo — italic display serif rendered as inline SVG so it
+   matches the brand mark from the mockups even when the licensed
+   "PP Neue World" font isn't loaded. Falls back gracefully through
+   Fraunces → Cormorant Garamond → Georgia.
+   -------------------------------------------------------------------------- */
+const MellowLogo: React.FC<{ height?: number; color?: string }> = ({
+  height = 28,
+  color = "currentColor",
+}) => {
+  const w = (height * 142) / 36;
+  return (
+    <svg
+      width={w}
+      height={height}
+      viewBox="0 0 142 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="mellow"
+      style={{ display: "block", overflow: "visible" }}
+    >
+      <text
+        x="0"
+        y="29"
+        fontFamily="'PP Neue World', 'Fraunces', 'Cormorant Garamond', 'Cormorant', Georgia, serif"
+        fontSize="34"
+        fontStyle="italic"
+        fontWeight="500"
+        letterSpacing="-0.02em"
+        fill={color}
+      >
+        mellow
+      </text>
+      {/* Subtle accent stroke above the W — tiny brand flourish */}
+      <path
+        d="M122 4.6 L132 4.6"
+        stroke={color}
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        opacity="0.85"
+      />
+    </svg>
+  );
+};
+
+/* Compact "W" mark used in the side-rail */
+const MellowMark: React.FC<{ size?: number; color?: string }> = ({
+  size = 28,
+  color = "currentColor",
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-label="mellow"
+    style={{ display: "block" }}
+  >
+    {/* tiny accent stroke above the W */}
+    <path
+      d="M22 4.5 L29 4.5"
+      stroke={color}
+      strokeWidth="1.4"
+      strokeLinecap="round"
+    />
+    <text
+      x="2"
+      y="27"
+      fontFamily="'PP Neue World', 'Fraunces', 'Cormorant Garamond', Georgia, serif"
+      fontSize="28"
+      fontStyle="italic"
+      fontWeight="500"
+      fill={color}
+    >
+      W
+    </text>
+  </svg>
+);
+
+/* --------------------------------------------------------------------------
    Donut illustration — used in loader and "no candidates yet" empty state.
    Hand-rolled SVG so it never breaks on offline demos.
    -------------------------------------------------------------------------- */
@@ -316,6 +403,10 @@ export default function ScoutSalesDemo() {
   const [promoOption, setPromoOption] = useState<
     "oneOnOne" | "network" | "communities" | "boost"
   >("oneOnOne");
+  /** Which bucket pill is selected on the Candidates tab. Defaults to
+   *  AI Scout Match so the very first candidates view (right after
+   *  "Save and continue") shows the suggested contractors list. */
+  const [bucket, setBucket] = useState<BucketKey>("scout");
 
   const visibleIdx = VISIBLE_STEPS.indexOf(step);
 
@@ -323,15 +414,34 @@ export default function ScoutSalesDemo() {
     if (visibleIdx === -1) return;
     const next = VISIBLE_STEPS[Math.min(visibleIdx + 1, VISIBLE_STEPS.length - 1)];
     setStep(next);
+    setBucket(bucketForStep(next));
   };
   const goPrev = () => {
     if (visibleIdx === -1) return;
     const prev = VISIBLE_STEPS[Math.max(visibleIdx - 1, 0)];
     setStep(prev);
+    setBucket(bucketForStep(prev));
   };
 
   /* When entering ultra-ready, ensure Candidates tab is selected by default */
   const ensureCandidatesTab = () => setActiveTab("candidates");
+
+  /* Sync bucket pill with the current step when jumping around the demo.
+     scout-match → "scout"; candidates-empty/ultra-ready/application-modal/
+     invitation-modal/shortlisted → "applied". Useful when the salesperson
+     uses the dot navigation to skip ahead/back. */
+  const bucketForStep = (s: DemoStep): BucketKey => {
+    if (s === "scout-match") return "scout";
+    if (s === "shortlisted") return "shortlisted";
+    if (
+      s === "candidates-empty" ||
+      s === "ultra-ready" ||
+      s === "application-modal" ||
+      s === "invitation-modal"
+    )
+      return "applied";
+    return bucket;
+  };
 
   /* ---- Render the active surface (under modals) ---- */
   const renderSurface = () => {
@@ -367,18 +477,28 @@ export default function ScoutSalesDemo() {
     if (step === "edit-request") {
       return (
         <AppShell currentSection="requests">
-          <EditRequest onSave={() => setStep("public-request")} />
+          <EditRequest
+            onSave={() => {
+              setStep("scout-match");
+              setBucket("scout");
+            }}
+          />
         </AppShell>
       );
     }
     if (step === "public-request") {
       return <PublicRequest onApply={() => setStep("ultra-ready")} />;
     }
-    /* The candidates surface is reused under application-modal & invitation-modal */
+    /* The candidates surface is reused under scout-match, candidates-empty,
+       ultra-ready, application-modal & invitation-modal — only the active
+       bucket changes between them. */
     if (
+      step === "scout-match" ||
+      step === "candidates-empty" ||
       step === "ultra-ready" ||
       step === "application-modal" ||
-      step === "invitation-modal"
+      step === "invitation-modal" ||
+      step === "shortlisted"
     ) {
       return (
         <AppShell currentSection="requests">
@@ -387,7 +507,13 @@ export default function ScoutSalesDemo() {
             onTabChange={setActiveTab}
             promoOption={promoOption}
             onPromoOption={setPromoOption}
+            bucket={bucket}
+            onBucketChange={setBucket}
             onOpenApplication={() => setStep("application-modal")}
+            onInvite={() => {
+              setBucket("applied");
+              setStep("ultra-ready");
+            }}
           />
         </AppShell>
       );
@@ -404,7 +530,8 @@ export default function ScoutSalesDemo() {
         onNext={goNext}
         onJump={(s) => {
           setStep(s);
-          if (s === "ultra-ready") ensureCandidatesTab();
+          ensureCandidatesTab();
+          setBucket(bucketForStep(s));
         }}
       />
       <div className={styles.stage}>
@@ -502,7 +629,9 @@ const AppShell: React.FC<AppShellProps> = ({ currentSection, children }) => {
   return (
     <div className={styles.appShell}>
       <aside className={styles.sideRail}>
-        <div className={styles.sideLogo}>W</div>
+        <div className={styles.sideLogo}>
+          <MellowMark size={28} color="#1A1716" />
+        </div>
         <div
           className={`${styles.sideIcon} ${currentSection === "dashboard" ? styles.sideIconActive : ""}`}
           title="Dashboard"
@@ -551,7 +680,9 @@ const Landing: React.FC<{ onCreate: () => void }> = ({ onCreate }) => {
     <div className={styles.landing}>
       <div className={styles.landingInner}>
         <nav className={styles.landingNav}>
-          <span className={styles.landingLogo}>mellow</span>
+          <span className={styles.landingLogo}>
+            <MellowLogo height={32} color="#1A1716" />
+          </span>
           <div className={styles.landingNavRight}>
             <span className={styles.landingNavLink}>How it works</span>
             <span className={styles.landingNavLink}>For contractors</span>
@@ -938,7 +1069,9 @@ const EditRequest: React.FC<{ onSave: () => void }> = ({ onSave }) => {
         </div>
 
         <aside className={styles.previewCard}>
-          <div className={styles.publicLogo} style={{ marginBottom: 4 }}>mellow</div>
+          <div className={styles.publicLogo} style={{ marginBottom: 4 }}>
+            <MellowLogo height={22} color="#1A1716" />
+          </div>
           <h4 className={styles.tinyLabel} style={{ color: "var(--sd-mute)" }}>
             PUBLIC PREVIEW
           </h4>
@@ -983,7 +1116,9 @@ const PublicRequest: React.FC<{ onApply: () => void }> = ({ onApply }) => {
     <div className={styles.publicWrap}>
       <div className={styles.publicCard}>
         <header className={styles.publicHeader}>
-          <span className={styles.publicLogo}>mellow</span>
+          <span className={styles.publicLogo}>
+            <MellowLogo height={26} color="#1A1716" />
+          </span>
           <span className={styles.demoNote}>Public landing</span>
           <div className={styles.publicMeta}>
             <span>
@@ -1090,14 +1225,20 @@ type RequestCandidatesProps = {
   onPromoOption: (
     o: "oneOnOne" | "network" | "communities" | "boost"
   ) => void;
+  bucket: BucketKey;
+  onBucketChange: (b: BucketKey) => void;
   onOpenApplication: () => void;
+  onInvite: () => void;
 };
 const RequestCandidates: React.FC<RequestCandidatesProps> = ({
   activeTab,
   onTabChange,
   promoOption,
   onPromoOption,
+  bucket,
+  onBucketChange,
   onOpenApplication,
+  onInvite,
 }) => {
   const sorted = useMemo(
     () => [...CANDIDATES].sort((a, b) => b.match - a.match),
@@ -1146,7 +1287,10 @@ const RequestCandidates: React.FC<RequestCandidatesProps> = ({
       {activeTab === "candidates" ? (
         <CandidatesTab
           sorted={sorted}
+          bucket={bucket}
+          onBucketChange={onBucketChange}
           onOpenApplication={onOpenApplication}
+          onInvite={onInvite}
         />
       ) : (
         <PromotionTab
@@ -1158,110 +1302,280 @@ const RequestCandidates: React.FC<RequestCandidatesProps> = ({
   );
 };
 
-/* ---- Candidates tab body ---- */
+/* ---- Candidates tab body ----
+ *  Three buckets: AI Scout Match (suggested contractors not yet applied),
+ *  Applied (people who hit Apply on the public page) and Shortlisted.
+ *  Bucket pills are clickable and the candidate list switches accordingly.
+ */
 const CandidatesTab: React.FC<{
   sorted: typeof CANDIDATES;
+  bucket: BucketKey;
+  onBucketChange: (b: BucketKey) => void;
   onOpenApplication: () => void;
-}> = ({ sorted, onOpenApplication }) => {
+  onInvite: () => void;
+}> = ({ sorted, bucket, onBucketChange, onOpenApplication, onInvite }) => {
   const applied = sorted.filter((c) => c.source === "applied").length;
-  const ultraScouted = sorted.filter((c) => c.source !== "applied").length;
   return (
     <>
       <div className={styles.bucketRow}>
-        <div className={styles.bucket}>
-          <div className={styles.bucketIcon}>
+        <button
+          type="button"
+          className={`${styles.bucket} ${bucket === "scout" ? styles.bucketActive : ""}`}
+          onClick={() => onBucketChange("scout")}
+        >
+          <div
+            className={styles.bucketIcon}
+            style={
+              bucket === "scout"
+                ? { background: "#FFD9B8", color: "#E25B15" }
+                : undefined
+            }
+          >
             <Icon.Compass size={14} />
           </div>
-          <div>
+          <div className={styles.bucketTextCol}>
             <div className={styles.bucketLabel}>AI Scout Match</div>
             <div className={styles.bucketSub}>Suggested contractors</div>
           </div>
-          <div className={styles.bucketCount}>{ultraScouted}</div>
-        </div>
-        <div className={`${styles.bucket} ${styles.bucketActive}`}>
-          <div className={styles.bucketIcon} style={{ background: "#FFD9B8" }}>
-            <Icon.Check size={14} color="#E25B15" />
+          <div
+            className={styles.bucketCount}
+            style={
+              bucket === "scout"
+                ? { background: "#FFE3C2", color: "#E25B15" }
+                : undefined
+            }
+          >
+            {SCOUT_MATCH_CANDIDATES.length}
           </div>
-          <div>
+          {bucket === "scout" && <span className={styles.bucketDot} />}
+        </button>
+
+        <button
+          type="button"
+          className={`${styles.bucket} ${bucket === "applied" ? styles.bucketActive : ""}`}
+          onClick={() => onBucketChange("applied")}
+        >
+          <div
+            className={styles.bucketIcon}
+            style={
+              bucket === "applied"
+                ? { background: "#FFD9B8", color: "#E25B15" }
+                : undefined
+            }
+          >
+            <Icon.Check size={14} />
+          </div>
+          <div className={styles.bucketTextCol}>
             <div className={styles.bucketLabel}>Applied</div>
             <div className={styles.bucketSub}>Unsorted candidates</div>
           </div>
-          <div className={styles.bucketCount} style={{ background: "#FFE3C2", color: "#E25B15" }}>
+          <div
+            className={styles.bucketCount}
+            style={
+              bucket === "applied"
+                ? { background: "#FFE3C2", color: "#E25B15" }
+                : undefined
+            }
+          >
             {applied}
           </div>
-        </div>
-        <div className={styles.bucket}>
-          <div className={styles.bucketIcon}>
+        </button>
+
+        <button
+          type="button"
+          className={`${styles.bucket} ${bucket === "shortlisted" ? styles.bucketActive : ""}`}
+          onClick={() => onBucketChange("shortlisted")}
+        >
+          <div
+            className={styles.bucketIcon}
+            style={
+              bucket === "shortlisted"
+                ? { background: "#FFD9B8", color: "#E25B15" }
+                : undefined
+            }
+          >
             <Icon.Bookmark size={14} />
           </div>
-          <div>
+          <div className={styles.bucketTextCol}>
             <div className={styles.bucketLabel}>Shortlisted</div>
             <div className={styles.bucketSub}>Selected candidates</div>
           </div>
-          <div className={styles.bucketCount}>0</div>
-        </div>
+          <div
+            className={styles.bucketCount}
+            style={
+              bucket === "shortlisted"
+                ? { background: "#FFE3C2", color: "#E25B15" }
+                : undefined
+            }
+          >
+            0
+          </div>
+        </button>
       </div>
 
+      {bucket === "scout" && (
+        <ScoutMatchList onInvite={onInvite} />
+      )}
+
+      {bucket === "applied" && (
+        <>
+          <div className={styles.sortBar}>
+            <button className={styles.sortChip}>
+              Best match first <Icon.Chevron size={12} />
+            </button>
+            <span className={styles.smallMute}>
+              {sorted.length} candidates · 2 rejected
+            </span>
+          </div>
+
+          {sorted.map((c) => {
+            const isUltra = c.source === "ultra";
+            return (
+              <div
+                key={c.id}
+                className={`${styles.candidateRow} ${isUltra ? styles.ultra : ""}`}
+                onClick={onOpenApplication}
+                style={{ cursor: "pointer" }}
+                title="Open application (demo)"
+              >
+                <Avatar initials={c.initials} color={c.avatarTone} />
+                <div>
+                  <div className={styles.candidateName}>{c.name}</div>
+                  <div className={styles.candidateMeta}>
+                    {c.country} · {c.role} · {c.experience}
+                  </div>
+                </div>
+                <div className={`${styles.flex} ${styles.gap8}`}>
+                  {isUltra && (
+                    <span
+                      className={`${styles.sourceBadge} ${styles.sourceUltra}`}
+                    >
+                      Ultra
+                    </span>
+                  )}
+                  {c.source === "scouted" && (
+                    <span
+                      className={`${styles.sourceBadge} ${styles.sourceScouted}`}
+                    >
+                      AI Scouted
+                    </span>
+                  )}
+                </div>
+                <MatchPill score={c.match} />
+              </div>
+            );
+          })}
+
+          <div className={styles.ultraSuccess}>
+            <div
+              className={styles.bucketIcon}
+              style={{ background: "#FFD9B8", width: 36, height: 36 }}
+            >
+              <Icon.Sparkles color="#E25B15" />
+            </div>
+            <div>
+              <strong>Your Ultra candidates are ready!</strong>
+              <span>
+                Found the right fit? If not, you can start a new search at no extra cost.
+              </span>
+            </div>
+            <button className={styles.outlineBtn}>Reactivate Ultra</button>
+          </div>
+        </>
+      )}
+
+      {bucket === "shortlisted" && (
+        <div className={styles.emptyHero}>
+          <Icon.Bookmark size={28} color="#E25B15" />
+          <h3>No shortlisted candidates yet</h3>
+          <p>
+            Open an application from the Applied tab and tap “Add to Shortlist”
+            to bring your top picks here.
+          </p>
+        </div>
+      )}
+    </>
+  );
+};
+
+/* ---- AI Scout Match list ----
+ *  Mirrors the mockup: avatar (with optional photo placeholder), name, role,
+ *  experience, location, source pill (From X / LinkedIn / Mellow), match
+ *  score, and an "Invite to apply" CTA. Each row carries the orange left
+ *  accent so the list reads as "scout-suggested" at a glance.  */
+const ScoutMatchList: React.FC<{ onInvite: () => void }> = ({ onInvite }) => {
+  return (
+    <>
       <div className={styles.sortBar}>
         <button className={styles.sortChip}>
           Best match first <Icon.Chevron size={12} />
         </button>
         <span className={styles.smallMute}>
-          {sorted.length} candidates · 2 rejected
+          {SCOUT_MATCH_CANDIDATES.length} suggested · curated by AI Scout
         </span>
       </div>
 
-      {sorted.map((c) => {
-        const isUltra = c.source === "ultra";
-        return (
-          <div
-            key={c.id}
-            className={`${styles.candidateRow} ${isUltra ? styles.ultra : ""}`}
-            onClick={onOpenApplication}
-            style={{ cursor: "pointer" }}
-            title="Open application (demo)"
-          >
-            <Avatar initials={c.initials} color={c.avatarTone} />
-            <div>
-              <div className={styles.candidateName}>{c.name}</div>
-              <div className={styles.candidateMeta}>
-                {c.country} · {c.role} · {c.experience}
-              </div>
+      {SCOUT_MATCH_CANDIDATES.map((c) => (
+        <div
+          key={c.id}
+          className={`${styles.candidateRow} ${styles.ultra} ${styles.scoutRow}`}
+        >
+          {c.hasPhoto ? (
+            <div
+              className={styles.scoutAvatarPhoto}
+              style={{ background: c.avatarTone }}
+              aria-label={c.name}
+            >
+              <ScoutAvatarPortrait />
             </div>
-            <div className={`${styles.flex} ${styles.gap8}`}>
-              {isUltra && (
-                <span className={`${styles.sourceBadge} ${styles.sourceUltra}`}>
-                  Ultra
-                </span>
-              )}
-              {c.source === "scouted" && (
-                <span
-                  className={`${styles.sourceBadge} ${styles.sourceScouted}`}
-                >
-                  AI Scouted
-                </span>
-              )}
+          ) : (
+            <div className={styles.scoutAvatarMono}>
+              <span>{c.initials}</span>
             </div>
-            <MatchPill score={c.match} />
-          </div>
-        );
-      })}
+          )}
 
-      <div className={styles.ultraSuccess}>
-        <div className={styles.bucketIcon} style={{ background: "#FFD9B8", width: 36, height: 36 }}>
-          <Icon.Sparkles color="#E25B15" />
+          <div>
+            <div className={styles.candidateName}>{c.name}</div>
+            <div className={styles.candidateMeta}>
+              {c.role} · {c.experience} · {c.country}
+            </div>
+          </div>
+
+          <span className={styles.scoutSourcePill}>From {c.scoutSource}</span>
+          <MatchPill score={c.match} />
+          <button
+            className={styles.inviteApplyBtn}
+            onClick={onInvite}
+            type="button"
+          >
+            Invite to apply
+          </button>
         </div>
-        <div>
-          <strong>Your Ultra candidates are ready!</strong>
-          <span>
-            Found the right fit? If not, you can start a new search at no extra cost.
-          </span>
-        </div>
-        <button className={styles.outlineBtn}>Reactivate Ultra</button>
-      </div>
+      ))}
     </>
   );
 };
+
+/* Tiny portrait used when a Scout candidate has hasPhoto = true */
+const ScoutAvatarPortrait: React.FC = () => (
+  <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden>
+    <defs>
+      <clipPath id="scoutAvatarClip">
+        <circle cx="22" cy="22" r="22" />
+      </clipPath>
+    </defs>
+    <g clipPath="url(#scoutAvatarClip)">
+      <rect width="44" height="44" fill="#C28E6E" />
+      <circle cx="22" cy="17" r="7.5" fill="#1f120c" />
+      <ellipse cx="22" cy="38" rx="14" ry="10" fill="#fff" />
+      <circle cx="22" cy="20" r="6.4" fill="#caa285" />
+      <path
+        d="M14 14c0-5 4-8 8-8s8 3 8 8c0 2-1 3-2 4-1-3-3-5-6-5s-5 2-6 5c-1-1-2-2-2-4z"
+        fill="#1a0f0a"
+      />
+    </g>
+  </svg>
+);
 
 /* ---- Promotion tab body (default = One-on-one expanded) ---- */
 const PromotionTab: React.FC<{
