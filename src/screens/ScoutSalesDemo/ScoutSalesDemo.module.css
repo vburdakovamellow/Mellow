@@ -2064,6 +2064,29 @@
   border-left: 3px solid var(--sd-orange);
 }
 
+/* Rejected applicants — kept in the list but visually quieted so the
+   manager can scan past them. Still clickable to re-open the
+   application. Avatar/text/match-pill colors are softened so they read
+   as "deprioritised" without going fully disabled. */
+.candidateRow.rejectedRow {
+  background: #f3ede4;
+  border-color: #ebe1d2;
+  opacity: 0.78;
+}
+
+.candidateRow.rejectedRow:hover {
+  border-color: #d6c9b3;
+  opacity: 0.92;
+}
+
+.candidateRow.rejectedRow .candidateName {
+  color: var(--sd-mute);
+}
+
+.candidateRow.rejectedRow .candidateMeta {
+  color: var(--sd-mute-soft);
+}
+
 .candidateAvatar {
   width: 44px;
   height: 44px;
@@ -2111,6 +2134,52 @@
 .matchPillLow {
   background: #f7d2cf;
   color: #b3402b;
+}
+
+/* Rejected match pill — neutral grey regardless of score band so it
+   doesn't visually compete with active candidates. */
+.matchPillRejected {
+  background: #e5ddd2;
+  color: var(--sd-mute);
+}
+
+/* ---------- Rejected-candidates toggle bar ----------
+   Shown beneath the candidates list whenever there are any rejected
+   applicants. Acts as a single button that flips visibility of greyed
+   rejected rows. Lightweight so it doesn't compete with the cards. */
+.rejectedToggleBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  padding: 14px 4px 8px;
+  margin: 0;
+  cursor: pointer;
+  color: var(--sd-mute);
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+}
+
+.rejectedToggleBar:hover {
+  color: var(--sd-ink-soft);
+}
+
+.rejectedToggleCount {
+  color: var(--sd-ink-soft);
+  font-weight: 500;
+}
+
+.rejectedToggleLink {
+  color: var(--sd-mute);
+  text-decoration: none;
+}
+
+.rejectedToggleBar:hover .rejectedToggleLink {
+  color: var(--sd-ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .sourceBadge {

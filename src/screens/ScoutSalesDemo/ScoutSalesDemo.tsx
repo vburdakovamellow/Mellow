@@ -102,6 +102,30 @@ const Icon = {
       <circle cx="12" cy="12" r="3" stroke={color} strokeWidth={1.6} />
     </svg>
   ),
+  /* "Eye-off" — used on the rejected-candidates toggle when rejected
+     rows are currently hidden ("Show rejected candidates"). */
+  EyeOff: ({ size = 14, color = "currentColor" }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path
+        d="M3 3l18 18"
+        stroke={color}
+        strokeWidth={1.6}
+        strokeLinecap="round"
+      />
+      <path
+        d="M10.6 6.2A10 10 0 0112 6c6.5 0 10 6 10 6a14.3 14.3 0 01-3.3 4.1M6.6 6.6C3.6 8.5 2 12 2 12s3.5 6 10 6c1.6 0 3-.4 4.3-1"
+        stroke={color}
+        strokeWidth={1.6}
+        strokeLinecap="round"
+      />
+      <path
+        d="M9.5 9.6a3 3 0 004.2 4.2"
+        stroke={color}
+        strokeWidth={1.6}
+        strokeLinecap="round"
+      />
+    </svg>
+  ),
   Users: ({ size = 14, color = "currentColor" }: IconProps) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <circle cx="9" cy="8" r="3.4" stroke={color} strokeWidth={1.6} />
@@ -1608,6 +1632,23 @@ const CandidatesTab: React.FC<{
   onInvite: () => void;
 }> = ({ step, sorted, bucket, onBucketChange, onOpenApplication, onInvite }) => {
   const isAppliedEmpty = step === "scout-match";
+  /* Rejected candidates are hidden by default and surfaced through a
+   * "Show rejected candidates" toggle — mirrors the mockup. State lives
+   * inside the tab so it's reset whenever the bucket re-mounts. */
+  const [showRejected, setShowRejected] = useState(false);
+
+  const rejectedCandidates = useMemo(
+    () => sorted.filter((c) => c.rejected),
+    [sorted]
+  );
+  /* What ends up rendered in the active list: everything except rejected
+   * (when toggle is off) or the full sorted list (when toggle is on, with
+   * rejected rows greyed-out in-place). */
+  const activeCandidates = useMemo(
+    () => (showRejected ? sorted : sorted.filter((c) => !c.rejected)),
+    [sorted, showRejected]
+  );
+
   const appliedCount = isAppliedEmpty
     ? 0
     : sorted.filter((c) => c.source === "applied").length;
@@ -1721,22 +1762,33 @@ const CandidatesTab: React.FC<{
             <button className={styles.sortChip}>
               Best match first <Icon.Chevron size={12} />
             </button>
-            <span className={styles.smallMute}>
-              {sorted.length} candidates · 2 rejected
-            </span>
           </div>
 
-          {sorted.map((c) => {
+          {activeCandidates.map((c) => {
             const isUltra = c.source === "ultra";
+            const isRejected = !!c.rejected;
             return (
               <div
                 key={c.id}
-                className={`${styles.candidateRow} ${isUltra ? styles.ultra : ""}`}
+                className={[
+                  styles.candidateRow,
+                  isUltra ? styles.ultra : "",
+                  isRejected ? styles.rejectedRow : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 onClick={onOpenApplication}
                 style={{ cursor: "pointer" }}
-                title="Open application (demo)"
+                title={
+                  isRejected
+                    ? "Rejected — open application (demo)"
+                    : "Open application (demo)"
+                }
               >
-                <Avatar initials={c.initials} color={c.avatarTone} />
+                <Avatar
+                  initials={c.initials}
+                  color={isRejected ? "#C8C0B7" : c.avatarTone}
+                />
                 <div>
                   <div className={styles.candidateName}>{c.name}</div>
                   <div className={styles.candidateMeta}>
@@ -1744,14 +1796,14 @@ const CandidatesTab: React.FC<{
                   </div>
                 </div>
                 <div className={`${styles.flex} ${styles.gap8}`}>
-                  {isUltra && (
+                  {isUltra && !isRejected && (
                     <span
                       className={`${styles.sourceBadge} ${styles.sourceUltra}`}
                     >
                       Ultra
                     </span>
                   )}
-                  {c.source === "scouted" && (
+                  {c.source === "scouted" && !isRejected && (
                     <span
                       className={`${styles.sourceBadge} ${styles.sourceScouted}`}
                     >
@@ -1759,10 +1811,41 @@ const CandidatesTab: React.FC<{
                     </span>
                   )}
                 </div>
-                <MatchPill score={c.match} />
+                {isRejected ? (
+                  <span
+                    className={`${styles.matchPill} ${styles.matchPillRejected}`}
+                  >
+                    <Icon.Bolt size={12} /> {c.match}%
+                  </span>
+                ) : (
+                  <MatchPill score={c.match} />
+                )}
               </div>
             );
           })}
+
+          {rejectedCandidates.length > 0 && (
+            <button
+              type="button"
+              className={styles.rejectedToggleBar}
+              onClick={() => setShowRejected((v) => !v)}
+              aria-pressed={showRejected}
+            >
+              {showRejected ? (
+                <Icon.Eye size={16} color="currentColor" />
+              ) : (
+                <Icon.EyeOff size={16} color="currentColor" />
+              )}
+              <span className={styles.rejectedToggleCount}>
+                {rejectedCandidates.length} rejected
+              </span>
+              <span className={styles.rejectedToggleLink}>
+                {showRejected
+                  ? "Hide rejected candidates"
+                  : "Show rejected candidates"}
+              </span>
+            </button>
+          )}
 
           <div className={styles.ultraSuccess}>
             <div

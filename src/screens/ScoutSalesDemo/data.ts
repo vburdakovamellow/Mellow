@@ -126,6 +126,10 @@ export type Candidate = {
   avatarTone: string;
   highlights?: string[];
   shortPitch?: string;
+  /** Manager tagged this candidate as not relevant. Renders greyed-out
+   *  beneath the active list and is hidden behind a "Show rejected
+   *  candidates" toggle by default. */
+  rejected?: boolean;
 };
 
 /** Candidates surfaced by AI Scout Match (people *not* yet applied,
@@ -279,6 +283,34 @@ export const CANDIDATES: Candidate[] = [
     match: 47,
     source: "applied",
     avatarTone: "#C0B7AB",
+  },
+  /* ---- Rejected by the manager. Hidden by default behind a toggle. ----
+     Numbers and roles mirror the rejected rows in the "applied · with
+     rejected" mockup so the demo can switch the toggle on and read
+     pixel-close to the design.                                        */
+  {
+    id: "lorenzo",
+    name: "Lorenzo King",
+    initials: "LK",
+    country: "Hungary",
+    role: "UI/UX Designer",
+    experience: "2.5 years of experience",
+    match: 64,
+    source: "applied",
+    avatarTone: "#B9B1AA",
+    rejected: true,
+  },
+  {
+    id: "zofia",
+    name: "Zofia Nowak",
+    initials: "ZN",
+    country: "Hungary",
+    role: "UI/UX Designer",
+    experience: "4 years of experience",
+    match: 23,
+    source: "applied",
+    avatarTone: "#A8A29E",
+    rejected: true,
   },
 ];
 
