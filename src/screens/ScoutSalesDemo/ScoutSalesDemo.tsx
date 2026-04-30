@@ -244,6 +244,27 @@ const Icon = {
       <path d="M8 8l8 8M16 8l-8 8" stroke={color} strokeWidth={1.6} strokeLinecap="round" />
     </svg>
   ),
+  Pencil: ({ size = 14, color = "currentColor" }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path
+        d="M14.5 4.5l5 5L8.5 20.5H3.5v-5l11-11z"
+        stroke={color}
+        strokeWidth={1.6}
+        strokeLinejoin="round"
+      />
+      <path d="M12.5 6.5l5 5" stroke={color} strokeWidth={1.6} />
+    </svg>
+  ),
+  User: ({ size = 14, color = "currentColor" }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="8.5" r="3.6" stroke={color} strokeWidth={1.6} />
+      <path
+        d="M4.5 20c0-3.6 3.4-6.4 7.5-6.4S19.5 16.4 19.5 20"
+        stroke={color}
+        strokeWidth={1.6}
+      />
+    </svg>
+  ),
   Grid: ({ size = 14, color = "currentColor" }: IconProps) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <rect x="4" y="4" width="7" height="7" rx="1.5" stroke={color} strokeWidth={1.6} />
@@ -990,114 +1011,378 @@ const LoaderModal: React.FC<{ onClose: () => void; onDone: () => void }> = ({
    5. EDIT REQUEST (left = generated copy, right = public preview)
    ========================================================================== */
 const EditRequest: React.FC<{ onSave: () => void }> = ({ onSave }) => {
+  /* Editable controlled state — every field is wired up so the demo
+     looks live (the prospect can type into anything during the call).
+     We pre-populate from REQUEST so the page reads as a freshly
+     AI-generated draft. */
+  const [profile, setProfile] = useState(
+    "Graphic Designer for Social Media Optimisation • Mid-level • Speaks English, Spanish",
+  );
+  const [skills, setSkills] = useState<string[]>(REQUEST.skills);
+  const [skillDraft, setSkillDraft] = useState("");
+  const [summary, setSummary] = useState(REQUEST.description);
+  const [timeline, setTimeline] = useState(
+    `${REQUEST.projectType} · ${REQUEST.workload}`,
+  );
+  const [budget, setBudget] = useState(REQUEST.rate);
+  const [company, setCompany] = useState("");
+  const [companyExpanded, setCompanyExpanded] = useState(false);
+  const [location, setLocation] = useState("");
+  const [previewMode, setPreviewMode] = useState<"mobile" | "desktop">("mobile");
+
+  const removeSkill = (s: string) => setSkills((prev) => prev.filter((x) => x !== s));
+  const addSkill = () => {
+    const next = skillDraft.trim();
+    if (next && !skills.includes(next)) {
+      setSkills((prev) => [...prev, next]);
+    }
+    setSkillDraft("");
+  };
+
+  const previewSummary =
+    summary.length > 140 ? `${summary.slice(0, 140).trim()}…` : summary;
+
   return (
     <>
       <div className={styles.requestHead}>
-        <button className={styles.backLink}>← Back</button>
+        <button className={styles.backLink}>← Go to dashboard</button>
       </div>
       <div className={styles.editTitleRow}>
         <span className={styles.editPill}>Draft</span>
         <h1 className={styles.editH1}>{REQUEST.title}</h1>
         <button className={styles.saveBtn} onClick={onSave}>
-          <Icon.Check size={12} color="#fff" /> Save and continue
+          <Icon.Sparkles size={12} color="#fff" /> Save &amp; get candidates
         </button>
       </div>
 
       <div className={styles.editRow}>
         <div className={styles.editLeft}>
-          <div className={styles.editSection}>
-            <div className={styles.editSectionLabel}>Profile</div>
-            <p>
-              Graphic Designer for Social Media Optimisation, Mid-level Speaker,
-              Brand Designer, English, Spanish.
-            </p>
-          </div>
+          {/* ---- Card 1: Candidate ---- */}
+          <section className={styles.editCard}>
+            <header className={styles.editCardHead}>
+              <div className={styles.editCardIcon}>
+                <Icon.User size={16} color="#1A1716" />
+              </div>
+              <h3 className={styles.editCardTitle}>Candidate</h3>
+              <button
+                className={styles.editPencilBtn}
+                aria-label="Edit candidate section"
+                type="button"
+              >
+                <Icon.Pencil size={14} color="#3a3531" />
+              </button>
+            </header>
 
-          <div className={styles.editSection}>
-            <div className={styles.editSectionLabel}>Skills and Tech</div>
-            <div className={styles.tagsLine}>
-              {REQUEST.skills.map((s) => (
-                <span className={styles.tagPill} key={s}>{s}</span>
-              ))}
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Profile</label>
+              <textarea
+                className={`${styles.editInput} ${styles.editTextarea}`}
+                value={profile}
+                onChange={(e) => setProfile(e.target.value)}
+                rows={2}
+              />
             </div>
-          </div>
 
-          <div className={styles.editSection}>
-            <div className={styles.editSectionLabel}>Overview</div>
-            <p>{REQUEST.description}</p>
-          </div>
-
-          <div className={styles.editSection}>
-            <div className={styles.editSectionLabel}>Timeline · Budget</div>
-            <p>
-              <strong>Hours per week:</strong> {REQUEST.workload} ·{" "}
-              <strong>Project type:</strong> {REQUEST.projectType} ·{" "}
-              <strong>Rate:</strong> {REQUEST.rate}
-            </p>
-          </div>
-
-          <div className={styles.editSection}>
-            <div className={styles.editSectionLabel}>Key Responsibilities</div>
-            <ul className={styles.editList}>
-              {REQUEST.responsibilities.map((r) => (
-                <li key={r}>{r}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className={styles.editSection}>
-            <div className={styles.editSectionLabel}>Requirements</div>
-            <ul className={styles.editList}>
-              {REQUEST.requirements.map((r) => (
-                <li key={r}>{r}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className={styles.editSection}>
-            <div className={styles.editSectionLabel}>Languages</div>
-            <div className={styles.tagsLine}>
-              {REQUEST.languages.map((l) => (
-                <span className={styles.tagPill} key={l}>{l}</span>
-              ))}
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Skills and Tech</label>
+              <div className={styles.editChipsBox}>
+                {skills.map((s) => (
+                  <span className={styles.editChip} key={s}>
+                    {s}
+                    <button
+                      className={styles.editChipX}
+                      type="button"
+                      onClick={() => removeSkill(s)}
+                      aria-label={`Remove ${s}`}
+                    >
+                      <Icon.X size={10} />
+                    </button>
+                  </span>
+                ))}
+                <input
+                  className={styles.editChipInput}
+                  placeholder="Add a skill"
+                  value={skillDraft}
+                  onChange={(e) => setSkillDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === ",") {
+                      e.preventDefault();
+                      addSkill();
+                    }
+                  }}
+                />
+              </div>
             </div>
-          </div>
+          </section>
+
+          {/* ---- Card 2: Overview ---- */}
+          <section className={styles.editCard}>
+            <header className={styles.editCardHead}>
+              <div className={styles.editCardIcon}>
+                <Icon.Eye size={16} color="#1A1716" />
+              </div>
+              <h3 className={styles.editCardTitle}>Overview</h3>
+              <button
+                className={styles.editPencilBtn}
+                aria-label="Edit overview section"
+                type="button"
+              >
+                <Icon.Pencil size={14} color="#3a3531" />
+              </button>
+            </header>
+
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Summary</label>
+              <textarea
+                className={`${styles.editInput} ${styles.editTextarea}`}
+                value={summary}
+                onChange={(e) => setSummary(e.target.value)}
+                rows={4}
+              />
+            </div>
+
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Timeline</label>
+              <input
+                className={styles.editInput}
+                value={timeline}
+                onChange={(e) => setTimeline(e.target.value)}
+              />
+            </div>
+
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Budget</label>
+              <input
+                className={styles.editInput}
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+              />
+            </div>
+          </section>
+
+          {/* ---- Card 3: Details ---- */}
+          <section className={styles.editCard}>
+            <header className={styles.editCardHead}>
+              <div className={styles.editCardIcon}>
+                <Icon.Search size={16} color="#1A1716" />
+              </div>
+              <h3 className={styles.editCardTitle}>Details</h3>
+              <button
+                className={styles.editPencilBtn}
+                aria-label="Edit details section"
+                type="button"
+              >
+                <Icon.Pencil size={14} color="#3a3531" />
+              </button>
+            </header>
+
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Company</label>
+              {companyExpanded ? (
+                <input
+                  className={styles.editInput}
+                  placeholder="e.g. Acme Studio — a small creative agency in EU"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  autoFocus
+                />
+              ) : (
+                <div className={styles.editEmptyValue}>
+                  {company || "Not filled"}
+                </div>
+              )}
+              <button
+                type="button"
+                className={styles.editIntroBtn}
+                onClick={() => setCompanyExpanded((v) => !v)}
+              >
+                <Icon.Sparkles size={14} color="#E25B15" />
+                <div>
+                  <strong>Introduce Your Company</strong>
+                  <span>
+                    Company details help freelancers understand who they&apos;d
+                    be working with and increase response rates.
+                  </span>
+                </div>
+              </button>
+            </div>
+
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>
+                Location and Time Zone
+              </label>
+              <input
+                className={styles.editInput}
+                placeholder="Not filled"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+            </div>
+
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Description</label>
+
+              <div className={styles.editSubsection}>
+                <strong>Key Responsibilities:</strong>
+                <ul className={styles.editList}>
+                  {REQUEST.responsibilities.map((r) => (
+                    <li key={r}>{r}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className={styles.editSubsection}>
+                <strong>Requirements:</strong>
+                <ul className={styles.editList}>
+                  {REQUEST.requirements.map((r) => (
+                    <li key={r}>{r}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className={styles.editSubsection}>
+                <strong>Preferred Skills:</strong>
+                <ul className={styles.editList}>
+                  <li>Some know-how in front-end development.</li>
+                  <li>Experience with UX research methods and user testing.</li>
+                  <li>A good grasp of accessibility standards and best practices.</li>
+                  <li>Familiar with design systems and component libraries.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
         </div>
 
-        <aside className={styles.previewCard}>
-          <div className={styles.publicLogo} style={{ marginBottom: 4 }}>
-            <MellowLogo height={22} color="#1A1716" />
+        {/* ---- Right side: Preview ---- */}
+        <aside className={styles.editPreviewCol}>
+          <div className={styles.editPreviewToolbar}>
+            <button
+              className={`${styles.previewToggleBtn} ${previewMode === "mobile" ? styles.previewToggleActive : ""}`}
+              onClick={() => setPreviewMode("mobile")}
+              type="button"
+            >
+              Mobile view
+            </button>
+            <button
+              className={`${styles.previewToggleBtn} ${previewMode === "desktop" ? styles.previewToggleActive : ""}`}
+              onClick={() => setPreviewMode("desktop")}
+              type="button"
+            >
+              Switch to desktop view
+            </button>
           </div>
-          <h4 className={styles.tinyLabel} style={{ color: "var(--sd-mute)" }}>
-            PUBLIC PREVIEW
-          </h4>
-          <h2>{REQUEST.title}</h2>
-          <div className={styles.tagsLine}>
-            {REQUEST.skills.slice(0, 4).map((s) => (
-              <span className={styles.tagPill} key={s}>{s}</span>
-            ))}
-          </div>
-          <div className={styles.previewBody}>
-            {REQUEST.description.slice(0, 110)}…
-          </div>
-          <div className={styles.previewMeta}>
-            <div>
-              <span>Hourly rate</span>
-              <strong>{REQUEST.rate}</strong>
+
+          {previewMode === "mobile" ? (
+            <div className={styles.previewPhone}>
+              <div className={styles.previewPhoneNotch} />
+              <div className={styles.previewPhoneInner}>
+                <div className={styles.previewPhoneTopBar}>
+                  <MellowMark size={22} color="#1A1716" />
+                </div>
+                <div className={styles.previewMetaLine}>
+                  <span className={styles.previewCompany}>
+                    {MANAGER.company}
+                  </span>
+                  <span>·</span>
+                  <span>{REQUEST.location}</span>
+                  <span>·</span>
+                  <span>{REQUEST.timezone}</span>
+                </div>
+                <h2 className={styles.previewTitle}>{REQUEST.title}</h2>
+                <p className={styles.previewSummaryText}>
+                  {previewSummary}
+                  {summary.length > 140 && (
+                    <a className={styles.previewLink} href="#">
+                      {" "}
+                      Show more
+                    </a>
+                  )}
+                </p>
+
+                <div className={styles.previewMetaBlock}>
+                  <div className={styles.previewMetaLabel}>
+                    EXPERIENCE LEVEL
+                  </div>
+                  <span className={styles.previewPill}>
+                    {REQUEST.experience}-level
+                  </span>
+                </div>
+
+                <div className={styles.previewMetaBlock}>
+                  <div className={styles.previewMetaLabel}>SKILLS AND TECH</div>
+                  <div className={styles.tagsLine}>
+                    {skills.slice(0, 3).map((s) => (
+                      <span className={styles.tagPill} key={s}>
+                        {s}
+                      </span>
+                    ))}
+                    {skills.length > 3 && (
+                      <span className={styles.previewMore}>
+                        + {skills.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.previewMetaBlock}>
+                  <div className={styles.previewMetaLabel}>
+                    LANGUAGES REQUIRED
+                  </div>
+                  <div className={styles.tagsLine}>
+                    {REQUEST.languages.map((l) => (
+                      <span className={styles.tagPill} key={l}>
+                        {l}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.previewBudgetCard}>
+                  <div className={styles.previewMetaLabel}>BUDGET</div>
+                  <div className={styles.previewBudgetAmount}>{budget}</div>
+                  <div className={styles.previewProjectType}>
+                    Project type: <strong>{REQUEST.projectType}</strong>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <span>Workload</span>
-              <strong>{REQUEST.workload}</strong>
+          ) : (
+            <div className={styles.previewDesktop}>
+              <div className={styles.publicLogo} style={{ marginBottom: 4 }}>
+                <MellowLogo height={22} color="#1A1716" />
+              </div>
+              <h4 className={styles.tinyLabel} style={{ color: "var(--sd-mute)" }}>
+                DESKTOP PREVIEW
+              </h4>
+              <h2>{REQUEST.title}</h2>
+              <div className={styles.tagsLine}>
+                {skills.slice(0, 4).map((s) => (
+                  <span className={styles.tagPill} key={s}>
+                    {s}
+                  </span>
+                ))}
+              </div>
+              <div className={styles.previewBody}>{previewSummary}</div>
+              <div className={styles.previewMeta}>
+                <div>
+                  <span>Hourly rate</span>
+                  <strong>{budget}</strong>
+                </div>
+                <div>
+                  <span>Workload</span>
+                  <strong>{REQUEST.workload}</strong>
+                </div>
+                <div>
+                  <span>Project type</span>
+                  <strong>{REQUEST.projectType}</strong>
+                </div>
+                <div>
+                  <span>Experience</span>
+                  <strong>{REQUEST.experience}</strong>
+                </div>
+              </div>
             </div>
-            <div>
-              <span>Project type</span>
-              <strong>{REQUEST.projectType}</strong>
-            </div>
-            <div>
-              <span>Experience</span>
-              <strong>{REQUEST.experience}</strong>
-            </div>
-          </div>
+          )}
         </aside>
       </div>
     </>
@@ -1307,9 +1592,12 @@ const RequestCandidates: React.FC<RequestCandidatesProps> = ({
  *  Applied (people who hit Apply on the public page) and Shortlisted.
  *  Bucket pills are clickable and the candidate list switches accordingly.
  *
- *  When step === "candidates-empty" we override the contents with the
- *  "Need a Pro to Step In?" upsell + the "Candidates Will Appear Here"
- *  empty hero — bucket counts are forced to 0 and no rows are rendered.
+ *  Empty-state staging: at the scout-match step the request was just
+ *  saved, so Applied is still empty — we force the Applied count to 0 and
+ *  swap its body for the "Need a Pro to Step In?" upsell + the "Candidates
+ *  Will Appear Here" hero. Scout matches keep rendering as normal because
+ *  AI Scout has already produced suggestions. From candidates-empty onward
+ *  Applied populates with the real list.
  */
 const CandidatesTab: React.FC<{
   step: DemoStep;
@@ -1319,11 +1607,11 @@ const CandidatesTab: React.FC<{
   onOpenApplication: () => void;
   onInvite: () => void;
 }> = ({ step, sorted, bucket, onBucketChange, onOpenApplication, onInvite }) => {
-  const isEmptyStage = step === "candidates-empty";
-  const appliedCount = isEmptyStage
+  const isAppliedEmpty = step === "scout-match";
+  const appliedCount = isAppliedEmpty
     ? 0
     : sorted.filter((c) => c.source === "applied").length;
-  const scoutCount = isEmptyStage ? 0 : SCOUT_MATCH_CANDIDATES.length;
+  const scoutCount = SCOUT_MATCH_CANDIDATES.length;
   const shortlistedCount = step === "shortlisted" ? 1 : 0;
   return (
     <>
@@ -1423,13 +1711,11 @@ const CandidatesTab: React.FC<{
         </button>
       </div>
 
-      {isEmptyStage && <CandidatesEmptyState />}
+      {bucket === "scout" && <ScoutMatchList onInvite={onInvite} />}
 
-      {!isEmptyStage && bucket === "scout" && (
-        <ScoutMatchList onInvite={onInvite} />
-      )}
+      {bucket === "applied" && isAppliedEmpty && <CandidatesEmptyState />}
 
-      {!isEmptyStage && bucket === "applied" && (
+      {bucket === "applied" && !isAppliedEmpty && (
         <>
           <div className={styles.sortBar}>
             <button className={styles.sortChip}>
@@ -1496,8 +1782,8 @@ const CandidatesTab: React.FC<{
         </>
       )}
 
-      {!isEmptyStage && bucket === "shortlisted" && (
-        step === "shortlisted" ? (
+      {bucket === "shortlisted" &&
+        (step === "shortlisted" ? (
           <ShortlistedReadyList />
         ) : (
           <div className={styles.emptyHero}>
@@ -1508,8 +1794,7 @@ const CandidatesTab: React.FC<{
               to bring your top picks here.
             </p>
           </div>
-        )
-      )}
+        ))}
     </>
   );
 };
@@ -1961,15 +2246,98 @@ const PromotionTab: React.FC<{
               </div>
             </>
           )}
-          {promoOption === "boost" && (
-            <>
-              <h4>Boost by Mellow — coming soon</h4>
-              <div className={styles.smallMute}>
-                We&apos;ll syndicate your request to Mellow&apos;s open pool and
-                a curated set of niche job boards. Currently in private preview.
-              </div>
-            </>
-          )}
+          {promoOption === "boost" && <BoostDetail />}
+        </div>
+      </div>
+    </>
+  );
+};
+
+/* --------------------------------------------------------------------------
+   Boost detail panel — "Broader reach, powered by Mellow". Shows a
+   LinkedIn-style post draft from the AI Scout account plus a preview
+   card of how the request renders inside the post (title, budget block,
+   skill chips, experience/project-type meta, brand cloud accent).
+   -------------------------------------------------------------------------- */
+const BoostDetail: React.FC = () => {
+  return (
+    <>
+      <h4>Broader reach, powered by Mellow</h4>
+      <div className={styles.smallMute}>
+        We publish a post about your request on Scout&apos;s channels,
+        reaching freelancers who wouldn&apos;t otherwise see it.
+      </div>
+
+      <div className={styles.boostPostCard}>
+        <header className={styles.boostPostHead}>
+          <div className={styles.boostBrand}>
+            <div className={styles.boostBrandLogo} aria-hidden>
+              in
+            </div>
+            <div className={styles.boostBrandText}>
+              <strong>AI Scout</strong>
+              <span>LinkedIn · Not reposted</span>
+            </div>
+          </div>
+          <div className={styles.boostPostActions}>
+            <button className={styles.iconBtn} aria-label="Copy link">
+              <Icon.Link size={12} />
+            </button>
+            <button className={styles.boostRepostBtn} type="button">
+              Repost
+            </button>
+          </div>
+        </header>
+
+        <p className={styles.boostPostBody}>
+          <span className={styles.boostHashtag}>#hiring</span> for a new
+          position <strong>Junior–Mid UI/UX Designer</strong> to work on a
+          SaaS product refresh. Remote, flexible schedule, 1–3 months. Apply
+          now or share this opportunity with your network!
+        </p>
+
+        <div className={styles.boostPreviewCard}>
+          <div className={styles.boostPreviewHeader}>
+            <div className={styles.boostPreviewTag}>
+              <span className={styles.boostDot} /> New request · Studio M
+            </div>
+            <h5 className={styles.boostPreviewTitle}>
+              Junior to Mid-Level
+              <br />
+              UI/UX Designer
+            </h5>
+          </div>
+          <div className={styles.boostPreviewBudget}>
+            <span className={styles.boostBudgetAmount}>$2,000 – 3,000</span>
+            <span className={styles.boostBudgetLabel}>BUDGET</span>
+            <svg
+              className={styles.boostCloud}
+              viewBox="0 0 60 36"
+              aria-hidden
+            >
+              <path
+                d="M14 30c-7 0-12-4-12-10s5-9 11-9c1-6 7-9 13-9s11 4 13 9c5 0 11 3 11 9s-4 10-11 10H14z"
+                fill="#fff"
+              />
+            </svg>
+          </div>
+          <div className={styles.boostPreviewChips}>
+            <span className={styles.boostChip}>Figma</span>
+            <span className={styles.boostChip}>Canva</span>
+            <span className={styles.boostChip}>AI Creativity</span>
+            <span className={styles.boostChip}>Adobe Photoshop</span>
+            <span className={styles.boostChip}>Design Systems</span>
+          </div>
+          <div className={styles.boostPreviewMeta}>
+            <div>
+              <strong>Mid-level</strong>
+              <span>EXPERIENCE LEVEL</span>
+            </div>
+            <div>
+              <strong>Ongoing</strong>
+              <span>PROJECT TYPE</span>
+            </div>
+          </div>
         </div>
       </div>
     </>

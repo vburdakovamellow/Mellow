@@ -58,7 +58,7 @@ export const STEP_LABELS: Record<DemoStep, string> = {
   "public-request": "Public request page",
   "dashboard-active": "Dashboard · Active",
   "scout-match": "AI Scout · Match",
-  "candidates-empty": "Applied · Empty",
+  "candidates-empty": "Applied · First wave",
   "candidates-first": "Candidates · First application",
   "ultra-briefing": "Ultra · Briefing",
   "ultra-ready": "Applied · Ready",
