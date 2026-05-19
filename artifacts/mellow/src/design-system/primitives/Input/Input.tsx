@@ -1,0 +1,45 @@
+import styles from "./Input.module.css";
+import type { ReactNode } from "react";
+import React from "react";
+
+export function InputField({
+  label,
+  value,
+  placeholder,
+  readOnly = false,
+  rightIcon,
+  className,
+  onChange,
+  onKeyDown,
+  type = "text"
+}: {
+  label?: string;
+  value?: string;
+  placeholder?: string;
+  readOnly?: boolean;
+  rightIcon?: ReactNode;
+  className?: string;
+  onChange?: (next: string) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  type?: "text" | "number" | "url";
+}) {
+  return (
+    <label className={[styles.field, className].filter(Boolean).join(" ")}>
+      {label ? <span className={styles.label}>{label}</span> : null}
+      <span className={[styles.control, rightIcon ? styles.withRightIcon : ""].filter(Boolean).join(" ")}>
+        <input
+          aria-label={label ?? placeholder ?? "Input"}
+          className={styles.native}
+          value={value ?? ""}
+          placeholder={placeholder}
+          readOnly={readOnly}
+          type={type}
+          onChange={(e) => onChange?.(e.currentTarget.value)}
+          onKeyDown={onKeyDown}
+        />
+        {rightIcon ? <span className={styles.rightIcon}>{rightIcon}</span> : null}
+      </span>
+    </label>
+  );
+}
+

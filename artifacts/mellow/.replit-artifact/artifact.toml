@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Mellow"
+version = "1.0.0"
+id = "artifacts/mellow"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18191
+
+[services.development]
+run = "pnpm --filter @workspace/mellow run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mellow", "run", "build" ]
+publicDir = "artifacts/mellow/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18191"
+BASE_PATH = "/"

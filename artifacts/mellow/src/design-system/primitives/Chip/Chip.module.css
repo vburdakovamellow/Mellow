@@ -1,0 +1,47 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-8);
+  height: 32px;
+  padding: 0 var(--ds-space-12);
+  background: #ffffff;
+  border-radius: var(--ds-radius-12);
+  color: #000000;
+  border: 1px solid #000000;
+  user-select: none;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 2px;
+}
+
+.label {
+  font-size: var(--ds-font-size-14);
+  line-height: var(--ds-line-height-18);
+  font-weight: 400;
+}
+
+.rightIcon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+}
+
+.leftIcon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+}
+
