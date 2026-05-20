@@ -520,14 +520,12 @@ export default function ScoutSalesDemo() {
     }
     if (step === "edit-request") {
       return (
-        <AppShell currentSection="requests">
-          <EditRequest
-            onSave={() => {
-              setStep("scout-match");
-              setBucket("scout");
-            }}
-          />
-        </AppShell>
+        <EditRequest
+          onSave={() => {
+            setStep("scout-match");
+            setBucket("scout");
+          }}
+        />
       );
     }
     if (step === "public-request") {
@@ -1067,234 +1065,40 @@ const EditRequest: React.FC<{ onSave: () => void }> = ({ onSave }) => {
     summary.length > 140 ? `${summary.slice(0, 140).trim()}…` : summary;
 
   return (
-    <>
-      <div className={styles.requestHead}>
-        <button className={styles.backLink}>← Go to dashboard</button>
-      </div>
-      <div className={styles.editTitleRow}>
-        <span className={styles.editPill}>Draft</span>
-        <h1 className={styles.editH1}>{REQUEST.title}</h1>
-        <button className={styles.saveBtn} onClick={onSave}>
-          <Icon.Sparkles size={12} color="#fff" /> Save &amp; get candidates
-        </button>
-      </div>
-
-      <div className={styles.editRow}>
-        <div className={styles.editLeft}>
-          {/* ---- Card 1: Candidate ---- */}
-          <section className={styles.editCard}>
-            <header className={styles.editCardHead}>
-              <div className={styles.editCardIcon}>
-                <Icon.User size={16} color="#1A1716" />
-              </div>
-              <h3 className={styles.editCardTitle}>Candidate</h3>
-              <button
-                className={styles.editPencilBtn}
-                aria-label="Edit candidate section"
-                type="button"
-              >
-                <Icon.Pencil size={14} color="#3a3531" />
-              </button>
-            </header>
-
-            <div className={styles.editField}>
-              <label className={styles.editFieldLabel}>Profile</label>
-              <textarea
-                className={`${styles.editInput} ${styles.editTextarea}`}
-                value={profile}
-                onChange={(e) => setProfile(e.target.value)}
-                rows={2}
-              />
-            </div>
-
-            <div className={styles.editField}>
-              <label className={styles.editFieldLabel}>Skills and Tech</label>
-              <div className={styles.editChipsBox}>
-                {skills.map((s) => (
-                  <span className={styles.editChip} key={s}>
-                    {s}
-                    <button
-                      className={styles.editChipX}
-                      type="button"
-                      onClick={() => removeSkill(s)}
-                      aria-label={`Remove ${s}`}
-                    >
-                      <Icon.X size={10} />
-                    </button>
-                  </span>
-                ))}
-                <input
-                  className={styles.editChipInput}
-                  placeholder="Add a skill"
-                  value={skillDraft}
-                  onChange={(e) => setSkillDraft(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === ",") {
-                      e.preventDefault();
-                      addSkill();
-                    }
-                  }}
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* ---- Card 2: Overview ---- */}
-          <section className={styles.editCard}>
-            <header className={styles.editCardHead}>
-              <div className={styles.editCardIcon}>
-                <Icon.Eye size={16} color="#1A1716" />
-              </div>
-              <h3 className={styles.editCardTitle}>Overview</h3>
-              <button
-                className={styles.editPencilBtn}
-                aria-label="Edit overview section"
-                type="button"
-              >
-                <Icon.Pencil size={14} color="#3a3531" />
-              </button>
-            </header>
-
-            <div className={styles.editField}>
-              <label className={styles.editFieldLabel}>Summary</label>
-              <textarea
-                className={`${styles.editInput} ${styles.editTextarea}`}
-                value={summary}
-                onChange={(e) => setSummary(e.target.value)}
-                rows={4}
-              />
-            </div>
-
-            <div className={styles.editField}>
-              <label className={styles.editFieldLabel}>Timeline</label>
-              <input
-                className={styles.editInput}
-                value={timeline}
-                onChange={(e) => setTimeline(e.target.value)}
-              />
-            </div>
-
-            <div className={styles.editField}>
-              <label className={styles.editFieldLabel}>Budget</label>
-              <input
-                className={styles.editInput}
-                value={budget}
-                onChange={(e) => setBudget(e.target.value)}
-              />
-            </div>
-          </section>
-
-          {/* ---- Card 3: Details ---- */}
-          <section className={styles.editCard}>
-            <header className={styles.editCardHead}>
-              <div className={styles.editCardIcon}>
-                <Icon.Search size={16} color="#1A1716" />
-              </div>
-              <h3 className={styles.editCardTitle}>Details</h3>
-              <button
-                className={styles.editPencilBtn}
-                aria-label="Edit details section"
-                type="button"
-              >
-                <Icon.Pencil size={14} color="#3a3531" />
-              </button>
-            </header>
-
-            <div className={styles.editField}>
-              <label className={styles.editFieldLabel}>Company</label>
-              {companyExpanded ? (
-                <input
-                  className={styles.editInput}
-                  placeholder="e.g. Acme Studio — a small creative agency in EU"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  autoFocus
-                />
-              ) : (
-                <div className={styles.editEmptyValue}>
-                  {company || "Not filled"}
-                </div>
-              )}
-              <button
-                type="button"
-                className={styles.editIntroBtn}
-                onClick={() => setCompanyExpanded((v) => !v)}
-              >
-                <Icon.Sparkles size={14} color="#E25B15" />
-                <div>
-                  <strong>Introduce Your Company</strong>
-                  <span>
-                    Company details help freelancers understand who they&apos;d
-                    be working with and increase response rates.
-                  </span>
-                </div>
-              </button>
-            </div>
-
-            <div className={styles.editField}>
-              <label className={styles.editFieldLabel}>
-                Location and Time Zone
-              </label>
-              <input
-                className={styles.editInput}
-                placeholder="Not filled"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
-            </div>
-
-            <div className={styles.editField}>
-              <label className={styles.editFieldLabel}>Description</label>
-
-              <div className={styles.editSubsection}>
-                <strong>Key Responsibilities:</strong>
-                <ul className={styles.editList}>
-                  {REQUEST.responsibilities.map((r) => (
-                    <li key={r}>{r}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className={styles.editSubsection}>
-                <strong>Requirements:</strong>
-                <ul className={styles.editList}>
-                  {REQUEST.requirements.map((r) => (
-                    <li key={r}>{r}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className={styles.editSubsection}>
-                <strong>Preferred Skills:</strong>
-                <ul className={styles.editList}>
-                  <li>Some know-how in front-end development.</li>
-                  <li>Experience with UX research methods and user testing.</li>
-                  <li>A good grasp of accessibility standards and best practices.</li>
-                  <li>Familiar with design systems and component libraries.</li>
-                </ul>
-              </div>
-            </div>
-          </section>
+    <div className={styles.editWrap}>
+      {/* ---- Simple header ---- */}
+      <div className={styles.editHeader}>
+        <span className={styles.editHeaderTitle}>New Request</span>
+        <div className={styles.editHeaderActions}>
+          <button className={styles.savePublishBtn} onClick={onSave}>
+            Save &amp; publish
+          </button>
+          <button className={styles.editCloseBtn} type="button" aria-label="Close">
+            <Icon.X size={16} />
+          </button>
         </div>
+      </div>
 
-        {/* ---- Right side: Preview ---- */}
-        <aside className={styles.editPreviewCol}>
-          <div className={styles.editPreviewToolbar}>
-            <button
-              className={`${styles.previewToggleBtn} ${previewMode === "mobile" ? styles.previewToggleActive : ""}`}
-              onClick={() => setPreviewMode("mobile")}
-              type="button"
+      {/* ---- Two-column body ---- */}
+      <div className={styles.editBody}>
+
+        {/* ---- LEFT: Preview ---- */}
+        <aside className={styles.editPreviewSide}>
+          <label className={styles.editDesktopToggle}>
+            <span
+              className={styles.toggleTrack}
+              style={{ background: previewMode === "desktop" ? "var(--sd-ink)" : undefined }}
             >
-              Mobile view
-            </button>
-            <button
-              className={`${styles.previewToggleBtn} ${previewMode === "desktop" ? styles.previewToggleActive : ""}`}
-              onClick={() => setPreviewMode("desktop")}
-              type="button"
-            >
-              Switch to desktop view
-            </button>
-          </div>
+              <input
+                type="checkbox"
+                style={{ display: "none" }}
+                checked={previewMode === "desktop"}
+                onChange={(e) => setPreviewMode(e.target.checked ? "desktop" : "mobile")}
+              />
+              <span className={`${styles.toggleThumb} ${previewMode === "desktop" ? styles.toggleThumbOn : ""}`} />
+            </span>
+            Desktop preview
+          </label>
 
           {previewMode === "mobile" ? (
             <div className={styles.previewPhone}>
@@ -1408,8 +1212,92 @@ const EditRequest: React.FC<{ onSave: () => void }> = ({ onSave }) => {
             </div>
           )}
         </aside>
+
+        {/* ---- RIGHT: Form cards ---- */}
+        <div className={styles.editFormSide}>
+
+          {/* Card 1: Candidate */}
+          <section className={styles.editCard}>
+            <header className={styles.editCardHead}>
+              <div className={styles.editCardIcon}>
+                <Icon.User size={16} color="#1A1716" />
+              </div>
+              <h3 className={styles.editCardTitle}>Candidate</h3>
+              <button className={styles.editPencilBtn} aria-label="Edit candidate section" type="button">
+                <Icon.Pencil size={14} color="#3a3531" />
+              </button>
+            </header>
+
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Profile</label>
+              <textarea
+                className={`${styles.editInput} ${styles.editTextarea}`}
+                value={profile}
+                onChange={(e) => setProfile(e.target.value)}
+                rows={2}
+              />
+            </div>
+
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Skills and Tech</label>
+              <div className={styles.editChipsBox}>
+                {skills.map((s) => (
+                  <span className={styles.editChip} key={s}>
+                    {s}
+                    <button className={styles.editChipX} type="button" onClick={() => removeSkill(s)} aria-label={`Remove ${s}`}>
+                      <Icon.X size={10} />
+                    </button>
+                  </span>
+                ))}
+                <input
+                  className={styles.editChipInput}
+                  placeholder="Add a skill"
+                  value={skillDraft}
+                  onChange={(e) => setSkillDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addSkill(); }
+                  }}
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Card 2: Overview */}
+          <section className={styles.editCard}>
+            <header className={styles.editCardHead}>
+              <div className={styles.editCardIcon}>
+                <Icon.Eye size={16} color="#1A1716" />
+              </div>
+              <h3 className={styles.editCardTitle}>Overview</h3>
+              <button className={styles.editPencilBtn} aria-label="Edit overview section" type="button">
+                <Icon.Pencil size={14} color="#3a3531" />
+              </button>
+            </header>
+
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Summary</label>
+              <textarea
+                className={`${styles.editInput} ${styles.editTextarea}`}
+                value={summary}
+                onChange={(e) => setSummary(e.target.value)}
+                rows={4}
+              />
+            </div>
+
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Timeline</label>
+              <input className={styles.editInput} value={timeline} onChange={(e) => setTimeline(e.target.value)} />
+            </div>
+
+            <div className={styles.editField}>
+              <label className={styles.editFieldLabel}>Budget</label>
+              <input className={styles.editInput} value={budget} onChange={(e) => setBudget(e.target.value)} />
+            </div>
+          </section>
+
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
