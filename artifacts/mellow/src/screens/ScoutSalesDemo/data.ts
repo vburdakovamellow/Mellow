@@ -126,6 +126,8 @@ export type Candidate = {
   avatarTone: string;
   highlights?: string[];
   shortPitch?: string;
+  rate?: string;
+  date?: string;
   /** Manager tagged this candidate as not relevant. Renders greyed-out
    *  beneath the active list and is hidden behind a "Show rejected
    *  candidates" toggle by default. */
@@ -196,6 +198,8 @@ export const CANDIDATES: Candidate[] = [
     match: 100,
     source: "ultra",
     avatarTone: "#F4823C",
+    rate: "Rate on request",
+    date: "Today",
     highlights: ["Brand book and pitch decks for SaaS", "EU based", "Available next Monday"],
     shortPitch:
       "Senior brand designer with 9 yrs in B2B SaaS. Built a full visual system and ad templates for two Series B startups.",
@@ -210,6 +214,8 @@ export const CANDIDATES: Candidate[] = [
     match: 99,
     source: "applied",
     avatarTone: "#FFB47A",
+    rate: "$45/hr",
+    date: "Today",
     highlights: ["Strong portfolio in social ads", "5+ yrs in B2C lifestyle", "Speaks English & Spanish"],
     shortPitch:
       "Mid+ UI/UX designer who's been running social-creative pipelines for two D2C brands. Loves systems and motion.",
@@ -224,6 +230,8 @@ export const CANDIDATES: Candidate[] = [
     match: 97,
     source: "ultra",
     avatarTone: "#E36C20",
+    rate: "$55/hr",
+    date: "May 17",
     highlights: ["Senior creative across IG/TikTok", "Owns motion + static", "Worked with HubSpot"],
     shortPitch:
       "Creative designer with 8 yrs experience building social creatives for SaaS and e-commerce brands.",
@@ -238,6 +246,8 @@ export const CANDIDATES: Candidate[] = [
     match: 94,
     source: "ultra",
     avatarTone: "#F19A55",
+    rate: "Rate on request",
+    date: "May 17",
     highlights: ["Fast, scrappy, motion-first", "Hourly rate sweet-spot"],
   },
   {
@@ -250,6 +260,8 @@ export const CANDIDATES: Candidate[] = [
     match: 88,
     source: "applied",
     avatarTone: "#A8A29E",
+    rate: "$32/hr",
+    date: "May 17",
   },
   {
     id: "daryna",
@@ -261,6 +273,8 @@ export const CANDIDATES: Candidate[] = [
     match: 84,
     source: "scouted",
     avatarTone: "#F8B58D",
+    rate: "Rate on request",
+    date: "May 17",
   },
   {
     id: "alejandro",
@@ -272,6 +286,8 @@ export const CANDIDATES: Candidate[] = [
     match: 68,
     source: "applied",
     avatarTone: "#D9CFC4",
+    rate: "$99/hr",
+    date: "May 12",
   },
   {
     id: "elisa",
@@ -283,6 +299,8 @@ export const CANDIDATES: Candidate[] = [
     match: 47,
     source: "applied",
     avatarTone: "#C0B7AB",
+    rate: "Rate on request",
+    date: "Apr 28",
   },
   /* ---- Rejected by the manager. Hidden by default behind a toggle. ----
      Numbers and roles mirror the rejected rows in the "applied · with
@@ -298,6 +316,8 @@ export const CANDIDATES: Candidate[] = [
     match: 64,
     source: "applied",
     avatarTone: "#B9B1AA",
+    rate: "Rate on request",
+    date: "May 12",
     rejected: true,
   },
   {
@@ -310,6 +330,8 @@ export const CANDIDATES: Candidate[] = [
     match: 23,
     source: "applied",
     avatarTone: "#A8A29E",
+    rate: "Rate on request",
+    date: "May 10",
     rejected: true,
   },
 ];

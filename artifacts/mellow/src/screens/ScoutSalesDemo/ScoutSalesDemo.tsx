@@ -46,7 +46,7 @@ const VISIBLE_STEPS: DemoStep[] = [
 ];
 
 /** Bucket pill states inside the Candidates tab */
-type BucketKey = "scout" | "applied" | "shortlisted";
+type BucketKey = "scout" | "applied" | "shortlisted" | "offer";
 
 /* --------------------------------------------------------------------------
    Inline icon set (no external icon dep, keep prototype self-contained).
@@ -302,6 +302,17 @@ const Icon = {
       <path d="M4 11l8-7 8 7v9a1 1 0 01-1 1h-4v-6h-6v6H5a1 1 0 01-1-1v-9z" stroke={color} strokeWidth={1.6} />
     </svg>
   ),
+  SortArrows: ({ size = 14, color = "currentColor" }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d="M8 20V4m0 0L5 7m3-3l3 3" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16 4v16m0 0l3-3m-3 3l-3-3" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  Minus: ({ size = 14, color = "currentColor" }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d="M5 12h14" stroke={color} strokeWidth={2} strokeLinecap="round" />
+    </svg>
+  ),
 };
 
 /* --------------------------------------------------------------------------
@@ -542,13 +553,9 @@ export default function ScoutSalesDemo() {
       step === "shortlisted"
     ) {
       return (
-        <AppShell currentSection="requests">
+        <AppShell currentSection="requests" compact>
           <RequestCandidates
             step={step}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            promoOption={promoOption}
-            onPromoOption={setPromoOption}
             bucket={bucket}
             onBucketChange={setBucket}
             onOpenApplication={() => setStep("application-modal")}
@@ -662,9 +669,10 @@ const StepNav: React.FC<StepNavProps> = ({
    ========================================================================== */
 type AppShellProps = {
   currentSection: "dashboard" | "requests" | "candidates";
+  compact?: boolean;
   children: React.ReactNode;
 };
-const AppShell: React.FC<AppShellProps> = ({ currentSection, children }) => {
+const AppShell: React.FC<AppShellProps> = ({ currentSection, compact, children }) => {
   return (
     <div className={styles.appShell}>
       <aside className={styles.sideRail}>
@@ -692,14 +700,18 @@ const AppShell: React.FC<AppShellProps> = ({ currentSection, children }) => {
       </aside>
       <main className={styles.appMain}>
         <div className={styles.topBar}>
-          <span className={styles.topBarLeft}>
-            {currentSection === "dashboard"
-              ? "Dashboard · Empty"
-              : "Requests · Active"}
-          </span>
-          <button className={styles.pillCta}>
-            <Icon.Plus size={14} /> Generate request
-          </button>
+          {!compact && (
+            <span className={styles.topBarLeft}>
+              {currentSection === "dashboard"
+                ? "Dashboard · Empty"
+                : "Requests · Active"}
+            </span>
+          )}
+          {!compact && (
+            <button className={styles.pillCta}>
+              <Icon.Plus size={14} /> Generate request
+            </button>
+          )}
           <button className={styles.scoutPill}>
             <Icon.Sparkles size={14} color="#E25B15" /> AI Scout <Icon.Chevron size={12} />
           </button>
@@ -1409,17 +1421,10 @@ const PublicRequest: React.FC<{ onApply: () => void }> = ({ onApply }) => {
 };
 
 /* ==========================================================================
-   7. REQUEST CANDIDATES (Ultra Ready) + Promotion tab
+   7. REQUEST CANDIDATES
    ========================================================================== */
 type RequestCandidatesProps = {
-  /** Current demo step — drives the candidates-empty empty-state hero. */
   step: DemoStep;
-  activeTab: "candidates" | "promotion";
-  onTabChange: (t: "candidates" | "promotion") => void;
-  promoOption: "oneOnOne" | "network" | "communities" | "boost";
-  onPromoOption: (
-    o: "oneOnOne" | "network" | "communities" | "boost"
-  ) => void;
   bucket: BucketKey;
   onBucketChange: (b: BucketKey) => void;
   onOpenApplication: () => void;
@@ -1427,10 +1432,6 @@ type RequestCandidatesProps = {
 };
 const RequestCandidates: React.FC<RequestCandidatesProps> = ({
   step,
-  activeTab,
-  onTabChange,
-  promoOption,
-  onPromoOption,
   bucket,
   onBucketChange,
   onOpenApplication,
@@ -1451,66 +1452,19 @@ const RequestCandidates: React.FC<RequestCandidatesProps> = ({
         <span className={styles.statusPill}>Active</span>
       </h1>
 
-      <div
-        className={styles.flex}
-        style={{ alignItems: "center", marginBottom: 14 }}
-      >
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tab} ${activeTab === "candidates" ? styles.tabActive : ""}`}
-            onClick={() => onTabChange("candidates")}
-          >
-            Candidates
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === "promotion" ? styles.tabActive : ""}`}
-            onClick={() => onTabChange("promotion")}
-          >
-            Promotion
-          </button>
-        </div>
-        <div className={styles.spacer} />
-        <button className={styles.outlineBtn}>Edit request</button>
-        <button
-          className={styles.iconBtn}
-          aria-label="More"
-          style={{ marginLeft: 6 }}
-        >
-          ⋮
-        </button>
-      </div>
-
-      {activeTab === "candidates" ? (
-        <CandidatesTab
-          step={step}
-          sorted={sorted}
-          bucket={bucket}
-          onBucketChange={onBucketChange}
-          onOpenApplication={onOpenApplication}
-          onInvite={onInvite}
-        />
-      ) : (
-        <PromotionTab
-          promoOption={promoOption}
-          onPromoOption={onPromoOption}
-        />
-      )}
+      <CandidatesTab
+        step={step}
+        sorted={sorted}
+        bucket={bucket}
+        onBucketChange={onBucketChange}
+        onOpenApplication={onOpenApplication}
+        onInvite={onInvite}
+      />
     </>
   );
 };
 
-/* ---- Candidates tab body ----
- *  Three buckets: AI Scout Match (suggested contractors not yet applied),
- *  Applied (people who hit Apply on the public page) and Shortlisted.
- *  Bucket pills are clickable and the candidate list switches accordingly.
- *
- *  Empty-state staging: at the scout-match step the request was just
- *  saved, so Applied is still empty — we force the Applied count to 0 and
- *  swap its body for the "Need a Pro to Step In?" upsell + the "Candidates
- *  Will Appear Here" hero. Scout matches keep rendering as normal because
- *  AI Scout has already produced suggestions. From candidates-empty onward
- *  Applied populates with the real list.
- */
+/* ---- Candidates tab body — flat tabs, hover actions, multiselect ---- */
 const CandidatesTab: React.FC<{
   step: DemoStep;
   sorted: typeof CANDIDATES;
@@ -1520,239 +1474,136 @@ const CandidatesTab: React.FC<{
   onInvite: () => void;
 }> = ({ step, sorted, bucket, onBucketChange, onOpenApplication, onInvite }) => {
   const isAppliedEmpty = step === "scout-match";
-  /* Rejected candidates are hidden by default and surfaced through a
-   * "Show rejected candidates" toggle — mirrors the mockup. State lives
-   * inside the tab so it's reset whenever the bucket re-mounts. */
-  const [showRejected, setShowRejected] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
+  const activeCandidates = useMemo(
+    () => sorted.filter((c) => !c.rejected),
+    [sorted]
+  );
   const rejectedCandidates = useMemo(
     () => sorted.filter((c) => c.rejected),
     [sorted]
   );
-  /* What ends up rendered in the active list: everything except rejected
-   * (when toggle is off) or the full sorted list (when toggle is on, with
-   * rejected rows greyed-out in-place). */
-  const activeCandidates = useMemo(
-    () => (showRejected ? sorted : sorted.filter((c) => !c.rejected)),
-    [sorted, showRejected]
-  );
 
-  const appliedCount = isAppliedEmpty
-    ? 0
-    : sorted.filter((c) => c.source === "applied").length;
   const scoutCount = SCOUT_MATCH_CANDIDATES.length;
+  const appliedCount = isAppliedEmpty ? 0 : activeCandidates.length;
   const shortlistedCount = step === "shortlisted" ? 1 : 0;
+  const isUltraActive =
+    step === "ultra-ready" ||
+    step === "application-modal" ||
+    step === "shortlisted";
+
+  const toggleSelect = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const clearSelection = () => setSelected(new Set());
+  const hasSelection = selected.size > 0;
+
+  const tabs: { key: BucketKey; label: string; count?: number }[] = [
+    { key: "scout", label: "AI matches", count: scoutCount },
+    {
+      key: "applied",
+      label: "Applied",
+      count: appliedCount > 0 ? appliedCount : undefined,
+    },
+    {
+      key: "shortlisted",
+      label: "Shortlisted",
+      count: shortlistedCount > 0 ? shortlistedCount : undefined,
+    },
+    { key: "offer", label: "Offer received", count: 2 },
+  ];
+
   return (
     <>
-      <div className={styles.bucketRow}>
-        <button
-          type="button"
-          className={`${styles.bucket} ${bucket === "scout" ? styles.bucketActive : ""}`}
-          onClick={() => onBucketChange("scout")}
-        >
-          <div
-            className={styles.bucketIcon}
-            style={
-              bucket === "scout"
-                ? { background: "#FFD9B8", color: "#E25B15" }
-                : undefined
-            }
-          >
-            <Icon.Compass size={14} />
-          </div>
-          <div className={styles.bucketTextCol}>
-            <div className={styles.bucketLabel}>AI Scout Match</div>
-            <div className={styles.bucketSub}>Suggested contractors</div>
-          </div>
-          <div
-            className={styles.bucketCount}
-            style={
-              bucket === "scout"
-                ? { background: "#FFE3C2", color: "#E25B15" }
-                : undefined
-            }
-          >
-            {scoutCount}
-          </div>
-          {bucket === "scout" && <span className={styles.bucketDot} />}
+      {/* Flat tabs row */}
+      <div className={styles.flatTabsRow}>
+        <button className={styles.sortIconBtn} type="button" title="Sort">
+          <Icon.SortArrows size={15} />
         </button>
-
-        <button
-          type="button"
-          className={`${styles.bucket} ${bucket === "applied" ? styles.bucketActive : ""}`}
-          onClick={() => onBucketChange("applied")}
-        >
-          <div
-            className={styles.bucketIcon}
-            style={
-              bucket === "applied"
-                ? { background: "#FFD9B8", color: "#E25B15" }
-                : undefined
-            }
-          >
-            <Icon.Check size={14} />
-          </div>
-          <div className={styles.bucketTextCol}>
-            <div className={styles.bucketLabel}>Applied</div>
-            <div className={styles.bucketSub}>Unsorted candidates</div>
-          </div>
-          <div
-            className={styles.bucketCount}
-            style={
-              bucket === "applied"
-                ? { background: "#FFE3C2", color: "#E25B15" }
-                : undefined
-            }
-          >
-            {appliedCount}
-          </div>
-        </button>
-
-        <button
-          type="button"
-          className={`${styles.bucket} ${bucket === "shortlisted" ? styles.bucketActive : ""}`}
-          onClick={() => onBucketChange("shortlisted")}
-        >
-          <div
-            className={styles.bucketIcon}
-            style={
-              bucket === "shortlisted"
-                ? { background: "#FFD9B8", color: "#E25B15" }
-                : undefined
-            }
-          >
-            <Icon.Bookmark size={14} />
-          </div>
-          <div className={styles.bucketTextCol}>
-            <div className={styles.bucketLabel}>Shortlisted</div>
-            <div className={styles.bucketSub}>Selected candidates</div>
-          </div>
-          <div
-            className={styles.bucketCount}
-            style={
-              bucket === "shortlisted"
-                ? { background: "#FFE3C2", color: "#E25B15" }
-                : undefined
-            }
-          >
-            {shortlistedCount}
-          </div>
+        <div className={styles.flatTabs}>
+          {tabs.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              className={`${styles.flatTab} ${
+                bucket === t.key ? styles.flatTabActive : ""
+              }`}
+              onClick={() => onBucketChange(t.key)}
+            >
+              {t.label}
+              {t.count !== undefined && (
+                <span className={styles.flatTabBadge}>{t.count}</span>
+              )}
+            </button>
+          ))}
+        </div>
+        <button className={styles.dotsMenuBtn} type="button">
+          ⋮
         </button>
       </div>
 
+      {/* Bulk action bar */}
+      {hasSelection && (
+        <div className={styles.bulkBar}>
+          <button
+            className={styles.bulkClearBtn}
+            type="button"
+            onClick={clearSelection}
+          >
+            <Icon.X size={13} /> {selected.size} Selected
+          </button>
+          <div className={styles.spacer} />
+          <button className={styles.bulkRejectBtn} type="button">
+            Reject
+          </button>
+          <button className={styles.bulkShortlistBtn} type="button">
+            Add to shortlist
+          </button>
+          <button className={styles.bulkMinusBtn} type="button">
+            <Icon.Minus size={14} color="#fff" />
+          </button>
+        </div>
+      )}
+
+      {/* Scout bucket */}
       {bucket === "scout" && <ScoutMatchList onInvite={onInvite} />}
 
+      {/* Applied — empty state */}
       {bucket === "applied" && isAppliedEmpty && <CandidatesEmptyState />}
 
+      {/* Applied — with candidates */}
       {bucket === "applied" && !isAppliedEmpty && (
         <>
-          <div className={styles.sortBar}>
-            <button className={styles.sortChip}>
-              Best match first <Icon.Chevron size={12} />
-            </button>
+          {activeCandidates.map((c) => (
+            <CandidateRow
+              key={c.id}
+              c={c}
+              isSelected={selected.has(c.id)}
+              hasAnySelection={hasSelection}
+              onSelect={() => toggleSelect(c.id)}
+              isHovered={hoveredId === c.id}
+              onHover={setHoveredId}
+              actionLabel="Shortlist"
+              onAction={onOpenApplication}
+            />
+          ))}
+
+          <div className={styles.listFooter}>
+            {activeCandidates.length} candidates &middot;{" "}
+            {rejectedCandidates.length} rejected
           </div>
 
-          {activeCandidates.map((c) => {
-            const isUltra = c.source === "ultra";
-            const isRejected = !!c.rejected;
-            return (
-              <div
-                key={c.id}
-                className={[
-                  styles.candidateRow,
-                  isUltra ? styles.ultra : "",
-                  isRejected ? styles.rejectedRow : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                onClick={onOpenApplication}
-                style={{ cursor: "pointer" }}
-                title={
-                  isRejected
-                    ? "Rejected — open application (demo)"
-                    : "Open application (demo)"
-                }
-              >
-                <Avatar
-                  initials={c.initials}
-                  color={isRejected ? "#C8C0B7" : c.avatarTone}
-                />
-                <div>
-                  <div className={styles.candidateName}>{c.name}</div>
-                  <div className={styles.candidateMeta}>
-                    {c.country} · {c.role} · {c.experience}
-                  </div>
-                </div>
-                <div className={`${styles.flex} ${styles.gap8}`}>
-                  {isUltra && !isRejected && (
-                    <span
-                      className={`${styles.sourceBadge} ${styles.sourceUltra}`}
-                    >
-                      Ultra
-                    </span>
-                  )}
-                  {c.source === "scouted" && !isRejected && (
-                    <span
-                      className={`${styles.sourceBadge} ${styles.sourceScouted}`}
-                    >
-                      AI Scouted
-                    </span>
-                  )}
-                </div>
-                {isRejected ? (
-                  <span
-                    className={`${styles.matchPill} ${styles.matchPillRejected}`}
-                  >
-                    <Icon.Bolt size={12} /> {c.match}%
-                  </span>
-                ) : (
-                  <MatchPill score={c.match} />
-                )}
-              </div>
-            );
-          })}
-
-          {rejectedCandidates.length > 0 && (
-            <button
-              type="button"
-              className={styles.rejectedToggleBar}
-              onClick={() => setShowRejected((v) => !v)}
-              aria-pressed={showRejected}
-            >
-              {showRejected ? (
-                <Icon.Eye size={16} color="currentColor" />
-              ) : (
-                <Icon.EyeOff size={16} color="currentColor" />
-              )}
-              <span className={styles.rejectedToggleCount}>
-                {rejectedCandidates.length} rejected
-              </span>
-              <span className={styles.rejectedToggleLink}>
-                {showRejected
-                  ? "Hide rejected candidates"
-                  : "Show rejected candidates"}
-              </span>
-            </button>
-          )}
-
-          <div className={styles.ultraSuccess}>
-            <div
-              className={styles.bucketIcon}
-              style={{ background: "#FFD9B8", width: 36, height: 36 }}
-            >
-              <Icon.Sparkles color="#E25B15" />
-            </div>
-            <div>
-              <strong>Your Ultra candidates are ready!</strong>
-              <span>
-                Found the right fit? If not, you can start a new search at no extra cost.
-              </span>
-            </div>
-            <button className={styles.outlineBtn}>Reactivate Ultra</button>
-          </div>
+          <BottomPromoCards isUltraActive={isUltraActive} />
         </>
       )}
 
+      {/* Shortlisted bucket */}
       {bucket === "shortlisted" &&
         (step === "shortlisted" ? (
           <ShortlistedReadyList />
@@ -1761,212 +1612,218 @@ const CandidatesTab: React.FC<{
             <Icon.Bookmark size={28} color="#E25B15" />
             <h3>No shortlisted candidates yet</h3>
             <p>
-              Open an application from the Applied tab and tap “Add to Shortlist”
-              to bring your top picks here.
+              Open an application and tap &ldquo;Shortlist&rdquo; to bring your
+              top picks here.
             </p>
           </div>
         ))}
+
+      {/* Offer received bucket */}
+      {bucket === "offer" && (
+        <div className={styles.emptyHero}>
+          <Icon.Check size={28} color="#E25B15" />
+          <h3>No offers sent yet</h3>
+          <p>When you send a candidate an offer, they&apos;ll appear here.</p>
+        </div>
+      )}
     </>
   );
 };
 
-/* --------------------------------------------------------------------------
-   "Need a Pro to Step In?" upsell illustration — a stylised reviewer
-   holding two résumés against a warm orange backdrop. Hand-rolled SVG so
-   it's pixel-stable across browsers and works offline during demos.
-   -------------------------------------------------------------------------- */
-const ProReviewerIllustration: React.FC = () => (
-  <svg
-    viewBox="0 0 280 180"
-    width="100%"
-    height="100%"
-    aria-hidden
-    style={{ display: "block" }}
-  >
-    {/* Soft orange backdrop circle */}
-    <defs>
-      <radialGradient id="proGlow" cx="55%" cy="55%" r="60%">
-        <stop offset="0%" stopColor="#FFD09F" stopOpacity="0.95" />
-        <stop offset="100%" stopColor="#FFD09F" stopOpacity="0" />
-      </radialGradient>
-    </defs>
-    <circle cx="170" cy="92" r="78" fill="url(#proGlow)" />
-    <circle cx="170" cy="92" r="60" fill="#FFB988" opacity="0.55" />
+/* ---- Individual candidate row — hover-reveal Reject/Shortlist + checkbox ---- */
+const CandidateRow: React.FC<{
+  c: (typeof CANDIDATES)[0];
+  isSelected: boolean;
+  hasAnySelection: boolean;
+  onSelect: () => void;
+  isHovered: boolean;
+  onHover: (id: string | null) => void;
+  actionLabel: "Shortlist" | "Request offer";
+  onAction?: () => void;
+}> = ({
+  c,
+  isSelected,
+  hasAnySelection,
+  onSelect,
+  isHovered,
+  onHover,
+  actionLabel,
+  onAction,
+}) => {
+  const isScouted = c.source === "scouted";
+  const isUltra = c.source === "ultra";
+  const isRejected = !!c.rejected;
+  const showActions = isHovered || isSelected;
+  const showCheckbox = showActions || hasAnySelection;
 
-    {/* Sparkles */}
-    <g fill="#1A1716">
-      <path d="M82 70 l3 6 6 3 -6 3 -3 6 -3 -6 -6 -3 6 -3z" />
-      <path d="M250 60 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2z" />
-      <path d="M242 130 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2z" />
-    </g>
-
-    {/* Body */}
-    <g>
-      {/* Torso (sweater) */}
-      <path
-        d="M120 165 C120 130 130 118 165 118 C200 118 210 130 210 165 Z"
-        fill="#9DB6B0"
-        stroke="#1A1716"
-        strokeWidth="1.6"
-      />
-      {/* White collar */}
-      <path
-        d="M150 118 L165 132 L180 118 L178 124 L165 138 L152 124 Z"
-        fill="#fff"
-        stroke="#1A1716"
-        strokeWidth="1.4"
-      />
-      {/* Neck */}
-      <rect x="158" y="110" width="14" height="12" fill="#E8C4A0" stroke="#1A1716" strokeWidth="1.4" />
-      {/* Head */}
-      <circle cx="166" cy="92" r="21" fill="#EFCDA9" stroke="#1A1716" strokeWidth="1.6" />
-      {/* Hair */}
-      <path
-        d="M147 90 C145 70 158 60 174 62 C188 64 192 78 188 92 C186 86 182 80 175 80 C170 80 168 84 165 86 C160 88 153 90 147 90 Z"
-        fill="#1A1716"
-      />
-      {/* Hair lock */}
-      <path
-        d="M147 92 C148 100 152 108 158 110 C156 104 154 98 153 92 Z"
-        fill="#1A1716"
-      />
-      {/* Glasses */}
-      <circle cx="160" cy="94" r="4" fill="#fff" stroke="#1A1716" strokeWidth="1.4" />
-      <circle cx="172" cy="94" r="4" fill="#fff" stroke="#1A1716" strokeWidth="1.4" />
-      <path d="M164 94 L168 94" stroke="#1A1716" strokeWidth="1.4" />
-      {/* Earring */}
-      <circle cx="148" cy="98" r="1.6" fill="#1A1716" />
-
-      {/* Right arm holding résumé up */}
-      <path
-        d="M205 138 L228 110 L232 113 L210 142 Z"
-        fill="#9DB6B0"
-        stroke="#1A1716"
-        strokeWidth="1.4"
-      />
-      {/* Hand */}
-      <circle cx="232" cy="110" r="4" fill="#EFCDA9" stroke="#1A1716" strokeWidth="1.2" />
-      {/* Résumé 1 */}
-      <g transform="rotate(12 240 80)">
-        <rect x="222" y="58" width="34" height="44" rx="2" fill="#fff" stroke="#1A1716" strokeWidth="1.4" />
-        <circle cx="232" cy="70" r="3" fill="#FFB988" stroke="#1A1716" strokeWidth="1" />
-        <line x1="240" y1="68" x2="252" y2="68" stroke="#1A1716" strokeWidth="1" />
-        <line x1="240" y1="73" x2="248" y2="73" stroke="#1A1716" strokeWidth="1" />
-        <line x1="226" y1="84" x2="252" y2="84" stroke="#1A1716" strokeWidth="0.9" />
-        <line x1="226" y1="89" x2="248" y2="89" stroke="#1A1716" strokeWidth="0.9" />
-        <line x1="226" y1="94" x2="252" y2="94" stroke="#1A1716" strokeWidth="0.9" />
-      </g>
-
-      {/* Left arm holding résumé in lap */}
-      <path
-        d="M132 142 L116 158 L122 162 L138 150 Z"
-        fill="#9DB6B0"
-        stroke="#1A1716"
-        strokeWidth="1.4"
-      />
-      <circle cx="118" cy="160" r="4" fill="#EFCDA9" stroke="#1A1716" strokeWidth="1.2" />
-      {/* Résumé 2 */}
-      <g transform="rotate(-8 130 156)">
-        <rect x="108" y="138" width="32" height="40" rx="2" fill="#fff" stroke="#1A1716" strokeWidth="1.4" />
-        <line x1="112" y1="146" x2="135" y2="146" stroke="#1A1716" strokeWidth="0.9" />
-        <line x1="112" y1="151" x2="132" y2="151" stroke="#1A1716" strokeWidth="0.9" />
-        <line x1="112" y1="158" x2="135" y2="158" stroke="#1A1716" strokeWidth="0.9" />
-        <line x1="112" y1="163" x2="128" y2="163" stroke="#1A1716" strokeWidth="0.9" />
-        <line x1="112" y1="168" x2="135" y2="168" stroke="#1A1716" strokeWidth="0.9" />
-      </g>
-    </g>
-  </svg>
-);
-
-/* --------------------------------------------------------------------------
-   "Candidates Will Appear Here" empty-state illustration — magnifying
-   glass over a candidate avatar card, mirrors the warmth of the brand.
-   -------------------------------------------------------------------------- */
-const MagnifyingGlassIllustration: React.FC = () => (
-  <svg viewBox="0 0 140 130" width="140" height="130" aria-hidden style={{ display: "block" }}>
-    {/* warm shadow */}
-    <ellipse cx="60" cy="68" rx="38" ry="6" fill="#FFD09F" opacity="0.5" />
-    {/* candidate card */}
-    <rect x="32" y="22" width="50" height="58" rx="8" fill="#fff" stroke="#1A1716" strokeWidth="1.6" />
-    {/* avatar circle on card */}
-    <circle cx="57" cy="44" r="9" fill="#1A1716" />
-    <path d="M48 60 C48 54 52 50 57 50 C62 50 66 54 66 60 Z" fill="#FF6F23" />
-    {/* sparkles */}
-    <g fill="#1A1716">
-      <path d="M28 30 l1.6 3 3 1.6 -3 1.6 -1.6 3 -1.6 -3 -3 -1.6 3 -1.6z" />
-      <path d="M104 70 l1.6 3 3 1.6 -3 1.6 -1.6 3 -1.6 -3 -3 -1.6 3 -1.6z" />
-    </g>
-    {/* magnifier glass */}
-    <circle cx="86" cy="72" r="22" fill="#D8E6E2" stroke="#1A1716" strokeWidth="2" />
-    <circle cx="86" cy="72" r="22" fill="#fff" opacity="0.35" />
-    {/* glass highlight */}
-    <path d="M76 64 C78 62 82 60 86 60" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-    {/* handle */}
-    <rect
-      x="100"
-      y="86"
-      width="22"
-      height="7"
-      rx="3"
-      transform="rotate(35 100 86)"
-      fill="#3F4D49"
-      stroke="#1A1716"
-      strokeWidth="1.6"
-    />
-  </svg>
-);
-
-/* ---- "Need a Pro" upsell + "Candidates Will Appear Here" empty hero ----
- *  Composed empty state shown on the candidates-empty step. Mirrors the
- *  marketing-tuned mockup: warm orange banner upselling Mellow Ultra,
- *  followed by a neutral hero with a "Share your request" prompt.
- */
-const CandidatesEmptyState: React.FC = () => {
   return (
-    <>
-      <div className={styles.proUpsell}>
-        <button className={styles.proUpsellClose} aria-label="Dismiss">
-          <Icon.X size={14} />
-        </button>
-        <div className={styles.proUpsellCopy}>
-          <h3>Need a Pro to Step In?</h3>
-          <ul>
-            <li>
-              <Icon.Check size={12} color="#E25B15" />
-              Your request is reviewed and refined by a real person
-            </li>
-            <li>
-              <Icon.Check size={12} color="#E25B15" />
-              3+ carefully selected candidates within 48 hours
-            </li>
-            <li>
-              <Icon.Check size={12} color="#E25B15" />
-              You&apos;ll be notified as soon as your shortlist is ready
-            </li>
-          </ul>
-          <button className={styles.proUpsellCta} type="button">
-            Try Ultra for free
-          </button>
+    <div
+      className={[
+        styles.newCandidateRow,
+        isUltra && !isRejected ? styles.ultraRow : "",
+        isRejected ? styles.rejectedRow : "",
+        isSelected ? styles.selectedRow : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      onMouseEnter={() => onHover(c.id)}
+      onMouseLeave={() => onHover(null)}
+      onClick={!isRejected ? onAction : undefined}
+    >
+      <div className={styles.candidateAvatarWrap}>
+        {isUltra && !isRejected && <span className={styles.avatarDot} />}
+        <Avatar
+          initials={c.initials}
+          color={isRejected ? "#C8C0B7" : c.avatarTone}
+        />
+      </div>
+
+      <div className={styles.candidateInfo}>
+        <div className={styles.candidateNameRow}>
+          <span className={styles.candidateName}>{c.name}</span>
+          {isScouted && !isRejected && (
+            <span className={styles.scoutedInlineBadge}>AI Scouted</span>
+          )}
+          {isRejected ? (
+            <span className={`${styles.matchPill} ${styles.matchPillRejected}`}>
+              {c.match}%
+            </span>
+          ) : (
+            <MatchPill score={c.match} />
+          )}
         </div>
-        <div className={styles.proUpsellArt}>
-          <ProReviewerIllustration />
+        <div className={styles.candidateMeta}>
+          {c.role} · {c.experience}
+          {c.rate ? ` · ${c.rate}` : ""}
         </div>
       </div>
 
-      <div className={styles.candidatesEmptyHero}>
-        <MagnifyingGlassIllustration />
-        <h3>Candidates Will Appear Here</h3>
-        <p>
-          Want to speed things up? Use our sharing kit to reach even more
-          people.
-        </p>
-        <button className={styles.candidatesEmptyCta} type="button">
-          Share your request
-        </button>
+      <div className={styles.candidateRight}>
+        {showActions && !isRejected ? (
+          <>
+            <button
+              className={styles.rejectActionBtn}
+              type="button"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Reject
+            </button>
+            <button
+              className={styles.shortlistActionBtn}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAction?.();
+              }}
+            >
+              {actionLabel}
+            </button>
+          </>
+        ) : (
+          !isRejected && c.date && (
+            <span className={styles.candidateDate}>{c.date}</span>
+          )
+        )}
+        {showCheckbox && !isRejected && (
+          <button
+            className={`${styles.checkboxBtn} ${
+              isSelected ? styles.checkboxBtnOn : ""
+            }`}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect();
+            }}
+          >
+            {isSelected && <Icon.Check size={11} color="#fff" />}
+          </button>
+        )}
       </div>
-    </>
+    </div>
   );
 };
+
+/* ---- Bottom promo cards (Ultra active vs upsell) ---- */
+const BottomPromoCards: React.FC<{ isUltraActive: boolean }> = ({
+  isUltraActive,
+}) => (
+  <div className={styles.bottomPromos}>
+    <div className={styles.promoCard}>
+      {isUltraActive ? (
+        <>
+          <div className={styles.promoCardIcon}>
+            <Icon.Sparkles size={18} color="#E25B15" />
+          </div>
+          <div className={styles.promoCardBody}>
+            <strong>Ultra is reviewing your request!</strong>
+            <span className={styles.promoBriefingTag}>Briefing</span>
+            <p>
+              Your Ultra manager will get in touch if they have any questions.
+            </p>
+          </div>
+          <button className={styles.outlineBtn} style={{ marginLeft: "auto", flexShrink: 0 }}>
+            Email Ultra
+          </button>
+        </>
+      ) : (
+        <>
+          <div className={styles.promoCardIcon}>
+            <Icon.Clock size={18} color="#E25B15" />
+          </div>
+          <div className={styles.promoCardBody}>
+            <strong>Hire faster with Ultra!</strong>
+            <p>
+              A dedicated manager delivers 3+ matching candidates within 48
+              hours.
+            </p>
+          </div>
+          <button className={styles.promoOrangeBtn} style={{ marginLeft: "auto", flexShrink: 0 }}>
+            Try for free
+          </button>
+        </>
+      )}
+    </div>
+
+    <div className={styles.promoCard}>
+      <div className={styles.promoCardIcon}>
+        <Icon.Users size={18} color="#3F4D49" />
+      </div>
+      <div className={styles.promoCardBody}>
+        <strong>Need more candidates?</strong>
+        <p>Promote your request to reach more qualified candidates.</p>
+      </div>
+      <button className={styles.outlineBtn} style={{ marginLeft: "auto", flexShrink: 0 }}>
+        Promote
+      </button>
+    </div>
+  </div>
+);
+
+/* ---- "Everyone’s Been Sorted" empty state (scout-match step) ---- */
+const CandidatesEmptyState: React.FC = () => (
+  <>
+    <BottomPromoCards isUltraActive={true} />
+
+    <div className={styles.sortedEmptyHero}>
+      <svg viewBox="0 0 120 120" width={96} height={96} aria-hidden>
+        <circle cx="60" cy="60" r="58" fill="#FFF3E8" stroke="#F0D0B0" strokeWidth="1" />
+        <circle cx="60" cy="46" r="18" fill="#F4823C" />
+        <path d="M32 88c0-15 12-25 28-25s28 10 28 25z" fill="#F4823C" />
+        <path d="M44 44l6 6 12-12" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <circle cx="88" cy="82" r="16" fill="#F4823C" />
+        <path d="M82 82h12M88 76v12" stroke="#fff" strokeWidth="2" strokeLinecap="round" fill="none" />
+      </svg>
+      <h3>Everyone&apos;s Been Sorted</h3>
+      <p>
+        You&apos;ve reviewed all the candidates. New applicants will appear here
+        as they arrive.
+      </p>
+    </div>
+
+    <div className={styles.listFooter}>0 awaiting review · 4 rejected</div>
+  </>
+);
+
 
 /* ---- Shortlisted bucket with an actual proposal-ready candidate ----
  *  Renders the featured candidate (Taylor Cook) as a green "Proposal
